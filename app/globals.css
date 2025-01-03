@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: white !important;
+  color: black !important;
+}
+
+/* Sidebar Styling */
+.w-64 {
+  background-color: #f0f0f0; /* Light gray background */
+  border-right: 1px solid #ddd; /* Subtle gray border */
+}
