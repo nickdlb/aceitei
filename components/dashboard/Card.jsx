@@ -1,8 +1,13 @@
 import DeleteCardButton from "./DeleteCardButton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { editTitle } from '@/utils/editTitle';
 import Link from 'next/link';
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import { PencilIcon } from '@heroicons/react/24/outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
+import loadPins from '@/utils/loadPins';
+import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+
 
 export default function Card({
   imageUrl = '/api/placeholder/400/320',
@@ -15,31 +20,49 @@ export default function Card({
   marks_num = 0
 }) {
   const [CardTitulo, setCardTitulo] = useState(imageTitle);
-  const [DisabledTitulo, setDisabledTitulo] = useState(true);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [activeComments, setActiveComments] = useState(0);
+  const [completedComments, setCompletedComments] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [totalComments, setTotalComments] = useState(0);
+
+  useEffect(() => {
+    const fetchCommentCounts = async () => {
+      const pins = await loadPins(id);
+      if (pins) {
+        const activeCount = pins.filter(pin => pin.status === 'ativo').length;
+        const completedCount = pins.filter(pin => pin.status === 'resolvido').length;
+        setActiveComments(activeCount);
+        setCompletedComments(completedCount);
+        setTotalComments(pins.length);
+      }
+    };
+    fetchCommentCounts();
+  }, [id]);
 
   const HandleEditTitleButton = (event) => {
     setCardTitulo(event.target.value);
   };
 
-  const HandleKeyPress = (event) => {
+  const HandleKeyPress = async (event) => {
     if (event.key === "Enter") {
-      HandleEditTitle();
+      await HandleEditTitle();
     }
   };
 
   const HandleEditTitle = async () => {
-    if (DisabledTitulo) {
-      setDisabledTitulo(false);
+    if (!editingTitle) {
+      setEditingTitle(true);
     } else {
       StatusValue(true);
-      setDisabledTitulo(true);
+      setEditingTitle(false);
       await editTitle(id, CardTitulo);
       StatusValue(false);
     }
   };
 
   const HandleFocusOut = async () => {
-    setDisabledTitulo(true);
+    setEditingTitle(false);
     await editTitle(id, CardTitulo);
   };
 
@@ -49,19 +72,36 @@ export default function Card({
     StatusApp(false);
   };
 
+  const truncatedTitle = imageTitle.length > 30 ? `${imageTitle.substring(0, 30)}...` : imageTitle;
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+
   return (
-    <div className="w-72 bg-white rounded-lg shadow overflow-hidden">
+    <div className="w-72 bg-white rounded-lg shadow overflow-hidden relative group"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <Link href={`/${id}`}>
-        <div className="h-48 relative cursor-pointer">
-          <img 
+        <div className="h-48 relative cursor-pointer overflow-hidden">
+          <img
             src={imageUrl}
             alt={imageTitle}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover transition-transform duration-200 ${isHovered ? 'transform scale-110' : ''}`}
             loading="lazy"
           />
         </div>
       </Link>
-      
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition duration-300 bg-white rounded-full"> {/* Added background and rounded */}
+        <DeleteCardButton id={id} />
+      </div>
+
       <div className="p-3">
         {/* Status Section */}
         <div className="flex items-center mb-2">
@@ -72,37 +112,40 @@ export default function Card({
         </div>
 
         {/* Title Section */}
-        <div className="mb-2">
+        <div className="mb-1 relative">
           <input
-            disabled={DisabledTitulo}
+            style={{ display: editingTitle ? 'block' : 'none' }}
             value={CardTitulo}
-            className="w-full bg-transparent font-medium text-base focus:outline-none focus:bg-gray-100 disabled:text-gray-800 px-1 py-0.5 rounded"
+            className="w-full bg-transparent font-medium text-base focus:outline-none focus:bg-gray-100 px-1 py-0.5 rounded"
             onKeyPress={HandleKeyPress}
             onChange={HandleEditTitleButton}
             onBlur={HandleFocusOut}
+            autoFocus
+          />
+          <span style={{ display: editingTitle ? 'none' : 'block' }} className="font-medium text-base truncate">
+            {truncatedTitle}
+          </span>
+          <PencilIcon
+            onClick={HandleEditTitle}
+            className={`absolute top-1/2 right-2 -translate-y-1/2 h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700 ${editingTitle ? 'hidden' : 'block'}`}
           />
         </div>
+        <span className="text-xs text-gray-500 mb-1 pb-1 block">Última modificação {updated_at}</span>
 
-        {/* Update Info */}
-        <div className="flex items-center text-xs text-gray-500 mb-3">
-          <span>Update {updated_at}</span>
-          <div className="flex items-center ml-2">
-            <span className="flex items-center">
-              <CheckCircleIcon className="w-4 h-4 mr-1" />
-              {marks_num}
-            </span>
+        {/* Comment Counts and Update Info */}
+        <div className="flex items-center text-xs mb-3">
+          <div className="flex items-center mr-2">
+            <CheckIcon className="h-4 w-4 text-green-500 mr-1" />
+            {completedComments}
           </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={HandleEditTitle}
-            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
-          >
-            Alterar Título
-          </button>
-          <DeleteCardButton id={id} />
+          <div className="flex items-center mr-2">
+            <XMarkIcon className="h-4 w-4 text-yellow-500 mr-1" />
+            {activeComments}
+          </div>
+          <div className="flex items-center mr-2">
+            <ChatBubbleLeftIcon className="h-4 w-4 text-gray-500 mr-1" />
+            {totalComments}
+          </div>
         </div>
       </div>
     </div>
