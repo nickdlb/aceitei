@@ -1,5 +1,5 @@
 import DeleteCardButton from "./DeleteCardButton";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { editTitle } from '@/utils/editTitle';
 import Link from 'next/link';
 import { PencilIcon } from '@heroicons/react/24/outline';
@@ -25,6 +25,9 @@ export default function Card({
   const [completedComments, setCompletedComments] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [totalComments, setTotalComments] = useState(0);
+  const titleRef = useRef(null);
+  const [isTitleHovered, setIsTitleHovered] = useState(false);
+  const [localImageTitle, setLocalImageTitle] = useState(imageTitle);
 
   useEffect(() => {
     const fetchCommentCounts = async () => {
@@ -57,6 +60,7 @@ export default function Card({
       StatusValue(true);
       setEditingTitle(false);
       await editTitle(id, CardTitulo);
+      setLocalImageTitle(CardTitulo);
       StatusValue(false);
     }
   };
@@ -64,6 +68,7 @@ export default function Card({
   const HandleFocusOut = async () => {
     setEditingTitle(false);
     await editTitle(id, CardTitulo);
+    setLocalImageTitle(CardTitulo);
   };
 
   const HandleStatusClick = async () => {
@@ -72,7 +77,7 @@ export default function Card({
     StatusApp(false);
   };
 
-  const truncatedTitle = imageTitle.length > 30 ? `${imageTitle.substring(0, 30)}...` : imageTitle;
+  const truncatedTitle = localImageTitle.length > 28 ? `${localImageTitle.substring(0, 28)}...` : localImageTitle; // Changed max length to 28
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -80,6 +85,14 @@ export default function Card({
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+  };
+
+  const handleTitleMouseEnter = () => {
+    setIsTitleHovered(true);
+  };
+
+  const handleTitleMouseLeave = () => {
+    setIsTitleHovered(false);
   };
 
 
@@ -96,9 +109,10 @@ export default function Card({
             className={`w-full h-full object-cover transition-transform duration-200 ${isHovered ? 'transform scale-110' : ''}`}
             loading="lazy"
           />
+          <div className={`absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition duration-200 pointer-events-none`}></div>
         </div>
       </Link>
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition duration-300 bg-white rounded-full"> {/* Added background and rounded */}
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition duration-300 bg-white rounded-full">
         <DeleteCardButton id={id} />
       </div>
 
@@ -112,7 +126,7 @@ export default function Card({
         </div>
 
         {/* Title Section */}
-        <div className="mb-1 relative">
+        <div className="mb-1 relative" onMouseEnter={handleTitleMouseEnter} onMouseLeave={handleTitleMouseLeave} ref={titleRef}>
           <input
             style={{ display: editingTitle ? 'block' : 'none' }}
             value={CardTitulo}
@@ -127,7 +141,7 @@ export default function Card({
           </span>
           <PencilIcon
             onClick={HandleEditTitle}
-            className={`absolute top-1/2 right-2 -translate-y-1/2 h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700 ${editingTitle ? 'hidden' : 'block'}`}
+            className={`absolute top-1/2 right-2 -translate-y-1/2 h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700 ${editingTitle || isTitleHovered ? 'block' : 'hidden'}`}
           />
         </div>
         <span className="text-xs text-gray-500 mb-1 pb-1 block">Última modificação {updated_at}</span>
