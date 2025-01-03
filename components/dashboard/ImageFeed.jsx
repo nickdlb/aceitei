@@ -5,7 +5,7 @@ import { formatDate } from '@/utils/formatDate';
 import LoadingOverlay from '@/components/dashboard/LoadingOverlay';
 import useLoadImages from '@/hooks/loadImagesHook';
 
-const ImageGallery = ({ IsLoading, StatusValue, sortOrder }) => {
+const ImageGallery = ({ IsLoading, StatusValue, sortOrder, searchTerm }) => { // Added searchTerm prop
   const { imagens } = useLoadImages();
 
   const sortedImages = [...imagens].sort((a, b) => {
@@ -16,18 +16,22 @@ const ImageGallery = ({ IsLoading, StatusValue, sortOrder }) => {
     }
   });
 
+  const filteredImages = sortedImages.filter((imagem) =>
+    imagem.imageTitle.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <LoadingOverlay IsLoading={IsLoading}/>
       <div className="flex flex-row flex-wrap gap-4">
-        {sortedImages.map((imagem) => (
-          <Card 
-            StatusValue={StatusValue} 
-            key={imagem.id} 
-            imageUrl={imagem.image_url} 
-            imageTitle={imagem.imageTitle} 
-            status={imagem.status} 
-            updated_at={formatDate(imagem.created_at)} 
+        {filteredImages.map((imagem) => (
+          <Card
+            StatusValue={StatusValue}
+            key={imagem.id}
+            imageUrl={imagem.image_url}
+            imageTitle={imagem.imageTitle}
+            status={imagem.status}
+            updated_at={formatDate(imagem.created_at)}
             id={imagem.id}
             marks_num={imagem.marks_num || 0}
           />
