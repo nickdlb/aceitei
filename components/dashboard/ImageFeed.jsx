@@ -1,8 +1,8 @@
 "use client";
-import Card from '@/components/markupv2/dashboard/Card';
+import Card from '@/components/dashboard/Card';
 import React from 'react';
 import { formatDate } from '@/utils/formatDate';
-import LoadingOverlay from '@/components/markupv2/dashboard/LoadingOverlay';
+import LoadingOverlay from '@/components/dashboard/LoadingOverlay';
 import useLoadImages from '@/hooks/loadImagesHook';
 
 const ImageGallery = ({ IsLoading, StatusValue, sortOrder }) => {

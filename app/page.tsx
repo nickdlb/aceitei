@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react';
-import Sidebar from '../components/markupv2/sidebar/Sidebar';
-import TopBar from '../components/markupv2/dashboard/TopBar';
-import ImageGallery from '../components/markupv2/dashboard/ImageFeed';
+import Sidebar from '../components/sidebar/Sidebar';
+import TopBar from '../components/dashboard/TopBar';
+import ImageGallery from '../components/dashboard/ImageFeed';
 
 const App = () => {
   const [IsLoading, setIsLoading] = useState(false);
