@@ -17,7 +17,9 @@ import DeleteCardButton from "./DeleteCardButton";
       id = '0',
       StatusApp = () => {},
       StatusValue = () => {},
-      marks_num = 0
+      marks_num = 0,
+      currentlyEditing,
+      setCurrentlyEditing
     }) {
       const [CardTitulo, setCardTitulo] = useState(imageTitle);
       const [editingTitle, setEditingTitle] = useState(false);
@@ -28,6 +30,9 @@ import DeleteCardButton from "./DeleteCardButton";
       const titleRef = useRef(null);
       const [isTitleHovered, setIsTitleHovered] = useState(false);
       const [localImageTitle, setLocalImageTitle] = useState(imageTitle);
+      const [isUpdating, setIsUpdating] = useState(false);
+      const cardRef = useRef(null);
+      const inputRef = useRef(null);
 
       useEffect(() => {
         const fetchCommentCounts = async () => {
@@ -55,20 +60,32 @@ import DeleteCardButton from "./DeleteCardButton";
 
       const HandleEditTitle = async () => {
         if (!editingTitle) {
+          if (currentlyEditing) {
+            // If another card is being edited, cancel that edit
+            setCurrentlyEditing(null);
+          }
           setEditingTitle(true);
+          setCurrentlyEditing(id);
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 0);
         } else {
-          StatusValue(true);
+          setIsUpdating(true);
           setEditingTitle(false);
           await editTitle(id, CardTitulo);
           setLocalImageTitle(CardTitulo);
-          StatusValue(false);
+          setIsUpdating(false);
+          setCurrentlyEditing(null);
         }
       };
 
       const HandleFocusOut = async () => {
-        setEditingTitle(false);
-        await editTitle(id, CardTitulo);
-        setLocalImageTitle(CardTitulo);
+        if (editingTitle) {
+          setEditingTitle(false);
+          await editTitle(id, CardTitulo);
+          setLocalImageTitle(CardTitulo);
+          setCurrentlyEditing(null);
+        }
       };
 
       const HandleStatusClick = async () => {
@@ -95,11 +112,32 @@ import DeleteCardButton from "./DeleteCardButton";
         setIsTitleHovered(false);
       };
 
+      useEffect(() => {
+        if (currentlyEditing !== id && editingTitle) {
+          setEditingTitle(false);
+          setCardTitulo(localImageTitle);
+        }
+      }, [currentlyEditing, id, localImageTitle, setEditingTitle, setCardTitulo]);
+
+      useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (cardRef.current && !cardRef.current.contains(event.target)) {
+            HandleFocusOut();
+          }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+        };
+      }, [editingTitle, HandleFocusOut]);
+
 
       return (
         <div className="w-72 bg-white rounded-lg shadow overflow-hidden relative group"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          ref={cardRef}
         >
           <Link href={`/${id}`}>
             <div className="h-48 relative cursor-pointer overflow-hidden">
@@ -130,18 +168,19 @@ import DeleteCardButton from "./DeleteCardButton";
               <input
                 style={{ display: editingTitle ? 'block' : 'none' }}
                 value={CardTitulo}
-                className="w-full bg-transparent font-medium text-base focus:outline-none focus:bg-gray-100 px-1 py-0.5 rounded"
+                className="w-full font-medium text-base focus:outline-none px-1 py-0.5 rounded bg-gray-100"
                 onKeyPress={HandleKeyPress}
                 onChange={HandleEditTitleButton}
                 onBlur={HandleFocusOut}
                 autoFocus
+                ref={inputRef}
               />
               <span style={{ display: editingTitle ? 'none' : 'block' }} className="font-medium text-base truncate">
                 {truncatedTitle}
               </span>
               <PencilIcon
                 onClick={HandleEditTitle}
-                className={`absolute top-1/2 right-2 -translate-y-1/2 h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700 ${editingTitle || isTitleHovered ? 'block' : 'hidden'}`}
+                className={`absolute top-1/2 right-2 -translate-y-1/2 h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700 ${editingTitle ? 'hidden' : (isTitleHovered ? 'block' : 'hidden')}`}
               />
             </div>
             <span className="text-xs text-gray-500 mb-1 pb-1 block">Última modificação {updated_at}</span>

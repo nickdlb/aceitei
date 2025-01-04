@@ -1,25 +1,118 @@
 'use client'
     import React, { useState, useRef } from 'react';
-    import { uploadAndInsertFile } from '@/utils/uploadAndInsertFile';
     import { insertFileSupa } from '@/utils/insertFileSupa';
     import { LinkIcon } from '@heroicons/react/24/solid';
+    import { supabase } from '@/utils/supabaseClient';
+    import { uploadAndInsertFile } from '@/utils/uploadAndInsertFile';
 
-    const RightSidebar = () => {
+    const RightSidebar = ({ onUploadComplete }) => {
       const [urlInput, setUrlInput] = useState('');
       const fileInputRef = useRef(null);
+      const [uploading, setUploading] = useState(false);
+      const [progress, setProgress] = useState(0);
+      const [fileCount, setFileCount] = useState({ current: 0, total: 0 });
+      const [totalProgress, setTotalProgress] = useState(0);
+      const [fetchError, setFetchError] = useState(null);
+
+      const isValidUrl = (url) => {
+        try {
+          new URL(url);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      };
 
       const handleFileUpload = async (event) => {
         if (event.target.files) {
-          const files = Array.from(event.target.files).slice(0, 10);
+          setUploading(true);
+          setProgress(0);
+          setTotalProgress(0);
+          setFetchError(null);
+          const files = Array.from(event.target.files);
+          setFileCount({ current: 1, total: files.length });
+
+          let uploadedBytes = 0;
+          let totalBytes = 0;
           for (const file of files) {
-            await uploadAndInsertFile(file);
+            totalBytes += file.size;
           }
+
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            await new Promise((resolve, reject) => {
+              const fileNameOriginal = file.name;
+              const fileExtension = fileNameOriginal.split('.').pop();
+              const fileNameFinal = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${Math.floor(Math.random() * 10000)}.${fileExtension}`;
+
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/images/${fileNameFinal}`, true);
+              xhr.setRequestHeader('Authorization', `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`);
+              xhr.setRequestHeader('Content-Type', file.type);
+
+              xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                  const uploaded = uploadedBytes + event.loaded;
+                  const percentCompleted = Math.round((uploaded * 100) / totalBytes);
+                  setTotalProgress(percentCompleted);
+                  setProgress(Math.round((event.loaded * 100) / event.total));
+                }
+              };
+
+              xhr.onload = async () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  const urlFile = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/images/${fileNameFinal}`;
+                  try {
+                    await supabase.from('images').insert([
+                      {
+                        imageTitle: fileNameOriginal,
+                        image_url: urlFile,
+                        user_id: 'a08255eb-5731-422e-80e6-80c317d4fcb1',
+                      },
+                    ]);
+                    uploadedBytes += file.size;
+                    setFileCount(prev => ({ ...prev, current: i + 2 }));
+                    resolve(true);
+                    onUploadComplete();
+                  } catch (error) {
+                    console.error("Error inserting file metadata:", error);
+                    reject(error);
+                  }
+                } else {
+                  console.error("Upload failed with status:", xhr.status);
+                  reject(new Error(`Upload failed with status: ${xhr.status}`));
+                }
+              };
+
+              xhr.onerror = () => {
+                console.error("Upload failed");
+                reject(new Error("Upload failed"));
+              };
+
+              xhr.send(file);
+            });
+          }
+
+          setUploading(false);
+          setProgress(0);
+          setTotalProgress(0);
         }
       };
+
 
       const handleUrlSubmit = async (event) => {
         event.preventDefault();
         if (urlInput) {
+          if (!isValidUrl(urlInput)) {
+            console.error("Invalid URL provided");
+            setFetchError("Invalid URL provided");
+            return;
+          }
+          setUploading(true);
+          setProgress(0);
+          setTotalProgress(0);
+          setFileCount({ current: 1, total: 1 });
+          setFetchError(null);
           try {
             const response = await fetch(urlInput);
             if (!response.ok) {
@@ -27,24 +120,146 @@
             }
             const blob = await response.blob();
             const file = new File([blob], 'image.jpg', { type: blob.type });
-            await insertFileSupa(file);
+            
+            await new Promise(async (resolve, reject) => {
+              const fileNameOriginal = file.name;
+              const fileExtension = fileNameOriginal.split('.').pop();
+              const fileNameFinal = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${Math.floor(Math.random() * 10000)}.${fileExtension}`;
+
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/images/${fileNameFinal}`, true);
+              xhr.setRequestHeader('Authorization', `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`);
+              xhr.setRequestHeader('Content-Type', file.type);
+
+              xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                  const percentCompleted = Math.round((event.loaded * 100) / event.total);
+                  setTotalProgress(percentCompleted);
+                  setProgress(Math.round((event.loaded * 100) / event.total));
+                }
+              };
+
+              xhr.onload = async () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  const urlFile = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/images/${fileNameFinal}`;
+                  try {
+                    await supabase.from('images').insert([
+                      {
+                        imageTitle: fileNameOriginal,
+                        image_url: urlFile,
+                        user_id: 'a08255eb-5731-422e-80e6-80c317d4fcb1',
+                      },
+                    ]);
+                    setFileCount(prev => ({ ...prev, current: 2 }));
+                    resolve(true);
+                    onUploadComplete();
+                  } catch (error) {
+                    console.error("Error inserting file metadata:", error);
+                    reject(error);
+                  }
+                } else {
+                  console.error("Upload failed with status:", xhr.status);
+                  reject(new Error(`Upload failed with status: ${xhr.status}`));
+                }
+              };
+
+              xhr.onerror = () => {
+                console.error("Upload failed");
+                reject(new Error("Upload failed"));
+              };
+
+              xhr.send(file);
+            });
           } catch (error) {
             console.error('Error uploading from URL:', error);
+            setFetchError(error.message || "Failed to fetch from URL");
+          } finally {
+            setUploading(false);
+            setProgress(0);
+            setTotalProgress(0);
+            setFileCount({ current: 0, total: 0 });
           }
         }
       };
 
-      const handleDragOver = (event) => {
+      const handleDragOver = (event) =>
         event.preventDefault();
-      };
 
       const handleDrop = async (event) => {
         event.preventDefault();
         if (event.dataTransfer.files) {
-          const files = Array.from(event.dataTransfer.files).slice(0, 10);
+          setUploading(true);
+          setProgress(0);
+          setTotalProgress(0);
+          setFetchError(null);
+          const files = Array.from(event.dataTransfer.files);
+          setFileCount({ current: 1, total: files.length });
+
+          let uploadedBytes = 0;
+          let totalBytes = 0;
           for (const file of files) {
-            await uploadAndInsertFile(file);
+            totalBytes += file.size;
           }
+
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            await new Promise((resolve, reject) => {
+              const fileNameOriginal = file.name;
+              const fileExtension = fileNameOriginal.split('.').pop();
+              const fileNameFinal = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${Math.floor(Math.random() * 10000)}.${fileExtension}`;
+
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/images/${fileNameFinal}`, true);
+              xhr.setRequestHeader('Authorization', `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`);
+              xhr.setRequestHeader('Content-Type', file.type);
+
+              xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                  const uploaded = uploadedBytes + event.loaded;
+                  const percentCompleted = Math.round((uploaded * 100) / totalBytes);
+                  setTotalProgress(percentCompleted);
+                  setProgress(Math.round((event.loaded * 100) / event.total));
+                }
+              };
+
+              xhr.onload = async () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  const urlFile = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/images/${fileNameFinal}`;
+                  try {
+                    await supabase.from('images').insert([
+                      {
+                        imageTitle: fileNameOriginal,
+                        image_url: urlFile,
+                        user_id: 'a08255eb-5731-422e-80e6-80c317d4fcb1',
+                      },
+                    ]);
+                    uploadedBytes += file.size;
+                    setFileCount(prev => ({ ...prev, current: i + 2 }));
+                    resolve(true);
+                    onUploadComplete();
+                  } catch (error) {
+                    console.error("Error inserting file metadata:", error);
+                    reject(error);
+                  }
+                } else {
+                  console.error("Upload failed with status:", xhr.status);
+                  reject(new Error(`Upload failed with status: ${xhr.status}`));
+                }
+              };
+
+              xhr.onerror = () => {
+                console.error("Upload failed");
+                reject(new Error("Upload failed"));
+              };
+
+              xhr.send(file);
+            });
+          }
+
+          setUploading(false);
+          setProgress(0);
+          setTotalProgress(0);
+          onUploadComplete();
         }
       };
 
@@ -92,6 +307,21 @@
             </form>
           </div>
           <input type="file" className="hidden" onChange={handleFileUpload} ref={fileInputRef} multiple />
+          {uploading && (
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 relative">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full absolute top-0 left-0"
+                style={{ width: `${totalProgress}%` }}
+              >
+              </div>
+              <span
+                className="absolute text-xs text-gray-700 bottom-[-20px] left-0"
+              >
+                {fileCount.current} de {fileCount.total}
+              </span>
+            </div>
+          )}
+          {fetchError && <p className="text-red-500 mt-2">{fetchError}</p>}
         </div>
       );
     };

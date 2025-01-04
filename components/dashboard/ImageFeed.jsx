@@ -1,12 +1,13 @@
 "use client";
     import Card from '@/components/dashboard/Card';
-    import React from 'react';
+    import React, { useState } from 'react';
     import { formatDate } from '@/utils/formatDate';
     import LoadingOverlay from '@/components/dashboard/LoadingOverlay';
     import useLoadImages from '@/hooks/loadImagesHook';
 
     const ImageGallery = ({ IsLoading, StatusValue, sortOrder, searchTerm }) => {
       const { imagens } = useLoadImages();
+      const [currentlyEditing, setCurrentlyEditing] = useState(null);
 
       const sortedImages = [...imagens].sort((a, b) => {
         if (sortOrder === 'date') {
@@ -34,6 +35,8 @@
                 updated_at={formatDate(imagem.created_at)}
                 id={imagem.id}
                 marks_num={imagem.marks_num || 0}
+                currentlyEditing={currentlyEditing}
+                setCurrentlyEditing={setCurrentlyEditing}
               />
             ))}
           </div>

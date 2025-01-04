@@ -1,5 +1,5 @@
 'use client'
-    import { useState } from 'react';
+    import { useState, useCallback } from 'react';
     import Sidebar from '../components/sidebar/Sidebar';
     import ImageGallery from '../components/dashboard/ImageFeed';
     import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
@@ -10,6 +10,7 @@
       const [sortOrder, setSortOrder] = useState('date');
       const [searchTerm, setSearchTerm] = useState('');
       const [showSearchForm, setShowSearchForm] = useState(false);
+      const [refreshKey, setRefreshKey] = useState(0);
 
       const handleSort = (sortBy: string) => {
         setSortOrder(sortBy);
@@ -18,6 +19,10 @@
       const StatusValue = (StatusValue: boolean) => {
         setIsLoading(StatusValue);
       };
+
+      const handleUploadComplete = useCallback(() => {
+        setRefreshKey(prevKey => prevKey + 1);
+      }, []);
 
       return (
         <div className="flex h-screen bg-gray-50">
@@ -59,10 +64,11 @@
                 IsLoading={IsLoading}
                 sortOrder={sortOrder}
                 searchTerm={searchTerm}
+                key={refreshKey}
               />
             </main>
           </div>
-          <RightSidebar />
+          <RightSidebar onUploadComplete={handleUploadComplete} />
         </div>
       );
     };
