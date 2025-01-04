@@ -12,13 +12,9 @@ body {
   background-color: #f0f0f0; /* Light gray background */
   border-right: 1px solid #ddd; /* Subtle gray border */
 }
-
-.thin-scrollbar {
-  scrollbar-width: thin; /* For Firefox */
-  -ms-overflow-style: none; /* For IE and Edge */
-}
+/* Thin scrollbar */
 .thin-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 .thin-scrollbar::-webkit-scrollbar-track {
   background: #f1f1f1;
