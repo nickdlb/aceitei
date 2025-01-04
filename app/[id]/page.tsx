@@ -1,6 +1,6 @@
 'use client'
 import { useParams, useRouter } from "next/navigation";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ShowImageById } from '@/hooks/showImageByIdHook';
 import { insertPin } from '@/utils/insertPinSupa';
 import loadPins from '@/utils/loadPins';
@@ -9,7 +9,7 @@ import { deletePin } from '@/utils/deletePin';
 import { updatePinComment } from '@/utils/updatePinComment';
 import { updatePinStatus } from '@/utils/updatePinStatus';
 import Link from 'next/link';
-import { PencilIcon, CogIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, CheckIcon, CogIcon } from '@heroicons/react/24/outline';
 
 interface Pin {
     id: string;
@@ -29,6 +29,7 @@ export default function Page() {
     const [editingPinId, setEditingPinId] = useState<string | null>(null);
     const [comments, setComments] = useState<{[key: string]: string}>({});
     const [statusFilter, setStatusFilter] = useState<'ativo' | 'resolvido'>('ativo');
+    const commentInputRef = useRef<HTMLTextAreaElement>(null);
 
     // Hook personalizado para carregar a imagem
     ShowImageById(id, exibirImagem, setExibirImagem);
@@ -68,7 +69,23 @@ export default function Page() {
             const rect = target.getBoundingClientRect();
             const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
             const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
-            const pin_Number = (pins.length + 1);
+            let pin_Number: number;
+
+            // Verifica se há um pin em edição e se o comentário está vazio
+            const pinBeingEdited = pins.find(pin => pin.id === editingPinId);
+            if (editingPinId && !comments[editingPinId].trim() && pinBeingEdited) {
+                pin_Number = pinBeingEdited.num; // Manter o mesmo número do pin
+                await deletePin(editingPinId);
+                setPins(pins.filter(pin => pin.id !== editingPinId));
+                setComments(prev => {
+                    const newComments = { ...prev };
+                    delete newComments[editingPinId];
+                    return newComments;
+                });
+                setEditingPinId(null); // Reseta editingPinId após a exclusão
+            } else {
+                pin_Number = pins.length + 1; // Incrementar apenas se não houver pin em edição ou comentário
+            }
 
             const newPinData = await insertPin(id, xPercent, yPercent, pin_Number, '');
             
@@ -86,6 +103,10 @@ export default function Page() {
                 setPins(prevPins => [...prevPins, newPin]);
                 setComments(prev => ({ ...prev, [newPin.id]: '' }));
                 setEditingPinId(newPin.id);
+                // Focus no input após a criação
+                if (commentInputRef.current) {
+                    commentInputRef.current.focus();
+                }
             }
         } catch (error) {
             console.error("Erro ao adicionar pin:", error);
@@ -116,10 +137,17 @@ export default function Page() {
 
     const handleCommentSave = async (pinId: string) => {
         try {
-            await updatePinComment(pinId, comments[pinId]);
+            const comment = comments[pinId];
+            if (!comment.trim()) { // Verifica se o comentário está vazio após o trim
+                await deletePin(pinId);
+                setPins(pins.filter(pin => pin.id !== pinId));
+                setEditingPinId(null); // Reseta editingPinId após a exclusão
+                return;
+            }
+            await updatePinComment(pinId, comment);
             setPins(pins.map(pin => 
                 pin.id === pinId 
-                    ? { ...pin, comment: comments[pinId] }
+                    ? { ...pin, comment: comment }
                     : pin
             ));
             setEditingPinId(null);
@@ -130,6 +158,10 @@ export default function Page() {
 
     const startEditing = (pinId: string) => {
         setEditingPinId(pinId);
+        // Focus no input após iniciar a edição
+        if (commentInputRef.current) {
+            commentInputRef.current.focus();
+        }
     };
 
     const formatDateTime = (dateString: string) => {
@@ -149,6 +181,7 @@ export default function Page() {
                 delete newComments[pinId];
                 return newComments;
             });
+            setEditingPinId(null); // Reseta editingPinId após a exclusão
         } catch (error) {
             console.error("Erro ao deletar pin:", error);
         }
@@ -164,7 +197,7 @@ export default function Page() {
     const filteredPins = pins.filter(pin => pin.status === statusFilter);
 
     return (
-        <div className="w-full h-screen flex">
+        <div className="w-full h-screen flex" >
             {/* Sidebar */}
             <div id="sidebar" className="w-96 bg-gray-100 flex flex-col h-full">
                 {/* Header */}
@@ -245,6 +278,7 @@ export default function Page() {
                                 {editingPinId === pin.id ? (
                                     <div>
                                         <textarea
+                                            ref={commentInputRef}
                                             value={comments[pin.id] || ''}
                                             onChange={(e) => handleCommentChange(pin.id, e.target.value)}
                                             onKeyPress={(e) => handleKeyPress(e, pin.id)}
@@ -254,6 +288,7 @@ export default function Page() {
                                         />
                                         <button
                                             onClick={() => handleCommentSave(pin.id)}
+                                            disabled={!comments[pin.id]?.trim()} // Desabilita se estiver vazio
                                             className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
                                         >
                                             Confirmar
@@ -262,7 +297,7 @@ export default function Page() {
                                 ) : (
                                     <div className="flex justify-between items-start">
                                         <p className="text-sm text-gray-700">
-                                            {pin.comment || "Sem comentário"}
+                                            {pin.comment}
                                         </p>
                                         <div className="flex gap-2">
                                             <button
@@ -279,7 +314,7 @@ export default function Page() {
                                                         : 'text-green-500 hover:text-green-600'
                                                 }`}
                                             >
-                                                <CogIcon className="w-4 h-4" />
+                                                {pin.status === 'ativo' ? <CheckIcon className="w-4 h-4" /> : <CogIcon className="w-4 h-4" />}
                                             </button>
                                         </div>
                                     </div>
@@ -303,7 +338,7 @@ export default function Page() {
                     {filteredPins.map((pin) => (
                         <div
                             key={pin.id}
-                            className={`absolute text-xs text-white flex items-center justify-center font-bold w-5 h-5 ${
+                            className={`absolute text-xs text-black flex items-center justify-center font-bold w-5 h-5 ${
                                 pin.status === 'ativo' ? 'bg-yellow-500' : 'bg-green-500'
                             } rounded-full -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:opacity-90`}
                             style={{ 
