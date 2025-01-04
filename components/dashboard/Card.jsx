@@ -5,8 +5,9 @@ import DeleteCardButton from "./DeleteCardButton";
     import { PencilIcon } from '@heroicons/react/24/outline';
     import { TrashIcon } from '@heroicons/react/24/outline';
     import loadPins from '@/utils/loadPins';
-    import { CheckIcon,  } from '@heroicons/react/24/solid';
+    import { CheckIcon, EyeIcon, ShareIcon } from '@heroicons/react/24/solid';
     import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+    import { DocumentDuplicateIcon } from '@heroicons/react/24/outline';
 
 
     export default function Card({
@@ -33,6 +34,8 @@ import DeleteCardButton from "./DeleteCardButton";
       const [isUpdating, setIsUpdating] = useState(false);
       const cardRef = useRef(null);
       const inputRef = useRef(null);
+      const [isSharePopupOpen, setIsSharePopupOpen] = useState(false);
+      const [copySuccess, setCopySuccess] = useState(false);
 
       useEffect(() => {
         const fetchCommentCounts = async () => {
@@ -48,9 +51,8 @@ import DeleteCardButton from "./DeleteCardButton";
         fetchCommentCounts();
       }, [id]);
 
-      const HandleEditTitleButton = (event) => {
+      const HandleEditTitleButton = (event) =>
         setCardTitulo(event.target.value);
-      };
 
       const HandleKeyPress = async (event) => {
         if (event.key === "Enter") {
@@ -61,7 +63,6 @@ import DeleteCardButton from "./DeleteCardButton";
       const HandleEditTitle = async () => {
         if (!editingTitle) {
           if (currentlyEditing) {
-            // If another card is being edited, cancel that edit
             setCurrentlyEditing(null);
           }
           setEditingTitle(true);
@@ -94,7 +95,7 @@ import DeleteCardButton from "./DeleteCardButton";
         StatusApp(false);
       };
 
-      const truncatedTitle = localImageTitle.length > 28 ? `${localImageTitle.substring(0, 28)}...` : localImageTitle; // Changed max length to 28
+      const truncatedTitle = localImageTitle.length > 28 ? `${localImageTitle.substring(0, 28)}...` : localImageTitle;
 
       const handleMouseEnter = () => {
         setIsHovered(true);
@@ -132,6 +133,26 @@ import DeleteCardButton from "./DeleteCardButton";
         };
       }, [editingTitle, HandleFocusOut]);
 
+      const handleShareClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsSharePopupOpen(true);
+      };
+
+      const handleClosePopup = () => {
+        setIsSharePopupOpen(false);
+      };
+
+      const handleCopyClick = async () => {
+        try {
+          await navigator.clipboard.writeText(`http://localhost:3000/${id}`);
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 2000);
+        } catch (err) {
+          console.error("Failed to copy text: ", err);
+          setCopySuccess(false);
+        }
+      };
 
       return (
         <div className="w-72 bg-white rounded-lg shadow overflow-hidden relative group"
@@ -139,23 +160,29 @@ import DeleteCardButton from "./DeleteCardButton";
           onMouseLeave={handleMouseLeave}
           ref={cardRef}
         >
-          <Link href={`/${id}`}>
-            <div className="h-48 relative cursor-pointer overflow-hidden">
+          <div className="h-48 relative overflow-hidden">
+            <Link href={`/${id}`} target="_blank">
               <img
                 src={imageUrl}
                 alt={imageTitle}
                 className={`w-full h-full object-cover transition-transform duration-200 ${isHovered ? 'transform scale-110' : ''}`}
                 loading="lazy"
               />
-              <div className={`absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition duration-200 pointer-events-none`}></div>
+            </Link>
+            <div className={`absolute top-4 right-4 flex flex-col gap-2 ${isHovered ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}>
+              <Link href={`/${id}`} target="_blank" className="bg-white hover:bg-gray-100 p-1 rounded-full" title="Ver">
+                <EyeIcon className="h-4 w-4 text-gray-700 hover:text-gray-900" />
+              </Link>
+              <button onClick={handleShareClick} className="bg-white hover:bg-gray-100 p-1 rounded-full" title="Compartilhar">
+                <ShareIcon className="h-4 w-4 text-gray-700 hover:text-gray-900" />
+              </button>
+              <div className="bg-white rounded-full" title="Excluir">
+                <DeleteCardButton id={id} />
+              </div>
             </div>
-          </Link>
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition duration-300 bg-white rounded-full">
-            <DeleteCardButton id={id} />
           </div>
 
           <div className="p-3">
-            {/* Status Section */}
             <div className="flex items-center mb-2">
               <div className="w-2 h-2 rounded-full bg-green-500 mr-2" />
               <span onClick={HandleStatusClick} className="text-gray-600 text-sm cursor-pointer">
@@ -163,7 +190,6 @@ import DeleteCardButton from "./DeleteCardButton";
               </span>
             </div>
 
-            {/* Title Section */}
             <div className="mb-1 relative" onMouseEnter={handleTitleMouseEnter} onMouseLeave={handleTitleMouseLeave} ref={titleRef}>
               <input
                 style={{ display: editingTitle ? 'block' : 'none' }}
@@ -185,7 +211,6 @@ import DeleteCardButton from "./DeleteCardButton";
             </div>
             <span className="text-xs text-gray-500 mb-1 pb-1 block">Última modificação {updated_at}</span>
 
-            {/* Comment Counts and Update Info */}
             <div className="flex items-center text-xs mb-3">
               <div className="flex items-center mr-2">
                 <CheckIcon className="h-4 w-4 text-green-500 mr-1" />
@@ -197,6 +222,23 @@ import DeleteCardButton from "./DeleteCardButton";
               </div>
             </div>
           </div>
+          {/* Share Popup */}
+          {isSharePopupOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow p-6 w-64">
+                <h3 className="text-lg font-semibold mb-2">Compartilhar</h3>
+                <p>Compartilhe o link da imagem:</p>
+                <div className="flex items-center">
+                  <input type="text" value={`http://localhost:3000/${id}`} className="w-full mt-2 p-2 border rounded mr-2" readOnly />
+                  <button onClick={handleCopyClick} className="text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <DocumentDuplicateIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                {copySuccess && <p className="text-green-500 text-sm mt-1">Link copiado!</p>}
+                <button onClick={handleClosePopup} className="mt-4 bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">Fechar</button>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
