@@ -5,6 +5,7 @@
     body {
       background: white !important;
       color: black !important;
+<<<<<<< Updated upstream
     }
 
     /* Thin scrollbar */
@@ -23,4 +24,6 @@
 
     .thin-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #553;
+=======
+>>>>>>> Stashed changes
     }
