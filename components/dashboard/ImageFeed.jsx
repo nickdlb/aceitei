@@ -23,7 +23,7 @@
       return (
         <>
           <LoadingOverlay IsLoading={IsLoading}/>
-          <div className="flex flex-row flex-wrap gap-4 thin-scrollbar h-full overflow-y-auto justify-start">
+          <div className="flex flex-row flex-wrap gap-4 thin-scrollbar h-full overflow-y-auto justify-start content-start">
             {filteredImages.map((imagem) => (
               <Card
                 StatusValue={StatusValue}
