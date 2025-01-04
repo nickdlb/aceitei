@@ -12,3 +12,21 @@ body {
   background-color: #f0f0f0; /* Light gray background */
   border-right: 1px solid #ddd; /* Subtle gray border */
 }
+
+.thin-scrollbar {
+  scrollbar-width: thin; /* For Firefox */
+  -ms-overflow-style: none; /* For IE and Edge */
+}
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
