@@ -270,7 +270,8 @@
       };
 
       return (
-        <div className="w-[356px] h-screen bg-white border-l p-4 flex flex-col items-center justify-center">
+        <div className="w-[356px] h-screen bg-white p-4 flex flex-col items-center justify-center">
+
           <h2 className="text-xl font-semibold mb-4 text-center">Arraste e solte imagens, vídeos, PDFs e mais</h2>
           <div
             className="border-2 border-dashed border-gray-400 rounded-md p-10 flex flex-col items-center justify-center mb-4 cursor-pointer"
