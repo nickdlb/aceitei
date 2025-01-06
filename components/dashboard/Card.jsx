@@ -39,6 +39,7 @@ import DeleteCardButton from "./DeleteCardButton";
       const [copySuccess, setCopySuccess] = useState(false);
       const [imageLoaded, setImageLoaded] = useState(false);
       const [cardVisible, setCardVisible] = useState(false);
+      const [isModalOpen, setIsModalOpen] = useState(false);
 
       useEffect(() => {
         const fetchCommentCounts = async () => {
@@ -169,6 +170,15 @@ import DeleteCardButton from "./DeleteCardButton";
         }
       }, [imageUrl]);
 
+      const handleModalOpen = () => {
+        setIsModalOpen(true);
+      };
+
+      const handleModalClose = () => {
+        setIsModalOpen(false);
+        setIsHovered(false);
+      };
+
       return (
         <div className={`w-72 bg-white rounded-lg shadow overflow-hidden relative group ${cardVisible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
           onMouseEnter={handleMouseEnter}
@@ -185,7 +195,7 @@ import DeleteCardButton from "./DeleteCardButton";
                 onLoad={handleImageLoad}
               />
             </Link>
-            <div className={`absolute top-4 right-4 flex flex-col gap-2 ${isHovered ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}>
+            <div className={`absolute top-4 right-4 flex flex-col gap-2 ${isHovered || isModalOpen ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}>
               <Link href={`/${id}`} target="_blank" className="bg-white hover:bg-gray-100 p-1 rounded-full" title="Ver">
                 <EyeIcon className="h-4 w-4 text-gray-700 hover:text-gray-900" />
               </Link>
@@ -193,7 +203,7 @@ import DeleteCardButton from "./DeleteCardButton";
                 <ShareIcon className="h-4 w-4 text-gray-700 hover:text-gray-900" />
               </button>
               <div className="bg-white rounded-full" title="Excluir">
-                <DeleteCardButton id={id} onDelete={onDelete} />
+                <DeleteCardButton id={id} onDelete={onDelete} onModalOpen={handleModalOpen} onModalClose={handleModalClose} />
               </div>
             </div>
           </div>
