@@ -1,5 +1,5 @@
 'use client'
-    import { useState, useCallback, useEffect } from 'react';
+    import { useState, useCallback, useEffect, useRef } from 'react';
     import Sidebar from '../components/sidebar/Sidebar';
     import ImageGallery from '../components/dashboard/ImageFeed';
     import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
@@ -16,6 +16,8 @@
       const [isButtonHovered, setIsButtonHovered] = useState(false);
       const [initialWidthSet, setInitialWidthSet] = useState(false);
       const [images, setImages] = useState([]);
+      const sidebarRef = useRef<HTMLDivElement>(null);
+      const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
 
       useEffect(() => {
         const sidebarState = localStorage.getItem('isRightSidebarOpen');
@@ -66,15 +68,34 @@
           event.preventDefault();
           if (!isRightSidebarOpen) {
             toggleRightSidebar();
+            setDraggedOverSidebar(true);
           }
         };
 
+        const handleDragLeave = (event: DragEvent) => {
+          if (
+            draggedOverSidebar &&
+            (!event.relatedTarget || !document.documentElement.contains(event.relatedTarget as Node))
+          ) {
+            toggleRightSidebar();
+            setDraggedOverSidebar(false);
+          }
+        };
+
+        const handleDrop = (event: DragEvent) => {
+          event.preventDefault();
+        };
+
         window.addEventListener('dragover', handleDragOver);
+        window.addEventListener('dragleave', handleDragLeave);
+        window.addEventListener('drop', handleDrop);
 
         return () => {
           window.removeEventListener('dragover', handleDragOver);
+          window.removeEventListener('dragleave', handleDragLeave);
+          window.removeEventListener('drop', handleDrop);
         };
-      }, [isRightSidebarOpen]);
+      }, [isRightSidebarOpen, draggedOverSidebar]);
 
       return (
         <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -121,6 +142,7 @@
             </main>
           </div>
           <div
+            ref={sidebarRef}
             className={`transition-all duration-300 relative ${
               isRightSidebarOpen ? 'w-[356px]' : 'w-12'
             } bg-white border-l flex flex-col items-center justify-center ${!initialWidthSet ? 'transition-none w-12' : ''}`}
