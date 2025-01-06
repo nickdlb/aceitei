@@ -1,10 +1,10 @@
 'use client'
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Sidebar from '../components/sidebar/Sidebar';
 import ImageGallery from '../components/dashboard/ImageFeed';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import RightSidebar from '@/components/sidebar/RightSidebar';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { PlusIcon } from '@heroicons/react/24/solid';
 
 const App = () => {
   const [IsLoading, setIsLoading] = useState(false);
@@ -12,7 +12,16 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearchForm, setShowSearchForm] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [initialWidthSet, setInitialWidthSet] = useState(false);
+
+  useEffect(() => {
+    const sidebarState = localStorage.getItem('isRightSidebarOpen');
+    const shouldBeOpen = sidebarState === 'true';
+    setIsRightSidebarOpen(shouldBeOpen);
+    setInitialWidthSet(true);
+  }, []);
 
   const handleSort = (sortBy: string) => {
     setSortOrder(sortBy);
@@ -23,15 +32,26 @@ const App = () => {
   };
 
   const handleUploadComplete = useCallback(() => {
-    setRefreshKey(prevKey => prevKey + 1);
+    setRefreshKey((prevKey) => prevKey + 1);
   }, []);
 
+  const handleMouseEnter = () => {
+    setIsButtonHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsButtonHovered(false);
+  };
+
   const toggleRightSidebar = () => {
-    setIsRightSidebarOpen(!isRightSidebarOpen);
+    const newSidebarState = !isRightSidebarOpen;
+    setIsRightSidebarOpen(newSidebarState);
+    localStorage.setItem('isRightSidebarOpen', newSidebarState.toString());
+    setIsButtonHovered(false);
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden"> {/* Added overflow-hidden */}
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <div className="bg-white px-6 py-4 w-full flex items-center justify-between border-b border-[#E5E7EB] h-[65px]">
@@ -77,22 +97,23 @@ const App = () => {
       <div
         className={`transition-all duration-300 relative ${
           isRightSidebarOpen ? 'w-[356px]' : 'w-12'
-        } bg-white border-l flex flex-col items-center justify-center`}
+        } bg-white border-l flex flex-col items-center justify-center ${!initialWidthSet ? 'transition-none w-12' : ''}`}
       >
         {isRightSidebarOpen && (
           <RightSidebar onUploadComplete={handleUploadComplete} />
         )}
         <button
           onClick={toggleRightSidebar}
-          className={`absolute top-1/2 -translate-y-1/2 right-0 z-10 bg-gray-200 hover:bg-gray-300 p-2 rounded-l-md transition-all duration-300 ${
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className={`absolute top-1/2 -translate-y-1/2 right-0 z-10 bg-gray-200 hover:bg-blue-500 p-2 rounded-l-full transition-all duration-300 ${
             isRightSidebarOpen ? 'translate-x-0' : 'translate-x-[-1px]'
           }`}
         >
-          {isRightSidebarOpen ? (
-            <ChevronRightIcon className="h-5 w-5" />
-          ) : (
-            <ChevronLeftIcon className="h-5 w-5" />
-          )}
+          <div className="flex items-center hover:text-white">
+            <PlusIcon className="h-5 w-5 mr-2" />
+            {isRightSidebarOpen ? null : isButtonHovered && <span className="text-sm">Adicionar</span>}
+          </div>
         </button>
       </div>
     </div>

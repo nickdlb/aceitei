@@ -1,6 +1,6 @@
 "use client";
     import Card from '@/components/dashboard/Card';
-    import React, { useState } from 'react';
+    import React, { useState, useCallback, useEffect } from 'react';
     import { formatDate } from '@/utils/formatDate';
     import LoadingOverlay from '@/components/dashboard/LoadingOverlay';
     import useLoadImages from '@/hooks/loadImagesHook';
@@ -8,8 +8,13 @@
     const ImageGallery = ({ IsLoading, StatusValue, sortOrder, searchTerm }) => {
       const { imagens } = useLoadImages();
       const [currentlyEditing, setCurrentlyEditing] = useState(null);
+      const [localImages, setLocalImages] = useState([]);
 
-      const sortedImages = [...imagens].sort((a, b) => {
+      useEffect(() => {
+        setLocalImages(imagens);
+      }, [imagens]);
+
+      const sortedImages = [...localImages].sort((a, b) => {
         if (sortOrder === 'date') {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         } else {
@@ -20,6 +25,10 @@
       const filteredImages = sortedImages.filter((imagem) =>
         imagem.imageTitle.toLowerCase().includes(searchTerm.toLowerCase())
       );
+
+      const handleCardDelete = useCallback((deletedId) => {
+        setLocalImages(prevImages => prevImages.filter(img => img.id !== deletedId));
+      }, []);
 
       return (
         <>
@@ -37,6 +46,7 @@
                 marks_num={imagem.marks_num || 0}
                 currentlyEditing={currentlyEditing}
                 setCurrentlyEditing={setCurrentlyEditing}
+                onDelete={handleCardDelete}
               />
             ))}
           </div>
