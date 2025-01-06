@@ -61,6 +61,21 @@
         setIsButtonHovered(false);
       };
 
+      useEffect(() => {
+        const handleDragOver = (event: DragEvent) => {
+          event.preventDefault();
+          if (!isRightSidebarOpen) {
+            toggleRightSidebar();
+          }
+        };
+
+        window.addEventListener('dragover', handleDragOver);
+
+        return () => {
+          window.removeEventListener('dragover', handleDragOver);
+        };
+      }, [isRightSidebarOpen]);
+
       return (
         <div className="flex h-screen bg-gray-50 overflow-hidden">
           <Sidebar />
@@ -117,12 +132,14 @@
               onClick={toggleRightSidebar}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className={`absolute top-1/2 -translate-y-1/2 right-0 z-10 bg-gray-200 hover:bg-blue-500 p-2 rounded-l-full transition-all duration-300 ${
-                isRightSidebarOpen ? 'translate-x-0' : 'translate-x-[-1px]'
-              }`}
+              className={`absolute top-1/2 -translate-y-1/2  z-10 bg-gray-200 hover:bg-blue-500 p-3 rounded-l-full transition-all duration-300`}
+              style={{
+                right: isRightSidebarOpen ? '0' : '0',
+                transform: isRightSidebarOpen ? 'translateY(-50%)' : 'translate(-1px, -50%)',
+              }}
             >
               <div className="flex items-center hover:text-white">
-                <PlusIcon className="h-5 w-5 mr-2" />
+                <PlusIcon className="h-6 w-6 mr-2" />
                 {isRightSidebarOpen ? null : isButtonHovered && <span className="text-sm">Adicionar</span>}
               </div>
             </button>
