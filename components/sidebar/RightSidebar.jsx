@@ -10,8 +10,8 @@
       const fileInputRef = useRef(null);
       const [uploading, setUploading] = useState(false);
       const [progress, setProgress] = useState(0);
-      const [fileCount, setFileCount] = useState({ current: 0, total: 0 });
       const [totalProgress, setTotalProgress] = useState(0);
+      const [fileCount, setFileCount] = useState({ current: 0, total: 0 });
       const [fetchError, setFetchError] = useState(null);
 
       const isValidUrl = (url) => {
@@ -63,17 +63,17 @@
                 if (xhr.status >= 200 && xhr.status < 300) {
                   const urlFile = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/images/${fileNameFinal}`;
                   try {
-                    await supabase.from('images').insert([
+                    const { data } = await supabase.from('images').insert([
                       {
                         imageTitle: fileNameOriginal,
                         image_url: urlFile,
                         user_id: 'a08255eb-5731-422e-80e6-80c317d4fcb1',
                       },
-                    ]);
+                    ]).select().single();
                     uploadedBytes += file.size;
                     setFileCount(prev => ({ ...prev, current: i + 2 }));
                     resolve(true);
-                    onUploadComplete();
+                    onUploadComplete(data);
                   } catch (error) {
                     console.error("Error inserting file metadata:", error);
                     reject(error);
@@ -143,16 +143,16 @@
                 if (xhr.status >= 200 && xhr.status < 300) {
                   const urlFile = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/images/${fileNameFinal}`;
                   try {
-                    await supabase.from('images').insert([
+                    const { data } = await supabase.from('images').insert([
                       {
                         imageTitle: fileNameOriginal,
                         image_url: urlFile,
                         user_id: 'a08255eb-5731-422e-80e6-80c317d4fcb1',
                       },
-                    ]);
+                    ]).select().single();
                     setFileCount(prev => ({ ...prev, current: 2 }));
                     resolve(true);
-                    onUploadComplete();
+                    onUploadComplete(data);
                   } catch (error) {
                     console.error("Error inserting file metadata:", error);
                     reject(error);
@@ -226,17 +226,17 @@
                 if (xhr.status >= 200 && xhr.status < 300) {
                   const urlFile = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/images/${fileNameFinal}`;
                   try {
-                    await supabase.from('images').insert([
+                    const { data } = await supabase.from('images').insert([
                       {
                         imageTitle: fileNameOriginal,
                         image_url: urlFile,
                         user_id: 'a08255eb-5731-422e-80e6-80c317d4fcb1',
                       },
-                    ]);
+                    ]).select().single();
                     uploadedBytes += file.size;
                     setFileCount(prev => ({ ...prev, current: i + 2 }));
                     resolve(true);
-                    onUploadComplete();
+                    onUploadComplete(data);
                   } catch (error) {
                     console.error("Error inserting file metadata:", error);
                     reject(error);
@@ -259,7 +259,6 @@
           setUploading(false);
           setProgress(0);
           setTotalProgress(0);
-          onUploadComplete();
         }
       };
 

@@ -3,16 +3,14 @@
     import React, { useState, useCallback, useEffect } from 'react';
     import { formatDate } from '@/utils/formatDate';
     import LoadingOverlay from '@/components/dashboard/LoadingOverlay';
-    import useLoadImages from '@/hooks/loadImagesHook';
 
-    const ImageGallery = ({ IsLoading, StatusValue, sortOrder, searchTerm }) => {
-      const { imagens } = useLoadImages();
+    const ImageGallery = ({ IsLoading, StatusValue, sortOrder, searchTerm, images }) => {
       const [currentlyEditing, setCurrentlyEditing] = useState(null);
       const [localImages, setLocalImages] = useState([]);
 
       useEffect(() => {
-        setLocalImages(imagens);
-      }, [imagens]);
+        setLocalImages(images);
+      }, [images]);
 
       const sortedImages = [...localImages].sort((a, b) => {
         if (sortOrder === 'date') {
