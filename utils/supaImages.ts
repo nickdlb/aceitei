@@ -5,7 +5,7 @@ import { supabase } from './supabaseClient'
 
 export const fetchImages = async () => {
   const { data } = await supabase
-    .from('images')        // nome da sua tabela
-    .select('id, image_url, updated_at') // seleciona apenas as colunas necessárias
-  return data              // retorna array de objetos: [{id: 1, marksNum: 10}, ...]
-}
+      .from('images')
+      .select('id, image_url, updated_at, marks_num') // Added marks_num
+  return data;
+};

@@ -10,7 +10,7 @@ import { updatePinComment } from '@/utils/updatePinComment';
 import { updatePinStatus } from '@/utils/updatePinStatus';
 import Link from 'next/link';
 import { PencilIcon, CheckIcon, CogIcon } from '@heroicons/react/24/outline';
-import RightSidebar from '@/components/sidebar/RightSidebar';
+import { supabase } from '@/utils/supabaseClient'; // Import supabase
 
 interface Pin {
     id: string;
@@ -67,7 +67,7 @@ export default function Page() {
         };
 
         carregarPins();
-    }, [id]);
+    }, [id, refreshKey]); // Added refreshKey to trigger reload after pin updates
 
     useEffect(() => {
         if (imageRef.current) {
@@ -77,11 +77,11 @@ export default function Page() {
 
             if (container) {
                 if (aspectRatio > 1) {
-                    container.style.width = '-webkit-fill-available';
-                    container.style.height = 'auto';
-                } else {
-                    container.style.height = '-webkit-fill-available';
                     container.style.width = 'auto';
+                    container.style.height = '100%';
+                } else {
+                    container.style.height = 'auto';
+                    container.style.width = '100%';
                 }
             }
         }
@@ -150,6 +150,7 @@ export default function Page() {
                     ? { ...pin, status: newStatus }
                     : pin
             ));
+            setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
         } catch (error) {
             console.error("Erro ao atualizar status:", error);
         }
@@ -166,6 +167,7 @@ export default function Page() {
                 await deletePin(pinId);
                 setPins(pins.filter(pin => pin.id !== pinId));
                 setEditingPinId(null); // Reseta editingPinId após a exclusão
+                setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
                 return;
             }
             await updatePinComment(pinId, comment);
@@ -175,7 +177,7 @@ export default function Page() {
                     : pin
             ));
             setEditingPinId(null);
-            setRefreshKey(prevKey => prevKey + 1);
+            setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
         } catch (error) {
             console.error("Erro ao atualizar comentário:", error);
         }
@@ -207,13 +209,13 @@ export default function Page() {
                 return newComments;
             });
             setEditingPinId(null); // Reseta editingPinId após a exclusão
-            setRefreshKey(prevKey => prevKey + 1);
+            setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
         } catch (error) {
             console.error("Erro ao deletar pin:", error);
         }
     };
 
-    const handleKeyPress = async (event: React.KeyboardEvent, pinId: string) => {
+    const handleKeyPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => { // Added type to event
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
             await handleCommentSave(pinId);
@@ -227,31 +229,28 @@ export default function Page() {
         setIsDragging(true);
     };
 
-    const handlePinMouseUp = async (pin: Pin) => {
+    const handlePinMouseUp = async (event: React.MouseEvent<HTMLDivElement>) => { // Only event as parameter
         setIsDragging(false);
-        if (draggingPin) {
-            const imageRect = imageRef.current?.getBoundingClientRect();
-            if (imageRect) {
-                const xPercent = ((event.clientX - imageRect.left) / imageRect.width) * 100;
-                const yPercent = ((event.clientY - imageRect.top) / imageRect.height) * 100;
-                await updatePinPosition(pin.id, xPercent, yPercent);
-            }
+        if (draggingPin && imageRef.current) {
+            const imageRect = imageRef.current.getBoundingClientRect();
+            const xPercent = ((event.clientX - imageRect.left) / imageRect.width) * 100;
+            const yPercent = ((event.clientY - imageRect.top) / imageRect.height) * 100;
+            await updatePinPosition(draggingPin.id, xPercent, yPercent); // Use draggingPin here
+            setRefreshKey(prevKey => prevKey + 1);
         }
         setDraggingPin(null);
     };
 
-    const handlePinMouseMove = (event: React.MouseEvent) => {
-        if (isDragging && draggingPin) {
-            const imageRect = imageRef.current?.getBoundingClientRect();
-            if (imageRect) {
-                const xPercent = ((event.clientX - imageRect.left) / imageRect.width) * 100;
-                const yPercent = ((event.clientY - imageRect.top) / imageRect.height) * 100;
-                setPins(prevPins => prevPins.map(pin => 
-                    pin.id === draggingPin.id 
-                        ? { ...pin, x: xPercent, y: yPercent } 
-                        : pin
-                ));
-            }
+    const handlePinMouseMove = (event: React.MouseEvent<HTMLDivElement>) => { // Corrected event type
+        if (isDragging && draggingPin && imageRef.current) { // Check if imageRef.current exists
+            const imageRect = imageRef.current.getBoundingClientRect();
+            const xPercent = ((event.clientX - imageRect.left) / imageRect.width) * 100;
+            const yPercent = ((event.clientY - imageRect.top) / imageRect.height) * 100;
+            setPins(prevPins => prevPins.map(pin => 
+                pin.id === draggingPin.id 
+                    ? { ...pin, x: xPercent, y: yPercent } 
+                    : pin
+            ));
         }
     };
 
@@ -261,14 +260,14 @@ export default function Page() {
                 .from('markers')
                 .update({ pos_x: x, pos_y: y })
                 .eq('id', pinId);
-            setRefreshKey(prevKey => prevKey + 1);
+            setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
         } catch (error) {
             console.error('Erro ao atualizar posição do pin:', error);
         }
     };
 
     return (
-        <div className="w-full h-screen flex" onMouseMove={handlePinMouseMove} onMouseUp={handlePinMouseUp}>
+        <div className="w-full h-screen flex" onMouseMove={handlePinMouseMove} >
             {/* Sidebar */}
             <div id="sidebar" className="w-96 bg-gray-100 border-r border-gray-300 flex flex-col h-full">
                 {/* Header */}
@@ -397,12 +396,12 @@ export default function Page() {
             </div>
 
             {/* Área principal da imagem */}
-            <div className="flex container-imagem h-full items-center justify-center overflow-hidden" ref={imageContainerRef}>
+            <div className="flex flex-1 items-center justify-center overflow-hidden" ref={imageContainerRef} onMouseUp={handlePinMouseUp}> {/* Added onMouseUp */}
                 <div className="relative h-fit w-fit mx-auto"> {/* Added mx-auto and p-4 */}
                     <img 
                         src={exibirImagem} 
                         onClick={handleImageClick} 
-                        className="max-w-screen-md h-fit w-fit max-h-screen max-w-screen object-contain imagem-comentario" 
+                        className="max-w-screen-md h-fit w-fit max-h-screen max-w-screen object-contain" 
                         alt="Interactive image"
                         ref={imageRef}
                     />
@@ -423,10 +422,6 @@ export default function Page() {
                         </div>
                     ))}
                 </div>
-            </div>
-            {/* Right Sidebar */}
-            <div id="right-sidebar" className="w-96 bg-gray-100 border-l border-gray-300 flex flex-col h-full">
-                <RightSidebar />
             </div>
         </div>
     );
