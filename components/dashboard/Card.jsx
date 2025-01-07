@@ -150,7 +150,7 @@ import DeleteCardButton from "./DeleteCardButton";
 
       const handleCopyClick = async () => {
         try {
-          await navigator.clipboard.writeText(`http://localhost:3000/${id}`);
+          await navigator.clipboard.writeText(`${window.location.origin}/${id}`);
           setCopySuccess(true);
           setTimeout(() => setCopySuccess(false), 2000);
         } catch (err) {
