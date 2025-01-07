@@ -8,10 +8,27 @@ body {
 }
 
 /* Sidebar Styling */
-.w-64 {
+.w-96 {
   background-color: #f0f0f0; /* Light gray background */
   border-right: 1px solid #ddd; /* Subtle gray border */
+  transition: width 0.3s ease-in-out; /* Add transition for smooth animation */
 }
+
+.w-0 {
+  width: 0; /* Width when collapsed */
+  overflow: hidden; /* Hide content when collapsed */
+  transition: width 0.3s ease-in-out; /* Add transition for smooth animation */
+}
+
+#sidebar {
+  background-color: #f0f0f0; /* Light gray background for the entire sidebar */
+  transition: width 0.3s ease-in-out; /* Add transition for smooth animation */
+}
+
+#sidebar > div {
+  border-bottom: 1px solid #ddd; /* Dividers between sidebar sections */
+}
+
 /* Thin scrollbar */
 .thin-scrollbar::-webkit-scrollbar {
   width: 5px;
@@ -25,4 +42,12 @@ body {
 }
 .thin-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.container-imagem{
+  width:-webkit-fill-available !important;
+}
+
+.imagem-comentario {
+  min-width:12vw;
 }

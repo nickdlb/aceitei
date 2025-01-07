@@ -10,6 +10,7 @@ import { updatePinComment } from '@/utils/updatePinComment';
 import { updatePinStatus } from '@/utils/updatePinStatus';
 import Link from 'next/link';
 import { PencilIcon, CheckIcon, CogIcon } from '@heroicons/react/24/outline';
+import { supabase } from '@/utils/supabaseClient'; // Import supabase
 
 interface Pin {
     id: string;
@@ -30,6 +31,11 @@ export default function Page() {
     const [comments, setComments] = useState<{[key: string]: string}>({});
     const [statusFilter, setStatusFilter] = useState<'ativo' | 'resolvido'>('ativo');
     const commentInputRef = useRef<HTMLTextAreaElement>(null);
+    const imageContainerRef = useRef<HTMLDivElement>(null);
+    const imageRef = useRef<HTMLImageElement>(null);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [draggingPin, setDraggingPin] = useState<Pin | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     // Hook personalizado para carregar a imagem
     ShowImageById(id, exibirImagem, setExibirImagem);
@@ -61,7 +67,25 @@ export default function Page() {
         };
 
         carregarPins();
-    }, [id]);
+    }, [id, refreshKey]); // Added refreshKey to trigger reload after pin updates
+
+    useEffect(() => {
+        if (imageRef.current) {
+            const img = imageRef.current;
+            const aspectRatio = img.naturalWidth / img.naturalHeight;
+            const container = imageContainerRef.current;
+
+            if (container) {
+                if (aspectRatio > 1) {
+                    container.style.width = 'auto';
+                    container.style.height = '100%';
+                } else {
+                    container.style.height = 'auto';
+                    container.style.width = '100%';
+                }
+            }
+        }
+    }, [exibirImagem]);
 
     const handleImageClick = async (event: React.MouseEvent<HTMLImageElement>) => {
         try {
@@ -126,6 +150,7 @@ export default function Page() {
                     ? { ...pin, status: newStatus }
                     : pin
             ));
+            setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
         } catch (error) {
             console.error("Erro ao atualizar status:", error);
         }
@@ -142,6 +167,7 @@ export default function Page() {
                 await deletePin(pinId);
                 setPins(pins.filter(pin => pin.id !== pinId));
                 setEditingPinId(null); // Reseta editingPinId após a exclusão
+                setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
                 return;
             }
             await updatePinComment(pinId, comment);
@@ -151,6 +177,7 @@ export default function Page() {
                     : pin
             ));
             setEditingPinId(null);
+            setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
         } catch (error) {
             console.error("Erro ao atualizar comentário:", error);
         }
@@ -182,12 +209,13 @@ export default function Page() {
                 return newComments;
             });
             setEditingPinId(null); // Reseta editingPinId após a exclusão
+            setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
         } catch (error) {
             console.error("Erro ao deletar pin:", error);
         }
     };
 
-    const handleKeyPress = async (event: React.KeyboardEvent, pinId: string) => {
+    const handleKeyPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => { // Added type to event
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
             await handleCommentSave(pinId);
@@ -196,12 +224,54 @@ export default function Page() {
 
     const filteredPins = pins.filter(pin => pin.status === statusFilter);
 
+    const handlePinMouseDown = (pin: Pin) => {
+        setDraggingPin(pin);
+        setIsDragging(true);
+    };
+
+    const handlePinMouseUp = async (event: React.MouseEvent<HTMLDivElement>) => { // Only event as parameter
+        setIsDragging(false);
+        if (draggingPin && imageRef.current) {
+            const imageRect = imageRef.current.getBoundingClientRect();
+            const xPercent = ((event.clientX - imageRect.left) / imageRect.width) * 100;
+            const yPercent = ((event.clientY - imageRect.top) / imageRect.height) * 100;
+            await updatePinPosition(draggingPin.id, xPercent, yPercent); // Use draggingPin here
+            setRefreshKey(prevKey => prevKey + 1);
+        }
+        setDraggingPin(null);
+    };
+
+    const handlePinMouseMove = (event: React.MouseEvent<HTMLDivElement>) => { // Corrected event type
+        if (isDragging && draggingPin && imageRef.current) { // Check if imageRef.current exists
+            const imageRect = imageRef.current.getBoundingClientRect();
+            const xPercent = ((event.clientX - imageRect.left) / imageRect.width) * 100;
+            const yPercent = ((event.clientY - imageRect.top) / imageRect.height) * 100;
+            setPins(prevPins => prevPins.map(pin => 
+                pin.id === draggingPin.id 
+                    ? { ...pin, x: xPercent, y: yPercent } 
+                    : pin
+            ));
+        }
+    };
+
+    const updatePinPosition = async (pinId: string, x: number, y: number) => {
+        try {
+            await supabase
+                .from('markers')
+                .update({ pos_x: x, pos_y: y })
+                .eq('id', pinId);
+            setRefreshKey(prevKey => prevKey + 1); // Trigger re-render
+        } catch (error) {
+            console.error('Erro ao atualizar posição do pin:', error);
+        }
+    };
+
     return (
-        <div className="w-full h-screen flex" >
+        <div className="w-full h-screen flex" onMouseMove={handlePinMouseMove} >
             {/* Sidebar */}
-            <div id="sidebar" className="w-96 bg-gray-100 flex flex-col h-full">
+            <div id="sidebar" className="w-96 bg-gray-100 border-r border-gray-300 flex flex-col h-full">
                 {/* Header */}
-                <div className="p-4 border-b bg-white">
+                <div className="p-4 border-b bg-white border-b-gray-300">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-blue-600 rounded"></div>
                         <div className="flex items-center justify-between flex-1">
@@ -214,7 +284,7 @@ export default function Page() {
                 </div>
 
                 {/* Filtros de Status */}
-                <div className="px-4 py-3 bg-white border-b">
+                <div className="px-4 py-3 bg-white border-b border-b-gray-300">
                     <div className="flex gap-2">
                         <button
                             onClick={() => setStatusFilter('ativo')}
@@ -240,14 +310,14 @@ export default function Page() {
                 </div>
 
                 {/* Contador de Comentários */}
-                <div className="px-4 py-2">
+                <div className="px-4 py-2 bg-white border-b border-b-gray-300">
                     <span className="font-medium">
                         Total de Comentários: {filteredPins.length}
                     </span>
                 </div>
 
                 {/* Lista de Comentários */}
-                <div className="flex-1 overflow-y-auto p-4">
+                <div className="flex-1 overflow-y-auto p-4 max-h-[calc(100vh - 100px)] bg-white">
                     <div className="space-y-4">
                         {filteredPins.sort((a, b) => a.num - b.num).map((pin) => (
                             <div key={pin.id} className="bg-white rounded-lg p-4 shadow">
@@ -288,7 +358,7 @@ export default function Page() {
                                         />
                                         <button
                                             onClick={() => handleCommentSave(pin.id)}
-                                            disabled={!comments[pin.id]?.trim()} // Desabilita se estiver vazio
+                                            disabled={!comments[pin.id]?.trim()}
                                             className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
                                         >
                                             Confirmar
@@ -326,13 +396,14 @@ export default function Page() {
             </div>
 
             {/* Área principal da imagem */}
-            <div className="flex w-full h-full items-center justify-center">
-                <div className="relative max-w-screen-md">
+            <div className="flex flex-1 items-center justify-center overflow-hidden" ref={imageContainerRef} onMouseUp={handlePinMouseUp}> {/* Added onMouseUp */}
+                <div className="relative h-fit w-fit mx-auto"> {/* Added mx-auto and p-4 */}
                     <img 
                         src={exibirImagem} 
                         onClick={handleImageClick} 
-                        className="w-full h-full cursor-crosshair" 
+                        className="max-w-screen-md h-fit w-fit max-h-screen max-w-screen object-contain" 
                         alt="Interactive image"
+                        ref={imageRef}
                     />
 
                     {filteredPins.map((pin) => (
@@ -340,11 +411,12 @@ export default function Page() {
                             key={pin.id}
                             className={`absolute text-xs text-black flex items-center justify-center font-bold w-5 h-5 ${
                                 pin.status === 'ativo' ? 'bg-yellow-500' : 'bg-green-500'
-                            } rounded-full -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:opacity-90`}
+                            } rounded-full cursor-pointer hover:cursor-grab hover:opacity-90`}
                             style={{ 
                                 left: `${pin.x}%`, 
                                 top: `${pin.y}%` 
                             }}
+                            onMouseDown={() => handlePinMouseDown(pin)}
                         >
                             {pin.num}
                         </div>
