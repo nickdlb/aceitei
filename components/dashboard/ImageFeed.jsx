@@ -1,5 +1,5 @@
 "use client";
-    import Card from '@/components/dashboard/Card';
+    import Card from '@/components/card/Card.tsx';
     import React, { useState, useCallback, useEffect } from 'react';
     import { formatDate } from '@/utils/formatDate';
     import LoadingOverlay from '@/components/dashboard/LoadingOverlay';

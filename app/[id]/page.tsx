@@ -9,7 +9,7 @@ import { updatePinComment } from '@/utils/updatePinComment';
 import { updatePinStatus } from '@/utils/updatePinStatus';
 import { supabase } from '@/utils/supabaseClient';
 import Sidebar from '@/components/Sidebar';
-import ImageArea from '@/components/ImageArea';
+import ImageArea from '@/components/image/ImageArea';
 import { Pin } from '@/types/Pin';
 
 export default function Page() {
