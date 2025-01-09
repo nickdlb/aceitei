@@ -1,4 +1,6 @@
-export interface ImageAreaProps {
+import { Pin } from '@/types/Pin';
+
+export default interface ImageAreaProps {
     exibirImagem: string;
     pins: Pin[];
     handleImageClick: (xPercent: number, yPercent: number) => void;

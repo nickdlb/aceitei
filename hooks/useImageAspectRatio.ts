@@ -1,8 +1,8 @@
 import { useEffect, RefObject } from 'react';
 
 export function useImageAspectRatio(
-    imageRef: RefObject<HTMLImageElement>,
-    containerRef: RefObject<HTMLDivElement>,
+    imageRef: RefObject<HTMLImageElement> | null | any, 
+    containerRef: RefObject<HTMLDivElement> | null | any,
     imageSrc: string
 ) {
     useEffect(() => {

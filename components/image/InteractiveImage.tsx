@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 interface InteractiveImageProps {
     src: string;
     onClick: (event: React.MouseEvent<HTMLImageElement>) => void;
-    imageRef: React.RefObject<HTMLImageElement>;
+    imageRef: React.RefObject<HTMLImageElement> | any;
 }
 
 export default function InteractiveImage({ src, onClick, imageRef }: InteractiveImageProps) {
