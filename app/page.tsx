@@ -102,6 +102,7 @@ const App = () => {
                 />
                 <main className="p-6 flex-1 overflow-y-auto h-[calc(100vh - 65px)] pb-30">
                     <ImageGallery
+                        StatusValue={() => {}}
                         IsLoading={isLoading}
                         sortOrder={sortOrder}
                         searchTerm={searchTerm}
