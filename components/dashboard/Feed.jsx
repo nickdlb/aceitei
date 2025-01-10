@@ -1,5 +1,5 @@
 'use client';
-import ImageCard from '@/components/markup/dashboard/Card';
+import ImageCard from '@/components/markup/card/Card';
 import { useImages } from '@/hooks/useImages';
 
 const ImageFeed = () => {
