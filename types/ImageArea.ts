@@ -1,3 +1,5 @@
+import { Pin } from '@/types/Pin';
+
 export interface ImageAreaProps {
     exibirImagem: string;
     pins: Pin[];
