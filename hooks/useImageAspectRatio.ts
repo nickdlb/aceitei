@@ -1,15 +1,15 @@
 import { useEffect, RefObject } from 'react';
 
 export function useImageAspectRatio(
-    imageRef: RefObject<HTMLImageElement> | null | any, 
-    containerRef: RefObject<HTMLDivElement> | null | any,
+    imageRef: RefObject<HTMLImageElement | null>, // Changed type here
+    containerRef: RefObject<HTMLDivElement | null>,
     imageSrc: string
 ) {
     useEffect(() => {
-        if (imageRef.current) {
+        if (imageRef?.current) {
             const img = imageRef.current;
             const aspectRatio = img.naturalWidth / img.naturalHeight;
-            const container = containerRef.current;
+            const container = containerRef?.current;
 
             if (container) {
                 if (aspectRatio > 1) {

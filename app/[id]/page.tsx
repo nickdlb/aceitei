@@ -9,7 +9,7 @@ import { updatePinComment } from '@/utils/updatePinComment';
 import { updatePinStatus } from '@/utils/updatePinStatus';
 import { supabase } from '@/utils/supabaseClient';
 import Sidebar from '@/components/Sidebar';
-import { ImageAreaProps } from '@/components/image/ImageArea';
+import ImageArea from '@/components/image/ImageArea';
 import { Pin } from '@/types/Pin';
 
 export default function Page() {
@@ -184,7 +184,7 @@ export default function Page() {
                 handleStatusChange={handleStatusChange}
                 setEditingPinId={setEditingPinId}
             />
-            <ImageAreaProps
+            <ImageArea
                 exibirImagem={exibirImagem}
                 pins={filteredPins}
                 handleImageClick={handleImageClick}
@@ -197,4 +197,3 @@ export default function Page() {
         </div>
     );
 }
-
