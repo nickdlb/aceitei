@@ -12,6 +12,7 @@
     import ImageArea from '@/components/image/ImageArea';
     import { Pin } from '@/types/Pin';
     import { useAuth } from '@/components/AuthProvider';
+    import { Dispatch, SetStateAction } from 'react';
 
     export default function Page() {
         const { id } = useParams();
@@ -25,6 +26,7 @@
         const [isDragging, setIsDragging] = useState(false);
         const { session, loading } = useAuth();
         const [userNames, setUserNames] = useState<{[key: string]: string}>({});
+        const imageRef = useRef<HTMLImageElement>(null);
 
         ShowImageById(id, exibirImagem, setExibirImagem);
 
@@ -48,7 +50,7 @@
                         const commentState = pinsCarregados.reduce((acc, pin) => ({
                             ...acc,
                             [pin.id]: pin.comment
-                        }), {});
+                        }), {} as {[key: string]: string});
                         setComments(commentState);
 
                         const fetchUserNames = async () => {
@@ -81,7 +83,7 @@
                 const pinBeingEdited = pins.find(pin => pin.id === editingPinId);
                 let pin_Number: number;
 
-                if (editingPinId && !comments[editingPinId].trim() && pinBeingEdited) {
+                if (editingPinId && !comments[editingPinId]?.trim() && pinBeingEdited) {
                     pin_Number = pinBeingEdited.num;
                     await deletePin(editingPinId);
                     setPins(pins.filter(pin => pin.id !== editingPinId));
@@ -184,11 +186,30 @@
 
         const updatePinPosition = async (pinId: string, x: number, y: number) => {
             try {
-                await supabase
-                    .from('markers')
-                    .update({ pos_x: x, pos_y: y })
-                    .eq('id', pinId);
-                setRefreshKey(prevKey => prevKey + 1);
+                if (imageRef.current) {
+                    const rect = imageRef.current.getBoundingClientRect();
+                    const xPercent = (x / rect.width) * 100;
+                    const yPercent = (y / rect.height) * 100;
+                    await supabase
+                        .from('markers')
+                        .update({ pos_x: xPercent, pos_y: yPercent })
+                        .eq('id', pinId);
+                    
+                    const updatedPins = await loadPins(id);
+                    if (updatedPins) {
+                        const pinsFormatados = updatedPins.map(pin => ({
+                            id: pin.id,
+                            x: pin.pos_x,
+                            y: pin.pos_y,
+                            num: pin.pin_number,
+                            comment: pin.comment,
+                            created_at: pin.created_at,
+                            status: pin.status || 'ativo',
+                            user_id: pin.user_id
+                        }));
+                        setPins(pinsFormatados);
+                    }
+                }
             } catch (error) {
                 console.error('Erro ao atualizar posição do pin:', error);
             }
@@ -224,6 +245,7 @@
                     isDragging={isDragging}
                     setIsDragging={setIsDragging}
                     updatePinPosition={updatePinPosition}
+                    imageRef={imageRef}
                 />
             </div>
         );
