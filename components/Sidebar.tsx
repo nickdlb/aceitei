@@ -2,11 +2,13 @@ import Link from 'next/link';
     import { formatDate } from '@/utils/formatDate';
     import { Pin } from '@/types/Pin';
     import { PencilIcon, CheckIcon, CogIcon } from '@heroicons/react/24/outline';
+    import { supabase } from '@/utils/supabaseClient';
+    import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
     interface SidebarProps {
         pins: Pin[];
         statusFilter: 'ativo' | 'resolvido';
-        setStatusFilter: (status: 'ativo' | 'resolvido') => void;
+        setStatusFilter: Dispatch<SetStateAction<'ativo' | 'resolvido'>>;
         editingPinId: string | null;
         comments: {[key: string]: string};
         handleCommentChange: (pinId: string, value: string) => void;
@@ -109,6 +111,11 @@ import Link from 'next/link';
                                         <span className="text-xs text-gray-500">
                                             {formatDateTime(pin.created_at)}
                                         </span>
+                                        {userNames[pin.id] && (
+                                          <span className="text-xs text-gray-500">
+                                            {userNames[pin.id]}
+                                          </span>
+                                        )}
                                         <button
                                             onClick={() => handleDeletePin(pin.id)}
                                             className="text-xs text-red-500 hover:text-red-700"
@@ -139,11 +146,6 @@ import Link from 'next/link';
                                 ) : (
                                     <div className="flex justify-between items-start">
                                         <div className="flex flex-col">
-                                          {userNames[pin.id] && (
-                                            <span className="text-xs text-gray-500">
-                                              {userNames[pin.id]}
-                                            </span>
-                                          )}
                                           <p className="text-sm text-gray-700">
                                               {pin.comment}
                                           </p>

@@ -1,6 +1,6 @@
 'use client'
     import { useParams } from "next/navigation";
-    import { useState, useEffect, useRef } from 'react';
+    import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
     import { ShowImageById } from '@/hooks/showImageByIdHook';
     import { insertPin } from '@/utils/insertPinSupa';
     import loadPins from '@/utils/loadPins';
@@ -12,7 +12,6 @@
     import ImageArea from '@/components/image/ImageArea';
     import { Pin } from '@/types/Pin';
     import { useAuth } from '@/components/AuthProvider';
-    import { Dispatch, SetStateAction } from 'react';
 
     export default function Page() {
         const { id } = useParams();
@@ -52,24 +51,6 @@
                             [pin.id]: pin.comment
                         }), {} as {[key: string]: string});
                         setComments(commentState);
-
-                        const fetchUserNames = async () => {
-                          const names: { [key: string]: string } = {};
-                          for (const pin of pinsCarregados) {
-                            if (pin.user_id) {
-                              const { data, error } = await supabase
-                                .from('users')
-                                .select('nome')
-                                .eq('id', pin.user_id)
-                                .single();
-                              if (data && data.nome) {
-                                names[pin.id] = data.nome;
-                              }
-                            }
-                          }
-                          setUserNames(names);
-                        };
-                        fetchUserNames();
                     }
                 }
             };
@@ -77,6 +58,26 @@
               carregarPins();
             }
         }, [id, refreshKey, session, loading]);
+
+        useEffect(() => {
+          const fetchUserNames = async () => {
+            const names: { [key: string]: string } = {};
+            for (const pin of pins) {
+              if (pin.user_id) {
+                const { data, error } = await supabase
+                  .from('users')
+                  .select('nome')
+                  .eq('user_id', pin.user_id)
+                  .single();
+                if (data && data.nome) {
+                  names[pin.id] = data.nome;
+                }
+              }
+            }
+            setUserNames(names);
+          };
+          fetchUserNames();
+        }, [pins]);
 
         const handleImageClick = async (xPercent: number, yPercent: number) => {
             try {
