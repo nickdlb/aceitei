@@ -67,12 +67,12 @@
             <ProfilePhoto 
               photoURL={photoURL} 
               onUpdatePhoto={handleUpdatePhoto} 
-              userId={session?.user?.id}
+              userId={session?.user?.id || null}
             />
             <UserInfo 
               userData={userData} 
               onUpdateName={handleUpdateName} 
-              userId={session?.user?.id}
+              userId={session?.user?.id || null}
             />
           </div>
         </div>
