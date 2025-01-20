@@ -7,6 +7,7 @@ import RightSidebarButton from '@/components/sidebar/RightSidebarButton';
 import RightSidebar from '@/components/sidebar/RightSidebar';
 import { loadImages } from '@/utils/loadImages';
 import { Image } from '@/types/Image';
+import { useAuth } from '@/components/AuthProvider';
 
 const App = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +18,7 @@ const App = () => {
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [images, setImages] = useState<Image[]>([]);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
+    const { session, loading } = useAuth();
 
     useEffect(() => {
         const sidebarState = localStorage.getItem('isRightSidebarOpen');
@@ -29,7 +31,7 @@ const App = () => {
         const fetchInitialImages = async () => {
             setIsLoading(true);
             try {
-                const initialImages = await loadImages();
+                const initialImages = await loadImages(session?.user?.id || null);
                 setImages(initialImages);
             } catch (error) {
                 console.error("Error fetching images:", error);
@@ -37,8 +39,10 @@ const App = () => {
                 setIsLoading(false);
             }
         };
-        fetchInitialImages();
-    }, []);
+        if (!loading && session) {
+          fetchInitialImages();
+        }
+    }, [session, loading]);
 
     const handleSort = (sortBy: string) => {
         setSortOrder(sortBy);
@@ -88,6 +92,10 @@ const App = () => {
         };
     }, [isRightSidebarOpen, draggedOverSidebar]);
 
+    if (loading) {
+      return <div className="flex h-screen items-center justify-center">Loading...</div>;
+    }
+
     return (
         <div className="flex h-screen bg-gray-50 overflow-hidden">
             <Sidebar />
@@ -128,4 +136,3 @@ const App = () => {
 };
 
 export default App;
-

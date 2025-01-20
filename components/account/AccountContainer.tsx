@@ -1,77 +1,82 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@/utils/supabaseClient';
-import ProfilePhoto from './ProfilePhoto';
-import UserInfo from './UserInfo';
+    import React, { useState, useEffect } from 'react';
+    import { supabase } from '@/utils/supabaseClient';
+    import ProfilePhoto from './ProfilePhoto';
+    import UserInfo from './UserInfo';
+    import { useAuth } from '@/components/AuthProvider';
 
-const AccountContainer = () => {
-  const [photoURL, setPhotoURL] = useState('');
-  const [userData, setUserData] = useState({
-    nome: '',
-    usuario: '',
-    email: '',
-  });
-  const userId = '1';
+    const AccountContainer = () => {
+      const [photoURL, setPhotoURL] = useState('');
+      const [userData, setUserData] = useState({
+        nome: '',
+        email: '',
+      });
+      const { session, loading } = useAuth();
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        if (userId) {
-          const { data, error } = await supabase
-            .from('users')
-            .select('fotoperfil, nome, usuario, email')
-            .eq('id', userId)
-            .single();
+      useEffect(() => {
+        const fetchUserProfile = async () => {
+          try {
+            if (session?.user?.id) {
+              const { data, error } = await supabase
+                .from('users')
+                .select('fotoperfil, nome')
+                .eq('user_id', session.user.id)
+                .single();
 
-          if (error) {
+              if (error) {
+                console.error('Error fetching user profile:', error);
+                return;
+              }
+
+              if (data) {
+                setPhotoURL(data.fotoperfil || '');
+                setUserData({
+                  nome: data.nome || '',
+                  email: session.user.email || '',
+                });
+                localStorage.setItem('profilePhoto', data.fotoperfil || '');
+              }
+            }
+          } catch (error) {
             console.error('Error fetching user profile:', error);
-            return;
           }
+        };
 
-          if (data) {
-            setPhotoURL(data.fotoperfil || '');
-            setUserData({
-              nome: data.nome || '',
-              usuario: data.usuario || '',
-              email: data.email || '',
-            });
-            localStorage.setItem('profilePhoto', data.fotoperfil || '');
-          }
+        if (!loading && session) {
+          fetchUserProfile();
         }
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
+      }, [session, loading]);
+
+      const handleUpdatePhoto = (url: string) => {
+        setPhotoURL(url);
+      };
+
+      const handleUpdateName = (newName: string) => {
+        setUserData(prev => ({ ...prev, nome: newName }));
+      };
+
+      if (loading) {
+        return <div className="flex h-screen items-center justify-center">Loading...</div>;
       }
+
+      return (
+        <div className="flex-1 p-6">
+          <h1 className="text-2xl font-bold mb-4">Minha Conta</h1>
+          <div className="bg-white rounded-lg shadow p-6">
+            <ProfilePhoto 
+              photoURL={photoURL} 
+              onUpdatePhoto={handleUpdatePhoto} 
+              userId={session?.user?.id}
+            />
+            <UserInfo 
+              userData={userData} 
+              onUpdateName={handleUpdateName} 
+              userId={session?.user?.id}
+            />
+          </div>
+        </div>
+      );
     };
 
-    fetchUserProfile();
-  }, [userId]);
-
-  const handleUpdatePhoto = (url: string) => {
-    setPhotoURL(url);
-  };
-
-  const handleUpdateName = (newName: string) => {
-    setUserData(prev => ({ ...prev, nome: newName }));
-  };
-
-  return (
-    <div className="flex-1 p-6">
-      <h1 className="text-2xl font-bold mb-4">Minha Conta</h1>
-      <div className="bg-white rounded-lg shadow p-6">
-        <ProfilePhoto 
-          photoURL={photoURL} 
-          onUpdatePhoto={handleUpdatePhoto} 
-          userId={userId}
-        />
-        <UserInfo 
-          userData={userData} 
-          onUpdateName={handleUpdateName} 
-          userId={userId}
-        />
-      </div>
-    </div>
-  );
-};
-
-export default AccountContainer;
+    export default AccountContainer;

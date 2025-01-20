@@ -5,4 +5,5 @@ export interface Image {
     status: string;
     created_at: string;
     marks_num?: number; // Add other properties as needed
+    user_id: string;
 }
