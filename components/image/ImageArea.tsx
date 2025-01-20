@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
     import { ImageAreaProps } from '@/types/ImageArea';
     import { Pin } from '@/types/Pin';
     import { useImageAspectRatio } from '@/hooks/useImageAspectRatio';
+    import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 
     const ImageArea: React.FC<ImageAreaProps> = ({
       exibirImagem,
@@ -19,6 +20,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
       const containerRef = useRef<HTMLDivElement>(null);
       const pinsContainerRef = useRef<HTMLDivElement>(null);
       const [imageLoaded, setImageLoaded] = useState(false);
+      const [isZoomed, setIsZoomed] = useState(false);
 
       useImageAspectRatio(imageRef, containerRef, exibirImagem);
 
@@ -52,9 +54,32 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
         }
       }, []);
 
+      const handleZoom = () => {
+        setIsZoomed(!isZoomed);
+        if (containerRef.current && imageRef.current && pinsContainerRef.current) {
+          if (!isZoomed) {
+            containerRef.current.style.transform = 'scale(1.5)';
+            imageRef.current.style.transform = 'scale(1.5)';
+            pinsContainerRef.current.style.transform = 'scale(1.5)';
+            pinsContainerRef.current.style.transition = 'transform 0.3s ease';
+          } else {
+            containerRef.current.style.transform = 'scale(1)';
+            imageRef.current.style.transform = 'scale(1)';
+            pinsContainerRef.current.style.transform = 'scale(1)';
+            pinsContainerRef.current.style.transition = 'transform 0.3s ease';
+          }
+        }
+      };
+
       return (
         <div className="flex-1 flex flex-col items-center justify-center relative container-imagem" ref={containerRef}>
           <div className="relative">
+            <button
+              onClick={handleZoom}
+              className="absolute top-2 right-2 bg-white p-1 rounded-full shadow-md hover:bg-gray-100 z-10"
+            >
+              {isZoomed ? <MinusIcon className="h-5 w-5" /> : <PlusIcon className="h-5 w-5" />}
+            </button>
             <InteractiveImage src={exibirImagem} onClick={handleMouseDown} imageRef={imageRef} onLoad={handleImageLoad} />
             <div className="absolute top-0 left-0" ref={pinsContainerRef} style={{ pointerEvents: 'none' }}>
               {pins.map((pin) => (

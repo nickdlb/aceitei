@@ -20,7 +20,7 @@ import React, { useRef, useEffect } from 'react';
       setIsDragging,
       updatePinPosition,
       imageRef,
-      pinsContainerRef
+      pinsContainerRef,
     }) => {
       const pinRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +56,6 @@ import React, { useRef, useEffect } from 'react';
       const calculatePinPosition = () => {
         if (imageRef.current && pinsContainerRef.current) {
           const rect = imageRef.current.getBoundingClientRect();
-          const containerRect = pinsContainerRef.current.getBoundingClientRect();
           const x = (pin.x / 100) * rect.width;
           const y = (pin.y / 100) * rect.height;
           return { x, y };
