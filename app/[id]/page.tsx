@@ -54,7 +54,7 @@
                         setComments(commentState);
 
                         const fetchUserNames = async () => {
-                          const names = {};
+                          const names: { [key: string]: string } = {};
                           for (const pin of pinsCarregados) {
                             if (pin.user_id) {
                               const { data, error } = await supabase
