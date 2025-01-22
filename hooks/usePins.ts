@@ -7,7 +7,7 @@ import { deletePin } from '@/utils/deletePin';
 import { Comment } from '@/types/Document';
 import { Database } from '@/types/supabase';
 
-interface PageDocument {
+interface PageWithDocument {
     documents: {
         user_id: string;
     };
@@ -198,13 +198,13 @@ export const usePins = (pageId: string, session: any) => {
         const isCommentOwner = session.user.id === pin.user_id;
 
         // Verificar se é dono do documento
-        const { data: page } = await supabase
+        const { data } = await supabase
             .from('pages')
             .select('documents:documents(user_id)')
             .eq('id', pin.page_id)
-            .single();
+            .single<PageWithDocument>();
 
-        const isDocumentOwner = page?.documents?.user_id === session.user.id;
+        const isDocumentOwner = data?.documents?.user_id === session.user.id;
 
         return isCommentOwner || isDocumentOwner;
     };
