@@ -6,9 +6,38 @@ import React from 'react';
     } from '@heroicons/react/24/outline';
     import { supabase } from '../../utils/supabaseClient'; // Import supabase client
     import { useRouter } from 'next/navigation';
+    import { useAuth } from '@/components/AuthProvider';
+    import { useState, useEffect } from 'react';
+    import SidebarFooter from './SidebarFooter';
 
     const SidebarNav = () => {
       const router = useRouter();
+      const { session } = useAuth();
+      const [userName, setUserName] = useState('');
+      const [userPhoto, setUserPhoto] = useState('');
+
+      useEffect(() => {
+        const fetchUserProfile = async () => {
+          if (session?.user?.id) {
+            const { data, error } = await supabase
+              .from('users')
+              .select('fotoperfil, nome')
+              .eq('user_id', session.user.id)
+              .single();
+
+            if (error) {
+              console.error('Error fetching user profile:', error);
+              return;
+            }
+
+            if (data) {
+              setUserName(data.nome || '');
+              setUserPhoto(data.fotoperfil || '');
+            }
+          }
+        };
+        fetchUserProfile();
+      }, [session]);
 
       const handleSupabaseSignOut = async () => {
         try {
@@ -20,10 +49,10 @@ import React from 'react';
       };
 
       return (
-        <nav className="p-4">
+        <nav className="p-4 flex flex-col">
           <ul className="space-y-2">
               <SidebarMenuItem href="/" icon={<HomeIcon className="w-5 h-5" />} label="Dashboard" />
-              <SidebarMenuItem href="/minha-conta" icon={<UserCircleIcon className="w-5 h-5" />} label="Minha Conta" />
+              <SidebarMenuItem href="/account" icon={<UserCircleIcon className="w-5 h-5" />} label="Minha Conta" />
             <li>
               <button onClick={() => handleSupabaseSignOut()} className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-red-100">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-red-500">
@@ -33,6 +62,7 @@ import React from 'react';
               </button>
             </li>
           </ul>
+          <SidebarFooter />
         </nav>
       );
     };

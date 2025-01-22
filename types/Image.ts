@@ -1,9 +1,15 @@
 export interface Image {
     id: string;
     image_url: string;
-    imageTitle: string;
-    status: string;
+    imageTitle?: string;
     created_at: string;
-    marks_num?: number; // Add other properties as needed
+    document_id?: string;
+    page_number?: number;
     user_id: string;
+    documents?: {
+        id: string;
+        title: string;
+        created_at: string;
+        user_id: string;
+    };
 }

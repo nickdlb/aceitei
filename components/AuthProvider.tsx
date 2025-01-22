@@ -1,57 +1,61 @@
 'use client';
 
-    import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-    import { useRouter } from 'next/navigation';
-    import { supabase } from '@/utils/supabaseClient';
-    import { Session } from '@supabase/supabase-js';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '@/utils/supabaseClient';
+import { usePathname, useRouter } from 'next/navigation';
 
-    interface AuthContextType {
-      session: Session | null;
-      loading: boolean;
-    }
+interface AuthContextType {
+    session: Session | null;
+    loading: boolean;
+}
 
-    const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+    session: null,
+    loading: true
+});
 
-    export const AuthProvider = ({ children }: { children: ReactNode }) => {
-      const [session, setSession] = useState<Session | null>(null);
-      const [loading, setLoading] = useState(true);
-      const router = useRouter();
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [session, setSession] = useState<Session | null>(null);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const pathname = usePathname();
 
-      useEffect(() => {
-        const fetchSession = async () => {
-          setLoading(true);
-          const { data: { session }, error } = await supabase.auth.getSession();
-          if (error) {
-            console.error('Error fetching session:', error);
-          }
-          setSession(session);
-          setLoading(false);
-        };
-
-        fetchSession();
-
-        supabase.auth.onAuthStateChange((event, session) => {
-          setSession(session);
+    useEffect(() => {
+        // Buscar sessão inicial
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session);
+            setLoading(false);
         });
-      }, []);
 
-      useEffect(() => {
-        if (!loading && !session) {
-          router.push('/login');
+        // Escutar mudanças na autenticação
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+            setLoading(false);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    // Verificar autenticação apenas em rotas protegidas
+    useEffect(() => {
+        const protectedRoutes = ['/minha-conta', '/dashboard', '/account'];
+        const isProtectedRoute = protectedRoutes.some(route => pathname?.startsWith(route));
+
+        if (!loading && !session && isProtectedRoute) {
+            router.push('/login');
         }
-      }, [session, loading, router]);
+    }, [session, loading, pathname, router]);
 
-      return (
+    return (
         <AuthContext.Provider value={{ session, loading }}>
-          {children}
+            {children}
         </AuthContext.Provider>
-      );
-    };
+    );
+}
 
-    export const useAuth = () => {
-      const context = useContext(AuthContext);
-      if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-      }
-      return context;
-    };
+export function useAuth() {
+    return useContext(AuthContext);
+}

@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient';
 export const deletePin = async (pinId: string) => {
   try {
     const { error } = await supabase
-      .from('markers')
+      .from('comments')
       .delete()
       .eq('id', pinId);
 

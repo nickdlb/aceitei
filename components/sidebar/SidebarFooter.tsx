@@ -1,11 +1,9 @@
 import React from 'react';
-    import { UserCircleIcon } from '@heroicons/react/24/outline';
     import { useAuth } from '@/components/AuthProvider';
     import { supabase } from '@/utils/supabaseClient';
     import { useState, useEffect } from 'react';
-    import Link from 'next/link';
 
-    const SidebarLogo = () => {
+    const SidebarFooter = () => {
       const { session } = useAuth();
       const [userName, setUserName] = useState('');
       const [userPhoto, setUserPhoto] = useState('');
@@ -34,15 +32,25 @@ import React from 'react';
       }, [session]);
 
       return (
-        <div className="p-4 border-b">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="font-medium hover:text-blue-600">
-              Aceitei
-            </Link>
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded">Free</span>
+        <div className="p-4 border-t bg-white border-t-gray-300">
+          <div className="flex items-center gap-2">
+            {userPhoto ? (
+              <img
+                src={userPhoto}
+                alt="Foto do Usuário"
+                className="w-8 h-8 rounded-full mr-2"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-blue-600 rounded"></div>
+            )}
+            <div className="flex items-center justify-between flex-1">
+              <span className="font-medium">
+                {userName || 'Usuário'}
+              </span>
+            </div>
           </div>
         </div>
       );
     };
 
-    export default SidebarLogo;
+    export default SidebarFooter;

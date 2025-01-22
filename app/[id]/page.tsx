@@ -1,253 +1,212 @@
 'use client'
-    import { useParams } from "next/navigation";
-    import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
-    import { ShowImageById } from '@/hooks/showImageByIdHook';
-    import { insertPin } from '@/utils/insertPinSupa';
-    import loadPins from '@/utils/loadPins';
-    import { deletePin } from '@/utils/deletePin';
-    import { updatePinComment } from '@/utils/updatePinComment';
-    import { updatePinStatus } from '@/utils/updatePinStatus';
-    import { supabase } from '@/utils/supabaseClient';
-    import Sidebar from '@/components/Sidebar';
-    import ImageArea from '@/components/image/ImageArea';
-    import { Pin } from '@/types/Pin';
-    import { useAuth } from '@/components/AuthProvider';
+import { useParams, useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from 'react';
+import CommentBar from '@/components/comment/CommentBar';
+import ImageArea from '@/components/comment/ImageArea';
+import { useAuth } from '@/components/AuthProvider';
+import { usePins } from '@/hooks/usePins';
+import { supabase } from '@/utils/supabaseClient';
+import { type Page as DocumentPage } from '@/types/Document';
+import { getImageUrl } from '@/utils/imageUrl';
+import ImageSidebar from '@/components/comment/ImageSidebar';
+import AuthPopup from '@/components/auth/AuthPopup';
 
-    export default function Page() {
-        const { id } = useParams();
-        const [exibirImagem, setExibirImagem] = useState('');
-        const [pins, setPins] = useState<Pin[]>([]);
-        const [editingPinId, setEditingPinId] = useState<string | null>(null);
-        const [comments, setComments] = useState<{[key: string]: string}>({});
-        const [statusFilter, setStatusFilter] = useState<'ativo' | 'resolvido'>('ativo');
-        const [refreshKey, setRefreshKey] = useState(0);
-        const [draggingPin, setDraggingPin] = useState<Pin | null>(null);
-        const [isDragging, setIsDragging] = useState(false);
-        const { session, loading } = useAuth();
-        const [userNames, setUserNames] = useState<{[key: string]: string}>({});
-        const imageRef = useRef<HTMLImageElement>(null);
+export default function Page() {
+    const params = useParams();
+    const pageId = typeof params?.id === 'string' ? params.id : '';
+    const { session } = useAuth();
+    const imageRef = useRef<HTMLImageElement>(null);
+    const [isPagesOpen, setIsPagesOpen] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [pageData, setPageData] = useState<DocumentPage | null>(null);
+    const [pages, setPages] = useState<Array<{
+        id: string;
+        image_url: string;
+        page_number: number;
+    }>>([]);
+    const router = useRouter();
 
-        ShowImageById(id, exibirImagem, setExibirImagem);
+    useEffect(() => {
+        const loadPage = async () => {
+            if (!pageId) return;
 
-        useEffect(() => {
-            const carregarPins = async () => {
-                if (id) {
-                    const pinsCarregados = await loadPins(id);
-                    if (pinsCarregados) {
-                        const pinsFormatados = pinsCarregados.map(pin => ({
-                            id: pin.id,
-                            x: pin.pos_x,
-                            y: pin.pos_y,
-                            num: pin.pin_number,
-                            comment: pin.comment,
-                            created_at: pin.created_at,
-                            status: pin.status || 'ativo',
-                            user_id: pin.user_id
-                        }));
-                        setPins(pinsFormatados);
-                        
-                        const commentState = pinsCarregados.reduce((acc, pin) => ({
-                            ...acc,
-                            [pin.id]: pin.comment
-                        }), {} as {[key: string]: string});
-                        setComments(commentState);
+            try {
+                // 1. Primeiro tentar buscar como documento
+                const { data: document, error: documentError } = await supabase
+                    .from('documents')
+                    .select('id')
+                    .eq('id', pageId)
+                    .single();
+
+                let targetPageId = pageId;
+
+                // Se for um documento, buscar sua primeira página
+                if (document) {
+                    const { data: firstPage } = await supabase
+                        .from('pages')
+                        .select('id')
+                        .eq('document_id', document.id)
+                        .eq('page_number', 1)
+                        .single();
+
+                    if (firstPage) {
+                        targetPageId = firstPage.id;
                     }
                 }
-            };
-            if (!loading && session) {
-              carregarPins();
-            }
-        }, [id, refreshKey, session, loading]);
 
-        useEffect(() => {
-          const fetchUserNames = async () => {
-            const names: { [key: string]: string } = {};
-            for (const pin of pins) {
-              if (pin.user_id) {
-                const { data, error } = await supabase
-                  .from('users')
-                  .select('nome')
-                  .eq('user_id', pin.user_id)
-                  .single();
-                if (data && data.nome) {
-                  names[pin.id] = data.nome;
-                }
-              }
-            }
-            setUserNames(names);
-          };
-          fetchUserNames();
-        }, [pins]);
+                // 2. Buscar a página com seus dados do documento
+                const { data: page, error: pageError } = await supabase
+                    .from('pages')
+                    .select(`
+                        *,
+                        documents!pages_document_id_fkey (
+                            id,
+                            title,
+                            created_at,
+                            user_id
+                        )
+                    `)
+                    .eq('id', targetPageId)
+                    .single();
 
-        const handleImageClick = async (xPercent: number, yPercent: number) => {
-            try {
-                const pinBeingEdited = pins.find(pin => pin.id === editingPinId);
-                let pin_Number: number;
-
-                if (editingPinId && !comments[editingPinId]?.trim() && pinBeingEdited) {
-                    pin_Number = pinBeingEdited.num;
-                    await deletePin(editingPinId);
-                    setPins(pins.filter(pin => pin.id !== editingPinId));
-                    setComments(prev => {
-                        const newComments = { ...prev };
-                        delete newComments[editingPinId];
-                        return newComments;
-                    });
-                    setEditingPinId(null);
-                } else {
-                    pin_Number = pins.length + 1;
-                }
-
-                if (session?.user?.id) {
-                  const newPinData = await insertPin(id, xPercent, yPercent, pin_Number, '', session.user.id);
-                  
-                  if (newPinData && newPinData[0]) {
-                      const newPin = {
-                          id: newPinData[0].id,
-                          x: xPercent,
-                          y: yPercent,
-                          num: pin_Number,
-                          comment: '',
-                          created_at: new Date().toISOString(),
-                          status: 'ativo' as const,
-                          user_id: session.user.id
-                      };
-                      
-                      setPins(prevPins => [...prevPins, newPin]);
-                      setComments(prev => ({ ...prev, [newPin.id]: '' }));
-                      setEditingPinId(newPin.id);
-                  }
-                }
-            } catch (error) {
-                console.error("Erro ao adicionar pin:", error);
-            }
-        };
-
-        const handleStatusChange = async (pinId: string) => {
-            try {
-                const pin = pins.find(p => p.id === pinId);
-                if (!pin) return;
-
-                const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
-                await updatePinStatus(pinId, newStatus);
-                
-                setPins(pins.map(pin => 
-                    pin.id === pinId 
-                        ? { ...pin, status: newStatus }
-                        : pin
-                ));
-                setRefreshKey(prevKey => prevKey + 1);
-            } catch (error) {
-                console.error("Erro ao atualizar status:", error);
-            }
-        };
-
-        const handleCommentChange = (pinId: string, value: string) => {
-            setComments(prev => ({ ...prev, [pinId]: value }));
-        };
-
-        const handleCommentSave = async (pinId: string) => {
-            try {
-                const comment = comments[pinId];
-                if (!comment.trim()) {
-                    await deletePin(pinId);
-                    setPins(pins.filter(pin => pin.id !== pinId));
-                    setEditingPinId(null);
-                    setRefreshKey(prevKey => prevKey + 1);
+                if (pageError) {
+                    console.error('Error loading page:', pageError);
                     return;
                 }
-                await updatePinComment(pinId, comment);
-                setPins(pins.map(pin => 
-                    pin.id === pinId 
-                        ? { ...pin, comment: comment }
-                        : pin
-                ));
-                setEditingPinId(null);
-                setRefreshKey(prevKey => prevKey + 1);
-            } catch (error) {
-                console.error("Erro ao atualizar comentário:", error);
-            }
-        };
 
-        const handleDeletePin = async (pinId: string) => {
-            try {
-                await deletePin(pinId);
-                setPins(pins.filter(pin => pin.id !== pinId));
-                setComments(prev => {
-                    const newComments = { ...prev };
-                    delete newComments[pinId];
-                    return newComments;
-                });
-                setEditingPinId(null);
-                setRefreshKey(prevKey => prevKey + 1);
-            } catch (error) {
-                console.error("Erro ao deletar pin:", error);
-            }
-        };
-
-        const updatePinPosition = async (pinId: string, x: number, y: number) => {
-            try {
-                if (imageRef.current) {
-                    const rect = imageRef.current.getBoundingClientRect();
-                    const xPercent = (x / rect.width) * 100;
-                    const yPercent = (y / rect.height) * 100;
-                    await supabase
-                        .from('markers')
-                        .update({ pos_x: xPercent, pos_y: yPercent })
-                        .eq('id', pinId);
-                    
-                    const updatedPins = await loadPins(id);
-                    if (updatedPins) {
-                        const pinsFormatados = updatedPins.map(pin => ({
-                            id: pin.id,
-                            x: pin.pos_x,
-                            y: pin.pos_y,
-                            num: pin.pin_number,
-                            comment: pin.comment,
-                            created_at: pin.created_at,
-                            status: pin.status || 'ativo',
-                            user_id: pin.user_id
-                        }));
-                        setPins(pinsFormatados);
-                    }
+                if (!page) {
+                    console.error('Page not found');
+                    return;
                 }
+
+                // 3. Buscar todas as páginas do mesmo documento
+                const { data: allPages, error: allPagesError } = await supabase
+                    .from('pages')
+                    .select('id, image_url, page_number')
+                    .eq('document_id', page.document_id)
+                    .order('page_number');
+
+                if (allPagesError) {
+                    console.error('Error loading all pages:', allPagesError);
+                    return;
+                }
+
+                // 4. Se o ID original era de um documento, atualizar a URL para a página
+                if (document && targetPageId !== pageId) {
+                    router.replace(`/${targetPageId}`, { scroll: false });
+                }
+
+                setPages(allPages || []);
+                setPageData({
+                    ...page,
+                    documents: page.documents
+                });
+                setLoading(false);
             } catch (error) {
-                console.error('Erro ao atualizar posição do pin:', error);
+                console.error('Error in loadPage:', error);
+                setLoading(false);
             }
         };
 
-        const filteredPins = pins.filter(pin => pin.status === statusFilter);
+        loadPage();
+    }, [pageId, router]);
 
-        if (loading) {
-          return <div className="flex h-screen items-center justify-center">Loading...</div>;
+    const {
+        pins,
+        editingPinId,
+        comments,
+        statusFilter,
+        draggingPin,
+        isDragging,
+        userNames,
+        setStatusFilter,
+        setEditingPinId,
+        setDraggingPin,
+        setIsDragging,
+        handleImageClick,
+        handleStatusChange,
+        handleCommentChange,
+        handleCommentSave,
+        handleDeletePin,
+        updatePinPosition,
+        showAuthPopup,
+        setShowAuthPopup,
+        handleAuth
+    } = usePins(pageId, session);
+
+    const handlePageChange = async (newPageId: string) => {
+        router.push(`/${newPageId}`, { scroll: false });
+    };
+
+    const handleTitleUpdate = async (newTitle: string) => {
+        if (pageData) {
+            setPageData({ ...pageData, imageTitle: newTitle });
         }
+    };
 
+    if (loading || !pageData) {
         return (
-            <div className="w-full h-screen flex">
-                <Sidebar 
-                    pins={filteredPins}
-                    statusFilter={statusFilter}
-                    setStatusFilter={setStatusFilter}
-                    editingPinId={editingPinId}
-                    comments={comments}
-                    handleCommentChange={handleCommentChange}
-                    handleCommentSave={handleCommentSave}
-                    handleDeletePin={handleDeletePin}
-                    handleStatusChange={handleStatusChange}
-                    setEditingPinId={setEditingPinId}
-                    userNames={userNames}
-                />
-                <ImageArea
-                    exibirImagem={exibirImagem}
-                    pins={filteredPins}
-                    handleImageClick={handleImageClick}
-                    draggingPin={draggingPin}
-                    setDraggingPin={setDraggingPin}
-                    isDragging={isDragging}
-                    setIsDragging={setIsDragging}
-                    updatePinPosition={updatePinPosition}
-                    imageRef={imageRef}
-                />
+            <div className="flex h-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
             </div>
         );
     }
+
+    const imageUrl = getImageUrl(pageData.image_url);
+
+    if (!imageUrl) {
+        return <div className="flex h-screen items-center justify-center">Imagem não encontrada</div>;
+    }
+
+    const filteredPins = pins.filter(pin => pin.status === statusFilter);
+
+    const commentBarProps = {
+        pins: filteredPins,
+        statusFilter: statusFilter,
+        setStatusFilter: setStatusFilter,
+        editingPinId: editingPinId,
+        comments: comments,
+        handleCommentChange: handleCommentChange,
+        handleCommentSave: handleCommentSave,
+        handleDeletePin: handleDeletePin,
+        handleStatusChange: handleStatusChange,
+        setEditingPinId: setEditingPinId,
+        userNames: userNames
+    };
+
+    const imageAreaProps = {
+        exibirImagem: imageUrl,
+        imageTitle: pageData.imageTitle || 'Sem título',
+        imageId: pageId,
+        pins: filteredPins,
+        handleImageClick: handleImageClick,
+        draggingPin: draggingPin,
+        setDraggingPin: setDraggingPin,
+        isDragging: isDragging,
+        setIsDragging: setIsDragging,
+        updatePinPosition: updatePinPosition,
+        imageRef: imageRef,
+        onTitleUpdate: handleTitleUpdate,
+        onTogglePages: () => setIsPagesOpen(!isPagesOpen),
+        isPagesOpen: isPagesOpen
+    };
+
+    return (
+        <div className="w-full h-screen flex">
+            <CommentBar {...commentBarProps} />
+            <ImageArea {...imageAreaProps} />
+            {pages.length > 1 && isPagesOpen && (
+                <ImageSidebar
+                    pages={pages}
+                    currentPage={pageId}
+                    onPageChange={handlePageChange}
+                />
+            )}
+            <AuthPopup
+                isOpen={showAuthPopup}
+                onClose={() => setShowAuthPopup(false)}
+                onSubmit={handleAuth}
+            />
+        </div>
+    );
+}

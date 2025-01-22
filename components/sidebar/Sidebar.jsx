@@ -5,10 +5,8 @@ import React from 'react';
     const Sidebar = () => {
       return (
         <div className="w-64 h-screen bg-white border-r flex flex-col">
-          <div>
             <SidebarLogo />
             <SidebarNav />
-          </div>
         </div>
       );
     };
