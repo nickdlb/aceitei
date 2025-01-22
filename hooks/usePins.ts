@@ -5,7 +5,6 @@ import loadPins from '@/utils/loadPins';
 import { insertPin } from '@/utils/insertPinSupa';
 import { deletePin } from '@/utils/deletePin';
 import { Comment } from '@/types/Document';
-import { Database } from '@/types/supabase';
 
 interface PageWithDocument {
     documents: {

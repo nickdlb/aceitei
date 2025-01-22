@@ -13,7 +13,7 @@ export const loadImages = async (userId?: string): Promise<Page[]> => {
                 created_at,
                 document_id,
                 user_id,
-                documents:document_id (
+                documents:documents (
                     id,
                     title,
                     created_at,
@@ -35,7 +35,21 @@ export const loadImages = async (userId?: string): Promise<Page[]> => {
 
         console.log('Dados carregados:', data);
 
-        return data || [];
+        // Converter os dados para o formato correto
+        const formattedData: Page[] = data?.map(item => ({
+            id: item.id,
+            document_id: item.document_id,
+            image_url: item.image_url,
+            page_number: item.page_number,
+            imageTitle: item.imageTitle,
+            created_at: item.created_at,
+            user_id: item.user_id,
+            documents: Array.isArray(item.documents) && item.documents[0] 
+                ? item.documents[0] 
+                : undefined
+        })) || [];
+
+        return formattedData;
     } catch (error) {
         console.error('Error in loadImages:', error);
         return [];

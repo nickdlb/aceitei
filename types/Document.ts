@@ -11,8 +11,8 @@ export interface Page {
     image_url: string;
     page_number: number;
     imageTitle: string;
-    user_id: string;
     created_at: string;
+    user_id: string;
     documents?: Document;
 }
 
