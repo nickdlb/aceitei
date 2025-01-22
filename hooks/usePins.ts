@@ -4,9 +4,14 @@ import { supabase } from '@/utils/supabaseClient';
 import loadPins from '@/utils/loadPins';
 import { insertPin } from '@/utils/insertPinSupa';
 import { deletePin } from '@/utils/deletePin';
-import { updatePinComment } from '@/utils/updatePinComment';
-import { updatePinStatus } from '@/utils/updatePinStatus';
 import { Comment } from '@/types/Document';
+import { Database } from '@/types/supabase';
+
+interface PageDocument {
+    documents: {
+        user_id: string;
+    };
+}
 
 export const usePins = (pageId: string, session: any) => {
     const [pins, setPins] = useState<Pin[]>([]);
@@ -19,7 +24,7 @@ export const usePins = (pageId: string, session: any) => {
     const [isDragging, setIsDragging] = useState(false);
     const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
     const [showAuthPopup, setShowAuthPopup] = useState(false);
-    const [pendingClick, setPendingClick] = useState<{x: number, y: number} | null>(null);
+    const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
 
     useEffect(() => {
         const fetchPins = async () => {
@@ -62,30 +67,8 @@ export const usePins = (pageId: string, session: any) => {
 
                     if (error) throw error;
 
-                    // Organizar comentários em hierarquia
-                    const parentCommentMap: { [key: string]: Comment[] } = {};
-                    const topLevelComments: Comment[] = [];
-
-                    commentsData?.forEach(comment => {
-                        const fullComment: Comment = {
-                            ...comment,
-                            page_id: pageId
-                        };
-
-                        if (comment.parent_id) {
-                            if (!parentCommentMap[comment.parent_id]) {
-                                parentCommentMap[comment.parent_id] = [];
-                            }
-                            parentCommentMap[comment.parent_id].push(fullComment);
-                        } else {
-                            topLevelComments.push(fullComment);
-                        }
-                    });
-
-                    setParentComments(parentCommentMap);
-
                     // Converter para o formato Pin
-                    const pinsData = topLevelComments.map(comment => ({
+                    const pinsData = commentsData?.map(comment => ({
                         id: comment.id,
                         x: comment.pos_x,
                         y: comment.pos_y,
@@ -93,10 +76,11 @@ export const usePins = (pageId: string, session: any) => {
                         comment: comment.content,
                         created_at: comment.created_at,
                         status: comment.status,
-                        user_id: comment.user_id
+                        user_id: comment.user_id,
+                        page_id: comment.page_id
                     }));
 
-                    setPins(pinsData);
+                    setPins(pinsData || []);
 
                     const commentState = commentsData?.reduce((acc, comment) => ({
                         ...acc,
@@ -135,7 +119,7 @@ export const usePins = (pageId: string, session: any) => {
 
     const handleImageClick = async (xPercent: number, yPercent: number) => {
         const { data: { session } } = await supabase.auth.getSession();
-        
+
         if (!session?.user) {
             setPendingClick({ x: xPercent, y: yPercent });
             setShowAuthPopup(true);
@@ -184,7 +168,7 @@ export const usePins = (pageId: string, session: any) => {
             );
 
             if (newPinData && newPinData[0]) {
-                const newPin = {
+                const newPin: Pin = {
                     id: newPinData[0].id,
                     x: xPercent,
                     y: yPercent,
@@ -192,7 +176,8 @@ export const usePins = (pageId: string, session: any) => {
                     comment: '',
                     created_at: new Date().toISOString(),
                     status: 'ativo' as const,
-                    user_id: session.user.id
+                    user_id: session.user.id,
+                    page_id: pageId
                 };
 
                 setPins(prevPins => [...prevPins, newPin]);
@@ -206,13 +191,8 @@ export const usePins = (pageId: string, session: any) => {
         }
     };
 
-    // Função auxiliar para verificar permissões
-    const checkPermissions = async (pinId: string) => {
-        const pin = pins.find(p => p.id === pinId);
-        if (!pin) throw new Error('Comentário não encontrado');
-
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user?.id) throw new Error('Usuário não autenticado');
+    const checkPermissions = async (pin: Pin) => {
+        if (!session?.user?.id) return false;
 
         // Verificar se é dono do comentário
         const isCommentOwner = session.user.id === pin.user_id;
@@ -220,23 +200,19 @@ export const usePins = (pageId: string, session: any) => {
         // Verificar se é dono do documento
         const { data: page } = await supabase
             .from('pages')
-            .select('documents!inner(user_id)')
-            .eq('id', pageId)
+            .select('documents(user_id)')
+            .eq('id', pin.page_id)
             .single();
 
         const isDocumentOwner = page?.documents?.user_id === session.user.id;
 
-        if (!isCommentOwner && !isDocumentOwner) {
-            throw new Error('Apenas o autor do comentário ou o dono do documento podem realizar esta ação');
-        }
-
-        return true;
+        return isCommentOwner || isDocumentOwner;
     };
 
     // Ajustar handleStatusChange
     const handleStatusChange = async (pinId: string) => {
         try {
-            await checkPermissions(pinId);
+            await checkPermissions(pins.find(p => p.id === pinId) as Pin);
 
             const pin = pins.find(p => p.id === pinId);
             if (!pin) return;
@@ -250,7 +226,7 @@ export const usePins = (pageId: string, session: any) => {
 
             if (error) throw error;
 
-            setPins(prevPins => prevPins.map(p => 
+            setPins(prevPins => prevPins.map(p =>
                 p.id === pinId ? { ...p, status: newStatus } : p
             ));
 
@@ -292,7 +268,7 @@ export const usePins = (pageId: string, session: any) => {
     // Ajustar handleCommentSave
     const handleCommentSave = async (pinId: string) => {
         try {
-            await checkPermissions(pinId);
+            await checkPermissions(pins.find(p => p.id === pinId) as Pin);
 
             const comment = comments[pinId];
             if (!comment) return;
@@ -370,7 +346,8 @@ export const usePins = (pageId: string, session: any) => {
                     comment: pin.comment,
                     created_at: pin.created_at,
                     status: pin.status || 'ativo',
-                    user_id: pin.user_id
+                    user_id: pin.user_id,
+                    page_id: pin.page_id
                 }));
                 setPins(pinsFormatados);
             }

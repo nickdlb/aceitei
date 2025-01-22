@@ -6,6 +6,14 @@ import { useAuth } from '@/components/AuthProvider';
 import SidebarFooter from '../sidebar/SidebarFooter';
 import { CommentSidebarProps } from '@/types/comments';
 import { supabase } from '@/utils/supabaseClient';
+import { useState, useEffect } from 'react';
+import { Database } from '@/types/supabase';
+
+interface PageDocument {
+    documents: {
+        user_id: string;
+    };
+}
 
 const CommentBar = ({
     pins,
@@ -36,7 +44,6 @@ const CommentBar = ({
         }
     };
 
-    // Função auxiliar para verificar permissões
     const checkPermissions = async (pin: Pin) => {
         if (!session?.user?.id) return false;
 
@@ -46,7 +53,7 @@ const CommentBar = ({
         // Verificar se é dono do documento
         const { data: page } = await supabase
             .from('pages')
-            .select('documents!inner(user_id)')
+            .select('documents(user_id)')
             .eq('id', pin.page_id)
             .single();
 
@@ -54,6 +61,19 @@ const CommentBar = ({
 
         return isCommentOwner || isDocumentOwner;
     };
+
+    const [permissions, setPermissions] = useState<{ [key: string]: boolean }>({});
+
+    useEffect(() => {
+        const loadPermissions = async () => {
+            const perms: { [key: string]: boolean } = {};
+            for (const pin of pins) {
+                perms[pin.id] = await checkPermissions(pin);
+            }
+            setPermissions(perms);
+        };
+        loadPermissions();
+    }, [pins, session]);
 
     return (
         <div id="sidebar" className="w-96 bg-gray-100 border-r border-gray-300 flex flex-col h-full">
@@ -119,7 +139,7 @@ const CommentBar = ({
                                                 {userNames[pin.id]}
                                             </span>
                                         )}
-                                        {checkPermissions(pin) && (
+                                        {permissions[pin.id] && (
                                             <button
                                                 onClick={() => handleDeletePin(pin.id)}
                                                 className="text-gray-400 hover:text-gray-600"
@@ -156,7 +176,7 @@ const CommentBar = ({
                                             </p>
                                         </div>
                                         <div className="flex gap-2">
-                                            {checkPermissions(pin) && (
+                                            {permissions[pin.id] && (
                                                 <button
                                                     onClick={() => setEditingPinId(pin.id)}
                                                     className="text-gray-500 hover:text-gray-700"
@@ -164,13 +184,13 @@ const CommentBar = ({
                                                     <PencilIcon className="w-4 h-4" />
                                                 </button>
                                             )}
-                                            {checkPermissions(pin) && (
+                                            {permissions[pin.id] && (
                                                 <button
                                                     onClick={() => handleStatusChange(pin.id)}
                                                     className={`${pin.status === 'ativo'
                                                         ? 'text-yellow-500 hover:text-yellow-600'
                                                         : 'text-green-500 hover:text-green-600'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {pin.status === 'ativo' ? <CheckIcon className="w-4 h-4" /> : <CogIcon className="w-4 h-4" />}
                                                 </button>

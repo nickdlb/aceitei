@@ -6,5 +6,6 @@ export interface Pin {
     comment: string;
     created_at: string;
     status: 'ativo' | 'resolvido';
-    user_id?: string;
+    user_id: string;
+    page_id: string;
 }

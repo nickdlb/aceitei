@@ -1,3 +1,4 @@
+import { Session } from '@supabase/supabase-js';
 import { Pin } from './Pin';
 
 export interface ImageAreaProps {
@@ -29,6 +30,7 @@ export interface CommentSidebarProps {
     handleStatusChange: (pinId: string) => void;
     setEditingPinId: (pinId: string | null) => void;
     userNames: { [key: string]: string };
+    session: Session | null;
 }
 
 export interface CommentItemProps {
