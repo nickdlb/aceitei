@@ -200,7 +200,7 @@ export const usePins = (pageId: string, session: any) => {
         // Verificar se é dono do documento
         const { data: page } = await supabase
             .from('pages')
-            .select('documents(user_id)')
+            .select('documents:documents(user_id)')
             .eq('id', pin.page_id)
             .single();
 

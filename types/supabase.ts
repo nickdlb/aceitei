@@ -1,10 +1,10 @@
 export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+    | string
+    | number
+    | boolean
+    | null
+    | { [key: string]: Json | undefined }
+    | Json[]
 
 export interface Database {
     public: {
@@ -17,9 +17,7 @@ export interface Database {
                     page_number: number;
                     imageTitle: string;
                     created_at: string;
-                    documents: {
-                        user_id: string;
-                    };
+                    documents: Document;
                 };
             };
             documents: {
@@ -54,4 +52,11 @@ export interface Database {
             };
         };
     };
+}
+
+interface Document {
+    user_id: string;
+    id: string;
+    title: string;
+    created_at: string;
 } 

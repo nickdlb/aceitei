@@ -171,7 +171,8 @@ export default function Page() {
         handleDeletePin: handleDeletePin,
         handleStatusChange: handleStatusChange,
         setEditingPinId: setEditingPinId,
-        userNames: userNames
+        userNames: userNames,
+        session: session
     };
 
     const imageAreaProps = {
