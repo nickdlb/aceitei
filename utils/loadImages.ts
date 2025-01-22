@@ -44,8 +44,8 @@ export const loadImages = async (userId?: string): Promise<Page[]> => {
             imageTitle: item.imageTitle,
             created_at: item.created_at,
             user_id: item.user_id,
-            documents: Array.isArray(item.documents) && item.documents[0] 
-                ? item.documents[0] 
+            documents: Array.isArray(item.documents) && item.documents[0]
+                ? item.documents[0]
                 : undefined
         })) || [];
 

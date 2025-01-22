@@ -66,7 +66,6 @@ export const usePins = (pageId: string, session: any) => {
 
                     if (error) throw error;
 
-                    // Converter para o formato Pin
                     const pinsData = commentsData?.map(comment => ({
                         id: comment.id,
                         x: comment.pos_x,
@@ -80,7 +79,6 @@ export const usePins = (pageId: string, session: any) => {
                     }));
 
                     setPins(pinsData || []);
-
                     const commentState = commentsData?.reduce((acc, comment) => ({
                         ...acc,
                         [comment.id]: comment.content

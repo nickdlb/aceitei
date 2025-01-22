@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Verificar autenticação apenas em rotas protegidas
     useEffect(() => {
-        const protectedRoutes = ['/minha-conta', '/dashboard', '/account'];
+        const protectedRoutes = ['/minha-conta', '/dashboard'];
         const isProtectedRoute = protectedRoutes.some(route => pathname?.startsWith(route));
 
         if (!loading && !session && isProtectedRoute) {
