@@ -12,9 +12,9 @@ const SidebarFooter = () => {
     const fetchUserProfile = async () => {
       if (session?.user?.id) {
         const { data, error } = await supabase
-          .from('anonymous_users')
-          .select('name, photo') // Supondo que você tenha um campo photo
-          .eq('auth_id', session.user.id)
+          .from('users')
+          .select('nome, fotoperfil')
+          .eq('user_id', session.user.id)
           .single();
 
         if (error) {
@@ -23,8 +23,8 @@ const SidebarFooter = () => {
         }
 
         if (data) {
-          setUserName(data.name);
-          setUserPhoto(data.photo || ''); // Se você tiver um campo photo
+          setUserName(data.nome);
+          setUserPhoto(data.fotoperfil || ''); // Se você tiver um campo photo
         }
       }
     };
