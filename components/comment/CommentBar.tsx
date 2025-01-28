@@ -117,7 +117,7 @@ const CommentBar = ({
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 max-h-[calc(100vh - 100px)] bg-white">
-                    <div className="space-y-4">
+                    <div className="space-y-4 thin-scrollbar">
                         {pins.sort((a, b) => a.num - b.num).map((pin) => (
                             <div key={pin.id} className="bg-white rounded-lg p-4 shadow">
                                 <div className="flex justify-between items-center mb-3">

@@ -47,7 +47,7 @@ export const usePins = (pageId: string, session: any) => {
         const loadPins = async () => {
             if (pageId) {
                 try {
-                    const { data: commentsData, error } = await supabase
+                    const query = supabase
                         .from('comments')
                         .select(`
                             id,
@@ -58,13 +58,20 @@ export const usePins = (pageId: string, session: any) => {
                             status,
                             created_at,
                             user_id,
-                            parent_id,
                             page_id
                         `)
                         .eq('page_id', pageId)
                         .order('pin_number', { ascending: true });
 
-                    if (error) throw error;
+                    console.log('Executing query:', query);
+
+                    const { data: commentsData, error } = await query;
+
+                    if (error) {
+                        console.error('Error loading comments:', error);
+                        console.error('Error details:', error.message, error.stack);
+                        throw error;
+                    }
 
                     const pinsData = commentsData?.map(comment => ({
                         id: comment.id,
@@ -85,8 +92,9 @@ export const usePins = (pageId: string, session: any) => {
                     }), {} as { [key: string]: string });
 
                     setComments(commentState || {});
-                } catch (error) {
+                } catch (error: any) {
                     console.error('Error loading comments:', error);
+                    console.error('Error details:', error.message, error.stack);
                 }
             }
         };
@@ -412,4 +420,4 @@ export const usePins = (pageId: string, session: any) => {
         setShowAuthPopup,
         handleAuth
     };
-}; 
+};
