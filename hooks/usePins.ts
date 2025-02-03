@@ -197,22 +197,45 @@ export const usePins = (pageId: string, session: any) => {
     };
 
     const checkPermissions = async (pin: Pin) => {
-        if (!session?.user?.id) return false;
-
-        // Verificar se é dono do comentário
-        const isCommentOwner = session.user.id === pin.user_id;
-
-        // Verificar se é dono do documento
-        const { data } = await supabase
-            .from('pages')
-            .select('documents:documents(user_id)')
-            .eq('id', pin.page_id)
-            .single<PageWithDocument>();
-
-        const isDocumentOwner = data?.documents?.user_id === session.user.id;
-
-        return isCommentOwner || isDocumentOwner;
-    };
+        if (!session?.user?.id) {
+          // Se não houver usuário na sessão, não tem permissão.
+          return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
+        }
+      
+        // 1. Busque o documento (página) no Supabase
+        const { data: documentData, error: documentError } = await supabase
+          .from('pages')
+          .select('user_id')
+          .eq('id', pin.page_id)  // Certifique-se que "id" é a chave primária da página
+          .single();
+      
+        if (documentError) {
+          console.error("Erro ao buscar o documento:", documentError);
+          throw documentError;
+        }
+      
+        const isDocumentOwner = documentData?.user_id === session.user.id;
+      
+        // 2. Busque o pin (comentário) no Supabase
+        const { data: pinData, error: pinError } = await supabase
+          .from('comments')
+          .select('user_id')
+          .eq('id', pin.id)
+          .single();
+      
+        if (pinError) {
+          console.error("Erro ao buscar o pin:", pinError);
+          throw pinError;
+        }
+      
+        const isCommentOwner = pinData?.user_id === session.user.id;
+      
+        // Se o usuário for dono do documento ou do comentário, ele tem permissão.
+        const hasPermission = isDocumentOwner || isCommentOwner;
+      
+        return { isDocumentOwner, isCommentOwner, hasPermission };
+      };
+      
 
     // Ajustar handleStatusChange
     const handleStatusChange = async (pinId: string) => {
@@ -273,26 +296,34 @@ export const usePins = (pageId: string, session: any) => {
     // Ajustar handleCommentSave
     const handleCommentSave = async (pinId: string) => {
         try {
-            await checkPermissions(pins.find(p => p.id === pinId) as Pin);
-
-            const comment = comments[pinId];
-            if (!comment) return;
-
-            const { error } = await supabase
-                .from('comments')
-                .update({ content: comment })
-                .eq('id', pinId);
-
-            if (error) throw error;
-
-            setEditingPinId(null);
-            setRefreshKey(prev => prev + 1);
-
+          const pin = pins.find(p => p.id === pinId);
+          if (!pin) return;
+      
+          const { hasPermission } = await checkPermissions(pin);
+          if (!hasPermission) {
+            alert('Você não tem permissão para editar este comentário.');
+            return;
+          }
+      
+          const comment = comments[pinId];
+          if (!comment) return;
+      
+          const { error } = await supabase
+            .from('comments')
+            .update({ content: comment })
+            .eq('id', pinId);
+      
+          if (error) throw error;
+      
+          setEditingPinId(null);
+          setRefreshKey(prev => prev + 1);
+      
         } catch (error: any) {
-            console.error("Erro ao salvar comentário:", error.message);
-            alert(error.message || 'Erro ao salvar comentário');
+          console.error("Erro ao salvar comentário:", error.message);
+          alert(error.message || 'Erro ao salvar comentário');
         }
-    };
+      };
+      
 
     const handleDeletePin = async (pinId: string) => {
         try {
