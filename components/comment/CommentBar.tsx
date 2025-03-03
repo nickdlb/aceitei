@@ -50,7 +50,8 @@ const CommentBar = ({
       .select('user_id')
       .eq('id', pageId)
 
-    return session.user.id == data[0].user_id;
+    // Verifica se data não é null e se tem pelo menos um elemento
+    return data && data.length > 0 ? session.user.id === data[0].user_id : false;
   };
 
   // Função para verificar as permissões do comentário
