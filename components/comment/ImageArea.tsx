@@ -38,16 +38,12 @@ const ImageArea: React.FC<ImageAreaProps> = ({
   const handleTitleEdit = async () => {
     if (isEditingTitle && newTitle.trim()) {
       try {
-        const { error } = await supabase
-          .from('images')
-          .update({ imageTitle: newTitle })
-          .eq('id', imageId);
-
-        if (error) throw error;
-
-        onTitleUpdate(newTitle);
-      } catch (error) {
-        console.error('Erro ao atualizar título:', error);
+        // Chamar diretamente a função onTitleUpdate que foi passada como prop
+        await onTitleUpdate(newTitle);
+      } catch (error: any) {
+        // Melhorar o tratamento de erro para exibir mais detalhes
+        console.error('Erro ao atualizar título:', error?.message || JSON.stringify(error) || 'Erro desconhecido');
+        // Reverter para o título original em caso de erro
         setNewTitle(imageTitle);
       }
     }
