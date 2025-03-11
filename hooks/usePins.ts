@@ -24,6 +24,8 @@ export const usePins = (pageId: string, session: any) => {
     const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
     const [showAuthPopup, setShowAuthPopup] = useState(false);
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
+    // Adicionar o estado loadAttempts
+    const [loadAttempts, setLoadAttempts] = useState(0);
 
     useEffect(() => {
         const fetchPins = async () => {
@@ -47,6 +49,7 @@ export const usePins = (pageId: string, session: any) => {
         const loadPins = async () => {
             if (pageId) {
                 try {
+                    console.log('Loading pins, attempt:', loadAttempts + 1);
                     const query = supabase
                         .from('comments')
                         .select(`
@@ -62,8 +65,6 @@ export const usePins = (pageId: string, session: any) => {
                         `)
                         .eq('page_id', pageId)
                         .order('pin_number', { ascending: true });
-
-                    console.log('Executing query:', query);
 
                     const { data: commentsData, error } = await query;
 
@@ -86,12 +87,25 @@ export const usePins = (pageId: string, session: any) => {
                     }));
 
                     setPins(pinsData || []);
+                    
+                    // Garantir que o conteúdo dos comentários seja definido corretamente
                     const commentState = commentsData?.reduce((acc, comment) => ({
                         ...acc,
-                        [comment.id]: comment.content
+                        [comment.id]: comment.content || ''
                     }), {} as { [key: string]: string });
 
                     setComments(commentState || {});
+                    
+                    // Verificar se há comentários sem conteúdo e tentar novamente se necessário
+                    const hasEmptyComments = commentsData?.some(comment => 
+                        comment.content === undefined || comment.content === null
+                    );
+                    
+                    if (hasEmptyComments && loadAttempts < 3) {
+                        setTimeout(() => {
+                            setLoadAttempts(prev => prev + 1);
+                        }, 1000);
+                    }
                 } catch (error: any) {
                     console.error('Error loading comments:', error);
                     console.error('Error details:', error.message, error.stack);
@@ -100,7 +114,7 @@ export const usePins = (pageId: string, session: any) => {
         };
 
         loadPins();
-    }, [pageId, refreshKey]);
+    }, [pageId, refreshKey, loadAttempts]);
 
     useEffect(() => {
         const fetchUserNames = async () => {
@@ -266,7 +280,7 @@ export const usePins = (pageId: string, session: any) => {
         }
     };
 
-    // Função auxiliar para recarregar comentários
+    // Função auxiliar para recarregar comentários - melhorada
     const loadComments = async () => {
         try {
             const { data, error } = await supabase
@@ -277,6 +291,22 @@ export const usePins = (pageId: string, session: any) => {
             if (error) throw error;
 
             if (data) {
+                // Atualizar pins com os dados completos
+                const pinsData = data.map(comment => ({
+                    id: comment.id,
+                    x: comment.pos_x,
+                    y: comment.pos_y,
+                    num: comment.pin_number,
+                    comment: comment.content || '',
+                    created_at: comment.created_at,
+                    status: comment.status,
+                    user_id: comment.user_id,
+                    page_id: comment.page_id
+                }));
+                
+                setPins(pinsData);
+                
+                // Garantir que o conteúdo dos comentários seja definido corretamente
                 const commentState: { [key: string]: string } = {};
                 data.forEach(comment => {
                     commentState[comment.id] = comment.content || '';
@@ -315,14 +345,22 @@ export const usePins = (pageId: string, session: any) => {
       
           if (error) throw error;
       
+          // Atualizar o pin localmente também
+          setPins(prevPins => prevPins.map(p => 
+            p.id === pinId ? { ...p, comment: comment } : p
+          ));
+          
           setEditingPinId(null);
+          
+          // Forçar recarregamento completo
+          await loadComments();
           setRefreshKey(prev => prev + 1);
       
         } catch (error: any) {
           console.error("Erro ao salvar comentário:", error.message);
           alert(error.message || 'Erro ao salvar comentário');
         }
-      };
+    };
       
 
     const handleDeletePin = async (pinId: string) => {

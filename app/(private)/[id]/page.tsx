@@ -1,3 +1,4 @@
+// page.tsx
 'use client'
 import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from 'react';
@@ -31,8 +32,7 @@ export default function Page() {
             if (!pageId) return;
 
             try {
-                // 1. Primeiro tentar buscar como documento
-                const { data: document, error: documentError } = await supabase
+                const { data: document } = await supabase
                     .from('documents')
                     .select('id')
                     .eq('id', pageId)
@@ -40,7 +40,6 @@ export default function Page() {
 
                 let targetPageId = pageId;
 
-                // Se for um documento, buscar sua primeira página
                 if (document) {
                     const { data: firstPage } = await supabase
                         .from('pages')
@@ -54,8 +53,7 @@ export default function Page() {
                     }
                 }
 
-                // 2. Buscar a página com seus dados do documento
-                const { data: page, error: pageError } = await supabase
+                const { data: page } = await supabase
                     .from('pages')
                     .select(`
                         *,
@@ -69,38 +67,23 @@ export default function Page() {
                     .eq('id', targetPageId)
                     .single();
 
-                if (pageError) {
-                    console.error('Error loading page:', pageError);
-                    return;
-                }
-
                 if (!page) {
-                    console.error('Page not found');
+                  console.error('Page not found');
                     return;
                 }
 
-                // 3. Buscar todas as páginas do mesmo documento
-                const { data: allPages, error: allPagesError } = await supabase
+                const { data: allPages } = await supabase
                     .from('pages')
                     .select('id, image_url, page_number')
                     .eq('document_id', page.document_id)
                     .order('page_number');
 
-                if (allPagesError) {
-                    console.error('Error loading all pages:', allPagesError);
-                    return;
-                }
-
-                // 4. Se o ID original era de um documento, atualizar a URL para a página
                 if (document && targetPageId !== pageId) {
                     router.replace(`/${targetPageId}`, { scroll: false });
                 }
 
                 setPages(allPages || []);
-                setPageData({
-                    ...page,
-                    documents: page.documents
-                });
+                setPageData(page);
                 setLoading(false);
             } catch (error) {
                 console.error('Error in loadPage:', error);
@@ -137,12 +120,12 @@ export default function Page() {
     const handlePageChange = async (newPageId: string) => {
         router.push(`/${newPageId}`, { scroll: false });
     };
-
-    const handleTitleUpdate = async (newTitle: string) => {
+     const handleTitleUpdate = async (newTitle: string) => {
         if (pageData) {
             setPageData({ ...pageData, imageTitle: newTitle });
         }
     };
+
 
     if (loading || !pageData) {
         return (
@@ -162,17 +145,17 @@ export default function Page() {
 
     const commentBarProps = {
         pins: filteredPins,
-        statusFilter: statusFilter,
-        setStatusFilter: setStatusFilter,
-        editingPinId: editingPinId,
-        comments: comments,
-        handleCommentChange: handleCommentChange,
-        handleCommentSave: handleCommentSave,
-        handleDeletePin: handleDeletePin,
-        handleStatusChange: handleStatusChange,
-        setEditingPinId: setEditingPinId,
-        userNames: userNames,
-        session: session
+        statusFilter,
+        setStatusFilter,
+        editingPinId,
+        comments,
+        handleCommentChange,
+        handleCommentSave,
+        handleDeletePin,
+        handleStatusChange,
+        setEditingPinId,
+        userNames,
+        session
     };
 
     const imageAreaProps = {
@@ -192,22 +175,31 @@ export default function Page() {
         isPagesOpen: isPagesOpen
     };
 
+
     return (
-        <div className="w-full h-screen flex">
-            <CommentBar {...commentBarProps} />
-            <ImageArea {...imageAreaProps} />
-            {pages.length > 1 && isPagesOpen && (
-                <ImageSidebar
-                    pages={pages}
-                    currentPage={pageId}
-                    onPageChange={handlePageChange}
-                />
-            )}
-            <AuthPopup
-                isOpen={showAuthPopup}
-                onClose={() => setShowAuthPopup(false)}
-                onSubmit={handleAuth}
-            />
+      <div className="w-full h-screen flex">
+        {/* Sidebar de Comentários */}
+        <div className="w-96 flex-shrink-0 bg-gray-100 border-r border-gray-300"> {/* Mantém a largura fixa aqui */}
+          <CommentBar {...commentBarProps} />
         </div>
+
+        {/* Conteúdo Principal */}
+        <div className="flex-1 flex">
+          <ImageArea {...imageAreaProps} />
+          {pages.length > 1 && isPagesOpen && (
+            <ImageSidebar
+              pages={pages}
+              currentPage={pageId}
+              onPageChange={handlePageChange}
+            />
+          )}
+        </div>
+
+        <AuthPopup
+          isOpen={showAuthPopup}
+          onClose={() => setShowAuthPopup(false)}
+          onSubmit={handleAuth}
+        />
+      </div>
     );
 }

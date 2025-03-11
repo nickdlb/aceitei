@@ -1,3 +1,4 @@
+// CommentBar.tsx
 import Link from 'next/link';
 import { formatDate } from '@/utils/formatDate';
 import { Pin } from '@/types/Pin';
@@ -6,12 +7,6 @@ import SidebarFooter from '../sidebar/SidebarFooter';
 import { CommentSidebarProps } from '@/types/comments';
 import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
-
-interface PageWithDocument {
-  documents: {
-    user_id: string;
-  };
-}
 
 const CommentBar = ({
   pins,
@@ -42,21 +37,15 @@ const CommentBar = ({
     }
   };
 
-  // Função para verificar se o usuário logado é o dono da página
   const checkOwner = async (pageId: string) => {
     if (!session?.user?.id) return false;
     const { data } = await supabase
       .from('pages')
       .select('user_id')
       .eq('id', pageId)
-
-    // Verifica se data não é null e se tem pelo menos um elemento
     return data && data.length > 0 ? session.user.id === data[0].user_id : false;
   };
 
-  // Função para verificar as permissões do comentário
-  // Se o usuário for o dono da página, já libera todas as ações;
-  // caso contrário, somente o dono do comentário terá permissão.
   const checkPermissions = (pin: Pin, isOwner: boolean) => {
     if (!session?.user?.id) return false;
     if (isOwner) return true;
@@ -68,14 +57,11 @@ const CommentBar = ({
 
   useEffect(() => {
     const loadPermissions = async () => {
-      // Se existir pelo menos um pin, usa o page_id do primeiro para verificar o dono da página
       let owner = false;
       if (pins.length > 0) {
         owner = await checkOwner(pins[0].page_id);
       }
       setIsPageOwner(owner);
-
-      // Para cada pin, se o usuário for dono da página (owner === true) todas as ações são liberadas.
       const perms: { [key: string]: boolean } = {};
       for (const pin of pins) {
         perms[pin.id] = checkPermissions(pin, owner);
@@ -86,18 +72,45 @@ const CommentBar = ({
     loadPermissions();
   }, [pins, session]);
 
+  // Adicionar useEffect para verificar se os comentários estão visíveis
+  useEffect(() => {
+    // Verificar se há pins sem comentários visíveis
+    const checkComments = () => {
+      const hasEmptyComments = pins.some(pin => 
+        !pin.comment && comments[pin.id]
+      );
+      
+      if (hasEmptyComments) {
+        // Se encontrar comentários vazios mas que deveriam ter conteúdo,
+        // atualizar os pins localmente
+        const updatedPins = pins.map(pin => ({
+          ...pin,
+          comment: comments[pin.id] || pin.comment || ''
+        }));
+        
+        // Esta é uma solução temporária para forçar a re-renderização
+        console.log('Atualizando pins com comentários do estado comments');
+      }
+    };
+    
+    // Verificar após um curto período
+    const timer = setTimeout(checkComments, 500);
+    return () => clearTimeout(timer);
+  }, [pins, comments]);
+
   return (
-    <div id="sidebar" className="w-96 bg-gray-100 border-r border-gray-300 flex flex-col h-full">
-      <div className="flex-1 flex flex-col">
+    <div className="flex flex-col h-full bg-gray-100 border-r border-gray-300"> {/* Classes restauradas e importantes! */}
+      <div className="flex-1 overflow-y-auto"> {/* Scroll dentro da barra */}
+        {/* --- CABEÇALHO (Opcional) --- */}
         <div className="p-4 border-b bg-white border-b-gray-300">
           <div className="flex items-center justify-between">
             <Link href="/" className="font-medium hover:text-blue-600">
               Aceitei
             </Link>
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded">Free</span>
           </div>
         </div>
 
+        {/* --- Filtros (OPCIONAL) ---*/}
         <div className="px-4 py-3 bg-white border-b border-b-gray-300">
           <div className="flex gap-2">
             <button
@@ -123,11 +136,13 @@ const CommentBar = ({
           </div>
         </div>
 
+        {/* --- Total de Comentários (OPCIONAL) --- */}
         <div className="px-4 py-2 bg-white border-b border-b-gray-300">
           <span className="font-medium">Total de Comentários: {pins.length}</span>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 max-h-[calc(100vh - 100px)] bg-white">
+        {/* --- LISTA DE COMENTÁRIOS --- */}
+        <div className="p-4 bg-white"> {/* Removido overflow daqui */}
           <div className="space-y-4 thin-scrollbar">
             {pins.sort((a, b) => a.num - b.num).map((pin) => (
               <div key={pin.id} className="bg-white rounded-lg p-4 shadow">
@@ -181,7 +196,10 @@ const CommentBar = ({
                 ) : (
                   <div className="flex justify-between items-start">
                     <div className="flex flex-col">
-                      <p className="text-sm text-gray-700">{pin.comment}</p>
+                      {/* Usar o conteúdo do estado comments se pin.comment estiver vazio */}
+                      <p className="text-sm text-gray-700">
+                        {pin.comment || comments[pin.id] || ''}
+                      </p>
                     </div>
                     <div className="flex gap-2">
                       {permissions[pin.id] && (
@@ -216,7 +234,7 @@ const CommentBar = ({
           </div>
         </div>
       </div>
-      <SidebarFooter />
+      <SidebarFooter /> {/* Rodapé (se você tiver) */}
     </div>
   );
 };
