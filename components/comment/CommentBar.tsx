@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { formatDate } from '@/utils/formatDate';
 import { Pin } from '@/types/Pin';
-import { PencilIcon, CheckIcon, CogIcon, XMarkIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, CheckIcon, CogIcon, XMarkIcon, ChatBubbleLeftIcon, ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 import SidebarFooter from '../sidebar/SidebarFooter';
 import { CommentSidebarProps } from '@/types/comments';
 import { supabase } from '@/utils/supabaseClient';
@@ -57,6 +57,7 @@ const CommentBar = ({
   const [isPageOwner, setIsPageOwner] = useState(false);
   const [replying, setReplying] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [showReplies, setShowReplies] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     const loadPermissions = async () => {
@@ -101,54 +102,38 @@ const CommentBar = ({
     return () => clearTimeout(timer);
   }, [pins, comments]);
 
+  // Adicione este useEffect para verificar as respostas ao carregar
+  useEffect(() => {
+    // Inicializar o estado de showReplies com base nos pins carregados
+    const initialShowReplies: { [key: string]: boolean } = {};
+    pins.forEach(pin => {
+      // Verificar se o pin tem reactions
+      if (pin.reactions && pin.reactions.length > 0) {
+        initialShowReplies[pin.id] = false; // Inicialmente ocultas
+      }
+    });
+    setShowReplies(initialShowReplies);
+  }, [pins]);
+
   const handleReply = async (pinId: string) => {
     if (!replyText.trim() || !session?.user?.id) return;
 
     try {
-      // Primeiro verificar se o usuário tem permissão
-      const hasPermission = await checkPermissions(pins.find(p => p.id === pinId) as Pin);
-      if (!hasPermission) {
-        alert('Você não tem permissão para responder este comentário.');
-        return;
-      }
-
-      // Verificar se já existe uma reação deste usuário
-      const { data: existingReaction } = await supabase
+      // Agora sempre inserimos uma nova resposta, sem verificar se já existe
+      const { error } = await supabase
         .from('comment_reactions')
-        .select()
-        .eq('comment_id', pinId)
-        .eq('user_id', session.user.id)
-        .single();
-
-      let error;
-      if (existingReaction) {
-        // Se já existe, atualiza
-        ({ error } = await supabase
-          .from('comment_reactions')
-          .update({
-            reaction_type: replyText,
-            created_at: new Date().toISOString()
-          })
-          .eq('comment_id', pinId)
-          .eq('user_id', session.user.id));
-      } else {
-        // Se não existe, insere
-        ({ error } = await supabase
-          .from('comment_reactions')
-          .insert({
-            comment_id: pinId,
-            user_id: session.user.id,
-            reaction_type: replyText,
-            created_at: new Date().toISOString()
-          }));
-      }
+        .insert({
+          comment_id: pinId,
+          user_id: session.user.id,
+          reaction_type: replyText,
+          created_at: new Date().toISOString()
+        });
 
       if (error) {
         console.error('Erro detalhado:', error);
         throw error;
       }
 
-      // Limpar o estado e atualizar
       setReplyText('');
       setReplying(null);
       await loadComments();
@@ -157,6 +142,104 @@ const CommentBar = ({
       console.error('Erro ao adicionar resposta:', error);
       alert(`Erro ao adicionar resposta: ${error.message || 'Erro desconhecido'}`);
     }
+  };
+
+  const toggleReplies = (pinId: string) => {
+    setShowReplies(prev => ({
+      ...prev,
+      [pinId]: !prev[pinId]
+    }));
+  };
+
+  // Componente para renderizar uma única resposta
+  const CommentReply = ({
+    reaction,
+    level = 0,
+    parentId
+  }: {
+    reaction: CommentReaction;
+    level?: number;
+    parentId: string;
+  }) => {
+    const [showReplyForm, setShowReplyForm] = useState(false);
+    const [replyText, setReplyText] = useState('');
+
+    const handleSubmitReply = async () => {
+      if (!replyText.trim() || !session?.user?.id) return;
+
+      try {
+        // Inserir nova resposta usando apenas as colunas existentes
+        const { error } = await supabase
+          .from('comment_reactions')
+          .insert({
+            comment_id: parentId,
+            user_id: session.user.id,
+            reaction_type: replyText,
+            created_at: new Date().toISOString()
+          });
+
+        if (error) {
+          console.error('Erro detalhado:', error);
+          throw error;
+        }
+
+        setReplyText('');
+        setShowReplyForm(false);
+        if (loadComments) {
+          await loadComments();
+        }
+
+      } catch (error: any) {
+        console.error('Erro ao adicionar resposta:', error);
+        alert(`Erro ao adicionar resposta: ${error.message || 'Erro desconhecido'}`);
+      }
+    };
+
+    return (
+      <div className={`mt-2 ${level > 0 ? 'ml-4' : ''}`}>
+        <div className="text-gray-700 text-sm">{reaction.reaction_type}</div>
+        <div className="text-xs text-gray-500 mt-1">
+          {formatDateTime(reaction.created_at)}
+        </div>
+
+        <button
+          onClick={() => setShowReplyForm(!showReplyForm)}
+          className="text-xs text-blue-600 hover:text-blue-800 mt-1"
+        >
+          Responder
+        </button>
+
+        {showReplyForm && (
+          <div className="mt-2">
+            <textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              className="w-full p-2 border rounded-md text-sm"
+              placeholder="Digite sua resposta..."
+              rows={2}
+            />
+            <div className="mt-2 flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setReplyText('');
+                  setShowReplyForm(false);
+                }}
+                className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSubmitReply}
+                disabled={!replyText.trim()}
+                className="px-2 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              >
+                Enviar
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -177,8 +260,8 @@ const CommentBar = ({
             <button
               onClick={() => setStatusFilter('ativo')}
               className={`px-3 py-1 rounded text-sm ${statusFilter === 'ativo'
-                  ? 'bg-yellow-500 text-white'
-                  : 'bg-gray-100 text-gray-600'
+                ? 'bg-yellow-500 text-white'
+                : 'bg-gray-100 text-gray-600'
                 }`}
             >
               Ativos
@@ -186,8 +269,8 @@ const CommentBar = ({
             <button
               onClick={() => setStatusFilter('resolvido')}
               className={`px-3 py-1 rounded text-sm ${statusFilter === 'resolvido'
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-100 text-gray-600'
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-100 text-gray-600'
                 }`}
             >
               Resolvidos
@@ -210,8 +293,8 @@ const CommentBar = ({
                     <span className="text-black">{pin.num}</span>
                     <span
                       className={`text-xs px-2 py-1 rounded ${pin.status === 'ativo'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-green-100 text-green-800'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-green-100 text-green-800'
                         }`}
                     >
                       {pin.status === 'ativo' ? 'Ativo' : 'Resolvido'}
@@ -272,8 +355,8 @@ const CommentBar = ({
                         <button
                           onClick={() => handleStatusChange(pin.id)}
                           className={`${pin.status === 'ativo'
-                              ? 'text-yellow-500 hover:text-yellow-600'
-                              : 'text-green-500 hover:text-green-600'
+                            ? 'text-yellow-500 hover:text-yellow-600'
+                            : 'text-green-500 hover:text-green-600'
                             }`}
                         >
                           {pin.status === 'ativo' ? (
@@ -290,11 +373,22 @@ const CommentBar = ({
                 <div className="mt-2 flex items-center gap-2">
                   <button
                     onClick={() => setReplying(replying === pin.id ? null : pin.id)}
-                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                    title="Responder"
                   >
-                    <ChatBubbleLeftIcon className="w-4 h-4" />
-                    Responder
+                    <ChatBubbleLeftIcon className="w-5 h-5" />
                   </button>
+
+                  {/* Botão Ver respostas - só aparece se houver respostas */}
+                  {pin.reactions && pin.reactions.length > 0 && (
+                    <button
+                      onClick={() => toggleReplies(pin.id)}
+                      className="text-xs text-gray-600 hover:text-gray-800 flex items-center gap-1"
+                    >
+                      <ChatBubbleOvalLeftIcon className="w-4 h-4" />
+                      {showReplies[pin.id] ? 'Ocultar' : `Ver respostas (${pin.reactions.length})`}
+                    </button>
+                  )}
                 </div>
 
                 {replying === pin.id && (
@@ -327,7 +421,8 @@ const CommentBar = ({
                   </div>
                 )}
 
-                {pin.reactions && pin.reactions.length > 0 && (
+                {/* Exibir respostas apenas quando showReplies[pin.id] for true */}
+                {showReplies[pin.id] && pin.reactions && pin.reactions.length > 0 && (
                   <div className="mt-3 pl-4 border-l-2 border-gray-200">
                     {pin.reactions.map((reaction) => (
                       <div key={reaction.id} className="mt-2 text-sm">

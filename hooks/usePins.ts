@@ -5,6 +5,7 @@ import loadPins from '@/utils/loadPins';
 import { insertPin } from '@/utils/insertPinSupa';
 import { deletePin } from '@/utils/deletePin';
 import { Comment } from '@/types/Document';
+import { CommentReaction } from '@/types/CommentReaction';
 
 interface PageWithDocument {
     documents: {
@@ -283,41 +284,82 @@ export const usePins = (pageId: string, session: any) => {
     // Função auxiliar para recarregar comentários - melhorada
     const loadComments = async () => {
         try {
-            const { data, error } = await supabase
+            console.log('Iniciando carregamento de comentários...');
+            
+            // Primeiro carregamos os comentários
+            const { data: commentsData, error: commentsError } = await supabase
                 .from('comments')
-                .select(`
-                    *,
-                    reactions:comment_reactions(*)
-                `)
+                .select('*')
                 .eq('page_id', pageId);
 
-            if (error) throw error;
+            if (commentsError) throw commentsError;
 
-            if (data) {
-                const pinsData = data.map(comment => ({
+            console.log('Comentários carregados:', commentsData);
+
+            if (!commentsData || commentsData.length === 0) {
+                setPins([]);
+                setComments({});
+                return;
+            }
+
+            // Extrair os IDs dos comentários para filtrar as reações
+            const commentIds = commentsData.map(comment => comment.id);
+            
+            // Carregar apenas as reações relacionadas a esses comentários
+            const { data: reactionsData, error: reactionsError } = await supabase
+                .from('comment_reactions')
+                .select('*')
+                .in('comment_id', commentIds);
+
+            if (reactionsError) throw reactionsError;
+
+            console.log('Reações carregadas:', reactionsData);
+
+            // Mapeamos as reações para cada comentário
+            const commentReactionsMap = new Map();
+            
+            if (reactionsData) {
+                // Agrupar reações por comment_id
+                reactionsData.forEach(reaction => {
+                    if (!commentReactionsMap.has(reaction.comment_id)) {
+                        commentReactionsMap.set(reaction.comment_id, []);
+                    }
+                    commentReactionsMap.get(reaction.comment_id).push(reaction);
+                });
+            }
+
+            // Criamos os pins com suas reações
+            const pinsData = commentsData.map(comment => {
+                // Obter reações para este comentário
+                const reactions = commentReactionsMap.get(comment.id) || [];
+                
+                console.log(`Comentário ${comment.id} tem ${reactions.length} reações`);
+                
+                return {
                     id: comment.id,
                     x: comment.pos_x,
                     y: comment.pos_y,
                     num: comment.pin_number,
                     comment: comment.content || '',
                     created_at: comment.created_at,
-                    status: comment.status,
+                    status: comment.status || 'ativo',
                     user_id: comment.user_id,
                     page_id: comment.page_id,
-                    reactions: comment.reactions || []
-                }));
-                
-                setPins(pinsData);
-                
-                const commentState: { [key: string]: string } = {};
-                data.forEach(comment => {
-                    commentState[comment.id] = comment.content || '';
-                });
-                setComments(commentState);
-            }
+                    reactions: reactions
+                };
+            });
+            
+            console.log('Pins com reações:', pinsData);
+            
+            setPins(pinsData);
+            
+            const commentState: { [key: string]: string } = {};
+            commentsData.forEach(comment => {
+                commentState[comment.id] = comment.content || '';
+            });
+            setComments(commentState);
         } catch (error) {
             console.error('Erro ao carregar comentários:', error);
-            throw error;
         }
     };
 
@@ -467,6 +509,14 @@ export const usePins = (pageId: string, session: any) => {
             throw new Error('Não foi possível criar o usuário. Tente novamente.');
         }
     };
+
+    // Modificar o useEffect para garantir que loadComments seja chamado quando pageId estiver disponível
+    useEffect(() => {
+        if (pageId) {
+            console.log('Carregando comentários para a página:', pageId);
+            loadComments();
+        }
+    }, [pageId]);
 
     return {
         pins,
