@@ -4,7 +4,7 @@ import { formatDate } from '@/utils/formatDate';
 import { Pin } from '@/types/Pin';
 import { PencilIcon, CheckIcon, CogIcon, XMarkIcon, ChatBubbleLeftIcon, ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 import SidebarFooter from '../sidebar/SidebarFooter';
-import { CommentSidebarProps } from '@/types/comments';
+import { CommentSidebarProps, CommentReaction } from '@/types/comments';
 import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
 

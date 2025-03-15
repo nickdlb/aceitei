@@ -20,18 +20,19 @@ export interface ImageAreaProps {
 
 export interface CommentSidebarProps {
     pins: Pin[];
-    statusFilter: 'ativo' | 'resolvido';
-    setStatusFilter: (status: 'ativo' | 'resolvido') => void;
+    statusFilter: 'ativo' | 'resolvido' | null;
+    setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => void;
     editingPinId: string | null;
     comments: { [key: string]: string };
-    handleCommentChange: (pinId: string, value: string) => void;
-    handleCommentSave: (pinId: string) => void;
+    handleCommentChange: (pinId: string, comment: string) => void;
+    handleCommentSave: (pinId: string) => Promise<void>;
     handleDeletePin: (pinId: string) => void;
     handleStatusChange: (pinId: string) => void;
     setEditingPinId: (pinId: string | null) => void;
     userNames: { [key: string]: string };
     session: Session | null;
     loadComments: () => Promise<void>;
+    setShowAuthPopup: (show: boolean) => void;
 }
 
 export interface CommentItemProps {
@@ -53,4 +54,12 @@ export interface ImagePinProps {
     isDragging: boolean;
     setIsDragging: (isDragging: boolean) => void;
     updatePinPosition: (pinId: string, x: number, y: number) => void;
+}
+
+export interface CommentReaction {
+    id: string;
+    comment_id: string;
+    user_id: string;
+    reaction_type: string;
+    created_at: string;
 }
