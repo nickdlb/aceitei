@@ -21,7 +21,8 @@ const CommentBar = ({
   setEditingPinId,
   userNames,
   session,
-  loadComments
+  loadComments,
+  setShowAuthPopup
 }: CommentSidebarProps) => {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -116,10 +117,16 @@ const CommentBar = ({
   }, [pins]);
 
   const handleReply = async (pinId: string) => {
-    if (!replyText.trim() || !session?.user?.id) return;
+    if (!replyText.trim()) return;
+
+    // Verifique se o usuário está logado
+    if (!session?.user?.id) {
+      setShowAuthPopup(true); // Abre o popup de identificação
+      return;
+    }
 
     try {
-      // Agora sempre inserimos uma nova resposta, sem verificar se já existe
+      // Inserir nova resposta
       const { error } = await supabase
         .from('comment_reactions')
         .insert({
@@ -134,10 +141,10 @@ const CommentBar = ({
         throw error;
       }
 
-      setReplyText('');
-      setReplying(null);
-      await loadComments();
+      setReplyText(''); // Limpa o texto da resposta após enviar
+      await loadComments(); // Carrega os comentários novamente
 
+      // Não fechar as respostas
     } catch (error: any) {
       console.error('Erro ao adicionar resposta:', error);
       alert(`Erro ao adicionar resposta: ${error.message || 'Erro desconhecido'}`);
@@ -149,6 +156,7 @@ const CommentBar = ({
       ...prev,
       [pinId]: !prev[pinId]
     }));
+    // Não limpar o texto da resposta aqui
   };
 
   // Componente para renderizar uma única resposta
@@ -372,66 +380,50 @@ const CommentBar = ({
 
                 <div className="mt-2 flex items-center gap-2">
                   <button
-                    onClick={() => setReplying(replying === pin.id ? null : pin.id)}
-                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
-                    title="Responder"
+                    onClick={() => toggleReplies(pin.id)}
+                    className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
                   >
-                    <ChatBubbleLeftIcon className="w-5 h-5" />
+                    <ChatBubbleOvalLeftIcon className="w-4 h-4" />
+                    {showReplies[pin.id]
+                      ? 'Ocultar respostas'
+                      : pin.reactions && pin.reactions.length > 0
+                        ? `Ver respostas (${pin.reactions.length})`
+                        : 'Responder'}
                   </button>
-
-                  {/* Botão Ver respostas - só aparece se houver respostas */}
-                  {pin.reactions && pin.reactions.length > 0 && (
-                    <button
-                      onClick={() => toggleReplies(pin.id)}
-                      className="text-xs text-gray-600 hover:text-gray-800 flex items-center gap-1"
-                    >
-                      <ChatBubbleOvalLeftIcon className="w-4 h-4" />
-                      {showReplies[pin.id] ? 'Ocultar' : `Ver respostas (${pin.reactions.length})`}
-                    </button>
-                  )}
                 </div>
 
-                {replying === pin.id && (
+                {showReplies[pin.id] && (
                   <div className="mt-3">
+                    {pin.reactions && pin.reactions.length > 0 && (
+                      <div className="pl-4 border-l-2 border-gray-200 mb-3">
+                        {pin.reactions.map((reaction) => (
+                          <div key={reaction.id} className="mt-2 text-sm">
+                            <div className="flex justify-between items-center mb-1">
+                              <span className="text-xs font-medium text-gray-700">
+                                {userNames[reaction.user_id] || 'Usuário'}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                {formatDateTime(reaction.created_at)}
+                              </span>
+                            </div>
+                            <div className="text-gray-700">{reaction.reaction_type}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {/* Caixa de nova resposta */}
                     <textarea
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
-                      className="w-full p-2 border rounded-md text-sm"
                       placeholder="Digite sua resposta..."
-                      rows={2}
+                      className="border rounded p-2 w-full"
                     />
-                    <div className="mt-2 flex justify-end gap-2">
-                      <button
-                        onClick={() => {
-                          setReplyText('');
-                          setReplying(null);
-                        }}
-                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        onClick={() => handleReply(pin.id)}
-                        disabled={!replyText.trim()}
-                        className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                      >
-                        Enviar
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Exibir respostas apenas quando showReplies[pin.id] for true */}
-                {showReplies[pin.id] && pin.reactions && pin.reactions.length > 0 && (
-                  <div className="mt-3 pl-4 border-l-2 border-gray-200">
-                    {pin.reactions.map((reaction) => (
-                      <div key={reaction.id} className="mt-2 text-sm">
-                        <div className="text-gray-700">{reaction.reaction_type}</div>
-                        <div className="text-xs text-gray-500">
-                          {formatDateTime(reaction.created_at)}
-                        </div>
-                      </div>
-                    ))}
+                    <button
+                      onClick={() => handleReply(pin.id)}
+                      className="mt-2 bg-blue-500 text-white rounded px-4 py-2"
+                    >
+                      Enviar
+                    </button>
                   </div>
                 )}
               </div>

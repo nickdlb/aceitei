@@ -26,6 +26,7 @@ export default function Page() {
         page_number: number;
     }>>([]);
     const router = useRouter();
+    const [showAuthPopup, setShowAuthPopup] = useState(false);
 
     console.log('ID da página:', pageId);
 
@@ -114,8 +115,6 @@ export default function Page() {
         handleCommentSave,
         handleDeletePin,
         updatePinPosition,
-        showAuthPopup,
-        setShowAuthPopup,
         handleAuth,
         loadComments
     } = usePins(pageId, session);
@@ -173,7 +172,8 @@ export default function Page() {
         setEditingPinId,
         userNames,
         session,
-        loadComments
+        loadComments,
+        setShowAuthPopup
     };
 
     const imageAreaProps = {
@@ -213,11 +213,13 @@ export default function Page() {
                 )}
             </div>
 
-            <AuthPopup
-                isOpen={showAuthPopup}
-                onClose={() => setShowAuthPopup(false)}
-                onSubmit={handleAuth}
-            />
+            {showAuthPopup && (
+                <AuthPopup
+                    isOpen={showAuthPopup}
+                    onClose={() => setShowAuthPopup(false)}
+                    onSubmit={handleAuth}
+                />
+            )}
         </div>
     );
 }

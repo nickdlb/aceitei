@@ -88,7 +88,7 @@ export const usePins = (pageId: string, session: any) => {
                     }));
 
                     setPins(pinsData || []);
-                    
+
                     // Garantir que o conteúdo dos comentários seja definido corretamente
                     const commentState = commentsData?.reduce((acc, comment) => ({
                         ...acc,
@@ -96,12 +96,12 @@ export const usePins = (pageId: string, session: any) => {
                     }), {} as { [key: string]: string });
 
                     setComments(commentState || {});
-                    
+
                     // Verificar se há comentários sem conteúdo e tentar novamente se necessário
-                    const hasEmptyComments = commentsData?.some(comment => 
+                    const hasEmptyComments = commentsData?.some(comment =>
                         comment.content === undefined || comment.content === null
                     );
-                    
+
                     if (hasEmptyComments && loadAttempts < 3) {
                         setTimeout(() => {
                             setLoadAttempts(prev => prev + 1);
@@ -213,44 +213,44 @@ export const usePins = (pageId: string, session: any) => {
 
     const checkPermissions = async (pin: Pin) => {
         if (!session?.user?.id) {
-          // Se não houver usuário na sessão, não tem permissão.
-          return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
+            // Se não houver usuário na sessão, não tem permissão.
+            return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
         }
-      
+
         // 1. Busque o documento (página) no Supabase
         const { data: documentData, error: documentError } = await supabase
-          .from('pages')
-          .select('user_id')
-          .eq('id', pin.page_id)  // Certifique-se que "id" é a chave primária da página
-          .single();
-      
+            .from('pages')
+            .select('user_id')
+            .eq('id', pin.page_id)  // Certifique-se que "id" é a chave primária da página
+            .single();
+
         if (documentError) {
-          console.error("Erro ao buscar o documento:", documentError);
-          throw documentError;
+            console.error("Erro ao buscar o documento:", documentError);
+            throw documentError;
         }
-      
+
         const isDocumentOwner = documentData?.user_id === session.user.id;
-      
+
         // 2. Busque o pin (comentário) no Supabase
         const { data: pinData, error: pinError } = await supabase
-          .from('comments')
-          .select('user_id')
-          .eq('id', pin.id)
-          .single();
-      
+            .from('comments')
+            .select('user_id')
+            .eq('id', pin.id)
+            .single();
+
         if (pinError) {
-          console.error("Erro ao buscar o pin:", pinError);
-          throw pinError;
+            console.error("Erro ao buscar o pin:", pinError);
+            throw pinError;
         }
-      
+
         const isCommentOwner = pinData?.user_id === session.user.id;
-      
+
         // Se o usuário for dono do documento ou do comentário, ele tem permissão.
         const hasPermission = isDocumentOwner || isCommentOwner;
-      
+
         return { isDocumentOwner, isCommentOwner, hasPermission };
-      };
-      
+    };
+
 
     // Ajustar handleStatusChange
     const handleStatusChange = async (pinId: string) => {
@@ -285,7 +285,7 @@ export const usePins = (pageId: string, session: any) => {
     const loadComments = async () => {
         try {
             console.log('Iniciando carregamento de comentários...');
-            
+
             // Primeiro carregamos os comentários
             const { data: commentsData, error: commentsError } = await supabase
                 .from('comments')
@@ -304,7 +304,7 @@ export const usePins = (pageId: string, session: any) => {
 
             // Extrair os IDs dos comentários para filtrar as reações
             const commentIds = commentsData.map(comment => comment.id);
-            
+
             // Carregar apenas as reações relacionadas a esses comentários
             const { data: reactionsData, error: reactionsError } = await supabase
                 .from('comment_reactions')
@@ -317,7 +317,7 @@ export const usePins = (pageId: string, session: any) => {
 
             // Mapeamos as reações para cada comentário
             const commentReactionsMap = new Map();
-            
+
             if (reactionsData) {
                 // Agrupar reações por comment_id
                 reactionsData.forEach(reaction => {
@@ -332,9 +332,9 @@ export const usePins = (pageId: string, session: any) => {
             const pinsData = commentsData.map(comment => {
                 // Obter reações para este comentário
                 const reactions = commentReactionsMap.get(comment.id) || [];
-                
+
                 console.log(`Comentário ${comment.id} tem ${reactions.length} reações`);
-                
+
                 return {
                     id: comment.id,
                     x: comment.pos_x,
@@ -348,11 +348,11 @@ export const usePins = (pageId: string, session: any) => {
                     reactions: reactions
                 };
             });
-            
+
             console.log('Pins com reações:', pinsData);
-            
+
             setPins(pinsData);
-            
+
             const commentState: { [key: string]: string } = {};
             commentsData.forEach(comment => {
                 commentState[comment.id] = comment.content || '';
@@ -370,42 +370,42 @@ export const usePins = (pageId: string, session: any) => {
     // Ajustar handleCommentSave
     const handleCommentSave = async (pinId: string) => {
         try {
-          const pin = pins.find(p => p.id === pinId);
-          if (!pin) return;
-      
-          const { hasPermission } = await checkPermissions(pin);
-          if (!hasPermission) {
-            alert('Você não tem permissão para editar este comentário.');
-            return;
-          }
-      
-          const comment = comments[pinId];
-          if (!comment) return;
-      
-          const { error } = await supabase
-            .from('comments')
-            .update({ content: comment })
-            .eq('id', pinId);
-      
-          if (error) throw error;
-      
-          // Atualizar o pin localmente também
-          setPins(prevPins => prevPins.map(p => 
-            p.id === pinId ? { ...p, comment: comment } : p
-          ));
-          
-          setEditingPinId(null);
-          
-          // Forçar recarregamento completo
-          await loadComments();
-          setRefreshKey(prev => prev + 1);
-      
+            const pin = pins.find(p => p.id === pinId);
+            if (!pin) return;
+
+            const { hasPermission } = await checkPermissions(pin);
+            if (!hasPermission) {
+                alert('Você não tem permissão para editar este comentário.');
+                return;
+            }
+
+            const comment = comments[pinId];
+            if (!comment) return;
+
+            const { error } = await supabase
+                .from('comments')
+                .update({ content: comment })
+                .eq('id', pinId);
+
+            if (error) throw error;
+
+            // Atualizar o pin localmente também
+            setPins(prevPins => prevPins.map(p =>
+                p.id === pinId ? { ...p, comment: comment } : p
+            ));
+
+            setEditingPinId(null);
+
+            // Forçar recarregamento completo
+            await loadComments();
+            setRefreshKey(prev => prev + 1);
+
         } catch (error: any) {
-          console.error("Erro ao salvar comentário:", error.message);
-          alert(error.message || 'Erro ao salvar comentário');
+            console.error("Erro ao salvar comentário:", error.message);
+            alert(error.message || 'Erro ao salvar comentário');
         }
     };
-      
+
 
     const handleDeletePin = async (pinId: string) => {
         try {
