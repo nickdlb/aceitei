@@ -358,9 +358,9 @@ const CommentBar = ({
               <div key={pin.id} className="bg-white rounded-lg p-4 shadow">
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-black">{pin.num}</span>
+                    <span className="text-black text-xs">{pin.num}</span>
                     <span
-                      className={`text-xs px-2 py-1 rounded ${pin.status === 'ativo'
+                      className={`text-xs px-1 py-1 rounded ${pin.status === 'ativo'
                         ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-green-100 text-green-800'
                         }`}
@@ -373,72 +373,20 @@ const CommentBar = ({
                     {userNames[pin.user_id] && (
                       <span className="text-xs font-medium text-gray-700">{userNames[pin.user_id]}</span>
                     )}
-                    {permissions[pin.id] && (
-                      <button
-                        onClick={() => handleDeletePin(pin.id)}
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <XMarkIcon className="w-4 h-4" />
-                      </button>
-                    )}
                   </div>
                 </div>
 
-                {editingPinId === pin.id ? (
-                  <div>
-                    <textarea
-                      value={comments[pin.id] || ''}
-                      onChange={(e) => handleCommentChange(pin.id, e.target.value)}
-                      onKeyPress={(e) => handleKeyPress(e, pin.id)}
-                      className="w-full p-2 border rounded mb-2 min-h-[60px] resize-none text-sm"
-                      placeholder="Comentário..."
-                      autoFocus
-                    />
-                    <button
-                      onClick={() => handleCommentSave(pin.id)}
-                      disabled={!comments[pin.id]?.trim()}
-                      className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
-                    >
-                      Confirmar
-                    </button>
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    {/* Usar o conteúdo do estado comments se pin.comment estiver vazio */}
+                    <p className="text-sm text-gray-700">
+                      {pin.comment || comments[pin.id] || ''}
+                    </p>
                   </div>
-                ) : (
-                  <div className="flex justify-between items-start">
-                    <div className="flex flex-col">
-                      {/* Usar o conteúdo do estado comments se pin.comment estiver vazio */}
-                      <p className="text-sm text-gray-700">
-                        {pin.comment || comments[pin.id] || ''}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      {permissions[pin.id] && (
-                        <button
-                          onClick={() => setEditingPinId(pin.id)}
-                          className="text-gray-500 hover:text-gray-700"
-                        >
-                          <PencilIcon className="w-4 h-4" />
-                        </button>
-                      )}
-                      {permissions[pin.id] && (
-                        <button
-                          onClick={() => handleStatusChange(pin.id)}
-                          className={`${pin.status === 'ativo'
-                            ? 'text-yellow-500 hover:text-yellow-600'
-                            : 'text-green-500 hover:text-green-600'
-                            }`}
-                        >
-                          {pin.status === 'ativo' ? (
-                            <CheckIcon className="w-4 h-4" />
-                          ) : (
-                            <CogIcon className="w-4 h-4" />
-                          )}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
+                </div>
 
-                <div className="mt-2 flex items-center gap-2">
+                {/* Nova div para os botões e o botão "Ver Respostas" */}
+                <div className="flex justify-between items-center mt-2">
                   <button
                     onClick={() => toggleReplies(pin.id)}
                     className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
@@ -450,6 +398,32 @@ const CommentBar = ({
                         ? `Ver respostas (${pin.reactions.length})`
                         : 'Responder'}
                   </button>
+                  {permissions[pin.id] && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingPinId(pin.id)}
+                        className="text-black hover:text-gray-700"
+                      >
+                        <PencilIcon className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange(pin.id)}
+                        className="text-black hover:text-gray-700"
+                      >
+                        {pin.status === 'ativo' ? (
+                          <CheckIcon className="w-4 h-4" />
+                        ) : (
+                          <CogIcon className="w-4 h-4" />
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleDeletePin(pin.id)}
+                        className="text-black hover:text-gray-700"
+                      >
+                        <XMarkIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {showReplies[pin.id] && (
