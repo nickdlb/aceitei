@@ -285,13 +285,15 @@ export const usePins = (pageId: string, session: any) => {
         try {
             const { data, error } = await supabase
                 .from('comments')
-                .select('*')
+                .select(`
+                    *,
+                    reactions:comment_reactions(*)
+                `)
                 .eq('page_id', pageId);
 
             if (error) throw error;
 
             if (data) {
-                // Atualizar pins com os dados completos
                 const pinsData = data.map(comment => ({
                     id: comment.id,
                     x: comment.pos_x,
@@ -301,12 +303,12 @@ export const usePins = (pageId: string, session: any) => {
                     created_at: comment.created_at,
                     status: comment.status,
                     user_id: comment.user_id,
-                    page_id: comment.page_id
+                    page_id: comment.page_id,
+                    reactions: comment.reactions || []
                 }));
                 
                 setPins(pinsData);
                 
-                // Garantir que o conteúdo dos comentários seja definido corretamente
                 const commentState: { [key: string]: string } = {};
                 data.forEach(comment => {
                     commentState[comment.id] = comment.content || '';
@@ -487,6 +489,7 @@ export const usePins = (pageId: string, session: any) => {
         handleDeletePin,
         updatePinPosition,
         setShowAuthPopup,
-        handleAuth
+        handleAuth,
+        loadComments
     };
 };

@@ -31,6 +31,7 @@ export interface CommentSidebarProps {
     setEditingPinId: (pinId: string | null) => void;
     userNames: { [key: string]: string };
     session: Session | null;
+    loadComments: () => Promise<void>;
 }
 
 export interface CommentItemProps {

@@ -114,7 +114,8 @@ export default function Page() {
         updatePinPosition,
         showAuthPopup,
         setShowAuthPopup,
-        handleAuth
+        handleAuth,
+        loadComments
     } = usePins(pageId, session);
 
     const handlePageChange = async (newPageId: string) => {
@@ -169,7 +170,8 @@ export default function Page() {
         handleStatusChange,
         setEditingPinId,
         userNames,
-        session
+        session,
+        loadComments
     };
 
     const imageAreaProps = {

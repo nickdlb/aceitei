@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { formatDate } from '@/utils/formatDate';
 import { Pin } from '@/types/Pin';
-import { PencilIcon, CheckIcon, CogIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, CheckIcon, CogIcon, XMarkIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import SidebarFooter from '../sidebar/SidebarFooter';
 import { CommentSidebarProps } from '@/types/comments';
 import { supabase } from '@/utils/supabaseClient';
@@ -20,7 +20,8 @@ const CommentBar = ({
   handleStatusChange,
   setEditingPinId,
   userNames,
-  session
+  session,
+  loadComments
 }: CommentSidebarProps) => {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -54,6 +55,8 @@ const CommentBar = ({
 
   const [permissions, setPermissions] = useState<{ [key: string]: boolean }>({});
   const [isPageOwner, setIsPageOwner] = useState(false);
+  const [replying, setReplying] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
 
   useEffect(() => {
     const loadPermissions = async () => {
@@ -76,10 +79,10 @@ const CommentBar = ({
   useEffect(() => {
     // Verificar se há pins sem comentários visíveis
     const checkComments = () => {
-      const hasEmptyComments = pins.some(pin => 
+      const hasEmptyComments = pins.some(pin =>
         !pin.comment && comments[pin.id]
       );
-      
+
       if (hasEmptyComments) {
         // Se encontrar comentários vazios mas que deveriam ter conteúdo,
         // atualizar os pins localmente
@@ -87,16 +90,74 @@ const CommentBar = ({
           ...pin,
           comment: comments[pin.id] || pin.comment || ''
         }));
-        
+
         // Esta é uma solução temporária para forçar a re-renderização
         console.log('Atualizando pins com comentários do estado comments');
       }
     };
-    
+
     // Verificar após um curto período
     const timer = setTimeout(checkComments, 500);
     return () => clearTimeout(timer);
   }, [pins, comments]);
+
+  const handleReply = async (pinId: string) => {
+    if (!replyText.trim() || !session?.user?.id) return;
+
+    try {
+      // Primeiro verificar se o usuário tem permissão
+      const hasPermission = await checkPermissions(pins.find(p => p.id === pinId) as Pin);
+      if (!hasPermission) {
+        alert('Você não tem permissão para responder este comentário.');
+        return;
+      }
+
+      // Verificar se já existe uma reação deste usuário
+      const { data: existingReaction } = await supabase
+        .from('comment_reactions')
+        .select()
+        .eq('comment_id', pinId)
+        .eq('user_id', session.user.id)
+        .single();
+
+      let error;
+      if (existingReaction) {
+        // Se já existe, atualiza
+        ({ error } = await supabase
+          .from('comment_reactions')
+          .update({
+            reaction_type: replyText,
+            created_at: new Date().toISOString()
+          })
+          .eq('comment_id', pinId)
+          .eq('user_id', session.user.id));
+      } else {
+        // Se não existe, insere
+        ({ error } = await supabase
+          .from('comment_reactions')
+          .insert({
+            comment_id: pinId,
+            user_id: session.user.id,
+            reaction_type: replyText,
+            created_at: new Date().toISOString()
+          }));
+      }
+
+      if (error) {
+        console.error('Erro detalhado:', error);
+        throw error;
+      }
+
+      // Limpar o estado e atualizar
+      setReplyText('');
+      setReplying(null);
+      await loadComments();
+
+    } catch (error: any) {
+      console.error('Erro ao adicionar resposta:', error);
+      alert(`Erro ao adicionar resposta: ${error.message || 'Erro desconhecido'}`);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full bg-gray-100 border-r border-gray-300"> {/* Classes restauradas e importantes! */}
@@ -115,21 +176,19 @@ const CommentBar = ({
           <div className="flex gap-2">
             <button
               onClick={() => setStatusFilter('ativo')}
-              className={`px-3 py-1 rounded text-sm ${
-                statusFilter === 'ativo'
+              className={`px-3 py-1 rounded text-sm ${statusFilter === 'ativo'
                   ? 'bg-yellow-500 text-white'
                   : 'bg-gray-100 text-gray-600'
-              }`}
+                }`}
             >
               Ativos
             </button>
             <button
               onClick={() => setStatusFilter('resolvido')}
-              className={`px-3 py-1 rounded text-sm ${
-                statusFilter === 'resolvido'
+              className={`px-3 py-1 rounded text-sm ${statusFilter === 'resolvido'
                   ? 'bg-green-500 text-white'
                   : 'bg-gray-100 text-gray-600'
-              }`}
+                }`}
             >
               Resolvidos
             </button>
@@ -150,11 +209,10 @@ const CommentBar = ({
                   <div className="flex items-center gap-2">
                     <span className="text-black">{pin.num}</span>
                     <span
-                      className={`text-xs px-2 py-1 rounded ${
-                        pin.status === 'ativo'
+                      className={`text-xs px-2 py-1 rounded ${pin.status === 'ativo'
                           ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-green-100 text-green-800'
-                      }`}
+                        }`}
                     >
                       {pin.status === 'ativo' ? 'Ativo' : 'Resolvido'}
                     </span>
@@ -213,11 +271,10 @@ const CommentBar = ({
                       {permissions[pin.id] && (
                         <button
                           onClick={() => handleStatusChange(pin.id)}
-                          className={`${
-                            pin.status === 'ativo'
+                          className={`${pin.status === 'ativo'
                               ? 'text-yellow-500 hover:text-yellow-600'
                               : 'text-green-500 hover:text-green-600'
-                          }`}
+                            }`}
                         >
                           {pin.status === 'ativo' ? (
                             <CheckIcon className="w-4 h-4" />
@@ -227,6 +284,59 @@ const CommentBar = ({
                         </button>
                       )}
                     </div>
+                  </div>
+                )}
+
+                <div className="mt-2 flex items-center gap-2">
+                  <button
+                    onClick={() => setReplying(replying === pin.id ? null : pin.id)}
+                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                  >
+                    <ChatBubbleLeftIcon className="w-4 h-4" />
+                    Responder
+                  </button>
+                </div>
+
+                {replying === pin.id && (
+                  <div className="mt-3">
+                    <textarea
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      className="w-full p-2 border rounded-md text-sm"
+                      placeholder="Digite sua resposta..."
+                      rows={2}
+                    />
+                    <div className="mt-2 flex justify-end gap-2">
+                      <button
+                        onClick={() => {
+                          setReplyText('');
+                          setReplying(null);
+                        }}
+                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        onClick={() => handleReply(pin.id)}
+                        disabled={!replyText.trim()}
+                        className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        Enviar
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {pin.reactions && pin.reactions.length > 0 && (
+                  <div className="mt-3 pl-4 border-l-2 border-gray-200">
+                    {pin.reactions.map((reaction) => (
+                      <div key={reaction.id} className="mt-2 text-sm">
+                        <div className="text-gray-700">{reaction.reaction_type}</div>
+                        <div className="text-xs text-gray-500">
+                          {formatDateTime(reaction.created_at)}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
