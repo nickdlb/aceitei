@@ -118,30 +118,54 @@ const CommentBar = ({
 
   useEffect(() => {
     const loadUserNames = async () => {
+      // Cria um conjunto de todos os IDs de usuários que precisamos buscar
+      const userIds = new Set<string>();
+
+      // Adiciona o usuário da sessão atual
       if (session?.user?.id) {
-        const { data, error } = await supabase
+        userIds.add(session.user.id);
+      }
+
+      // Adiciona os usuários que criaram os pins
+      pins.forEach(pin => {
+        if (pin.user_id) userIds.add(pin.user_id);
+
+        // Adiciona os usuários que criaram reações
+        if (pin.reactions) {
+          pin.reactions.forEach(reaction => {
+            if (reaction.user_id) userIds.add(reaction.user_id);
+          });
+        }
+      });
+
+      // Busca os nomes de todos os usuários identificados
+      for (const userId of userIds) {
+        // Buscar na tabela users
+        const { data: userData, error: userError } = await supabase
           .from('users')
           .select('nome')
-          .eq('user_id', session.user.id)
+          .eq('user_id', userId)
           .single();
 
-        if (error) {
-          console.error('Erro ao buscar nome do usuário:', error);
-          return;
-        }
-
-        if (data) {
-          // Armazene o nome do usuário em um estado
+        if (userError || !userData || !userData.nome) {
+          console.error(`Erro ao buscar nome do usuário ${userId}:`, userError);
+          // Usa nome padrão se não encontrou
           setUserNames(prev => ({
             ...prev,
-            [session.user.id]: data.nome || 'Usuário Anônimo',
+            [userId]: 'Usuário Anônimo',
+          }));
+        } else {
+          // Armazena o nome encontrado na tabela users
+          setUserNames(prev => ({
+            ...prev,
+            [userId]: userData.nome || 'Usuário Anônimo',
           }));
         }
       }
     };
 
     loadUserNames();
-  }, [session]);
+  }, [pins, session]);
 
   const handleReply = async (pinId: string) => {
     if (!replyText.trim()) return;
@@ -184,6 +208,14 @@ const CommentBar = ({
       [pinId]: !prev[pinId]
     }));
     // Não limpar o texto da resposta aqui
+  };
+
+  // Adicionar esta função para lidar com o pressionamento de tecla
+  const handleReplyKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleReply(pinId);
+    }
   };
 
   // Componente para renderizar uma única resposta
@@ -249,6 +281,7 @@ const CommentBar = ({
             <textarea
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
+              onKeyPress={(e) => handleReplyKeyPress(e, parentId)}
               className="w-full p-2 border rounded-md text-sm"
               placeholder="Digite sua resposta..."
               rows={2}
@@ -337,8 +370,8 @@ const CommentBar = ({
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>
-                    {userNames[pin.id] && (
-                      <span className="text-xs text-gray-500">{userNames[pin.id]}</span>
+                    {userNames[pin.user_id] && (
+                      <span className="text-xs text-gray-500">{userNames[pin.user_id]}</span>
                     )}
                     {permissions[pin.id] && (
                       <button
@@ -442,6 +475,7 @@ const CommentBar = ({
                     <textarea
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
+                      onKeyPress={(e) => handleReplyKeyPress(e, pin.id)}
                       placeholder="Digite sua resposta..."
                       className="border rounded p-2 w-full"
                     />
