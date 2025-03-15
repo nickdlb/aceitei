@@ -19,7 +19,6 @@ const CommentBar = ({
   handleDeletePin,
   handleStatusChange,
   setEditingPinId,
-  userNames,
   session,
   loadComments,
   setShowAuthPopup
@@ -59,6 +58,7 @@ const CommentBar = ({
   const [replying, setReplying] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [showReplies, setShowReplies] = useState<{ [key: string]: boolean }>({});
+  const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const loadPermissions = async () => {
@@ -115,6 +115,33 @@ const CommentBar = ({
     });
     setShowReplies(initialShowReplies);
   }, [pins]);
+
+  useEffect(() => {
+    const loadUserNames = async () => {
+      if (session?.user?.id) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('nome')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (error) {
+          console.error('Erro ao buscar nome do usuário:', error);
+          return;
+        }
+
+        if (data) {
+          // Armazene o nome do usuário em um estado
+          setUserNames(prev => ({
+            ...prev,
+            [session.user.id]: data.nome || 'Usuário Anônimo',
+          }));
+        }
+      }
+    };
+
+    loadUserNames();
+  }, [session]);
 
   const handleReply = async (pinId: string) => {
     if (!replyText.trim()) return;
