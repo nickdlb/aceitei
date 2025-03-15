@@ -14,7 +14,7 @@ import AuthPopup from '@/components/auth/AuthPopup';
 
 export default function Page() {
     const params = useParams();
-    const pageId = params.id as string;
+    const pageId = params ? (params.id as string) : "";
     const { session } = useAuth();
     const imageRef = useRef<HTMLImageElement>(null);
     const [isPagesOpen, setIsPagesOpen] = useState(true);
@@ -162,7 +162,11 @@ export default function Page() {
     const commentBarProps = {
         pins: filteredPins,
         statusFilter,
-        setStatusFilter,
+        setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => {
+            if (filter !== null) {
+                setStatusFilter(filter);
+            }
+        },
         editingPinId,
         comments,
         handleCommentChange,
