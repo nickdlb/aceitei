@@ -371,7 +371,7 @@ const CommentBar = ({
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>
                     {userNames[pin.user_id] && (
-                      <span className="text-xs text-gray-500">{userNames[pin.user_id]}</span>
+                      <span className="text-xs font-medium text-gray-700">{userNames[pin.user_id]}</span>
                     )}
                     {permissions[pin.id] && (
                       <button
