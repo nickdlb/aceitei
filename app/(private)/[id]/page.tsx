@@ -68,7 +68,7 @@ export default function Page() {
                     .single();
 
                 if (!page) {
-                  console.error('Page not found');
+                    console.error('Page not found');
                     return;
                 }
 
@@ -120,9 +120,23 @@ export default function Page() {
     const handlePageChange = async (newPageId: string) => {
         router.push(`/${newPageId}`, { scroll: false });
     };
-     const handleTitleUpdate = async (newTitle: string) => {
+    const handleTitleUpdate = async (newTitle: string) => {
         if (pageData) {
-            setPageData({ ...pageData, imageTitle: newTitle });
+            try {
+                const { error } = await supabase
+                    .from('pages')
+                    .update({ imageTitle: newTitle })
+                    .eq('id', pageId);
+
+                if (error) {
+                    console.error('Erro ao atualizar o título:', error);
+                    return;
+                }
+
+                setPageData({ ...pageData, imageTitle: newTitle });
+            } catch (error) {
+                console.error('Erro na atualização do título:', error);
+            }
         }
     };
 
@@ -177,29 +191,29 @@ export default function Page() {
 
 
     return (
-      <div className="w-full h-screen flex">
-        {/* Sidebar de Comentários */}
-        <div className="w-96 flex-shrink-0 bg-gray-100 border-r border-gray-300"> {/* Mantém a largura fixa aqui */}
-          <CommentBar {...commentBarProps} />
-        </div>
+        <div className="w-full h-screen flex">
+            {/* Sidebar de Comentários */}
+            <div className="w-96 flex-shrink-0 bg-gray-100 border-r border-gray-300"> {/* Mantém a largura fixa aqui */}
+                <CommentBar {...commentBarProps} />
+            </div>
 
-        {/* Conteúdo Principal */}
-        <div className="flex-1 flex">
-          <ImageArea {...imageAreaProps} />
-          {pages.length > 1 && isPagesOpen && (
-            <ImageSidebar
-              pages={pages}
-              currentPage={pageId}
-              onPageChange={handlePageChange}
+            {/* Conteúdo Principal */}
+            <div className="flex-1 flex">
+                <ImageArea {...imageAreaProps} />
+                {pages.length > 1 && isPagesOpen && (
+                    <ImageSidebar
+                        pages={pages}
+                        currentPage={pageId}
+                        onPageChange={handlePageChange}
+                    />
+                )}
+            </div>
+
+            <AuthPopup
+                isOpen={showAuthPopup}
+                onClose={() => setShowAuthPopup(false)}
+                onSubmit={handleAuth}
             />
-          )}
         </div>
-
-        <AuthPopup
-          isOpen={showAuthPopup}
-          onClose={() => setShowAuthPopup(false)}
-          onSubmit={handleAuth}
-        />
-      </div>
     );
 }

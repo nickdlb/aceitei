@@ -124,9 +124,8 @@ const ImageArea: React.FC<ImageAreaProps> = ({
           </button>
           <button
             onClick={onTogglePages}
-            className={`p-2 hover:bg-gray-100 rounded-full transition-colors ${
-                isPagesOpen ? 'bg-gray-100' : ''
-            }`}
+            className={`p-2 hover:bg-gray-100 rounded-full transition-colors ${isPagesOpen ? 'bg-gray-100' : ''
+              }`}
             title={isPagesOpen ? "Ocultar páginas" : "Mostrar páginas"}
           >
             <DocumentDuplicateIcon className="w-5 h-5 text-gray-600" />
