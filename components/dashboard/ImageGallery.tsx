@@ -67,14 +67,23 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         return Boolean(image && image.id && (image.image_url || image.url));
     });
 
+    // No início da função de ordenação
+    console.log('Valor atual do sortOrder:', sortOrder);
+    console.log('Cards antes da ordenação:', validImages);
+
     // Ordenar imagens
     const sortedImages = [...validImages].sort((a, b) => {
         if (sortOrder === 'date') {
             return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        } else if (sortOrder === 'title') {
+            const titleA = (a.imageTitle || a.title || '').toLowerCase();
+            const titleB = (b.imageTitle || b.title || '').toLowerCase();
+            return titleA.localeCompare(titleB);
         }
-        // Adicione outros tipos de ordenação aqui se necessário
         return 0;
     });
+
+    console.log('Cards após ordenação:', sortedImages);
 
     // Filtrar por termo de busca
     const filteredImages = sortedImages.filter(image => {
