@@ -16,6 +16,7 @@ import { handleCommentChange } from '@/utils/handleCommentChange';
 import { handleCommentSave } from '@/utils/handleCommentSave';
 import { handleDeletePin } from '@/utils/handleDeletePin';
 import { type Page as DocumentPage } from '@/types/Document';
+import { handleAuth } from '@/utils/handleAuth';
 
 export default function Page() {
     const params = useParams();
@@ -117,7 +118,6 @@ export default function Page() {
         updatePinPosition,
         showAuthPopup,
         setShowAuthPopup,
-        handleAuth,
         loadComments
     } = usePins(pageId, session);
 
@@ -271,6 +271,10 @@ export default function Page() {
         isPagesOpen: isPagesOpen
     };
 
+    const handleAuthSubmit = async (name: string, email: string) => {
+        await handleAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
+    };
+
 
     return (
         <div className="w-full h-screen flex">
@@ -293,7 +297,7 @@ export default function Page() {
             <AuthPopup
                 isOpen={showAuthPopup}
                 onClose={() => setShowAuthPopup(false)}
-                onSubmit={handleAuth}
+                onSubmit={handleAuthSubmit}
             />
         </div>
     );

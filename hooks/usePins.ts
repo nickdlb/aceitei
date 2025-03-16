@@ -7,6 +7,7 @@ import { Comment } from '@/types/Document';
 import { CommentReaction } from '@/types/CommentReaction';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { checkPermissions } from '@/utils/checkPermissions';
+import { handleAuth } from '@/utils/handleAuth';
 
 interface PageWithDocument {
     documents: {
@@ -236,50 +237,6 @@ export const usePins = (pageId: string, session: any) => {
         }
     };
 
-    const handleAuth = async (name: string, email: string) => {
-        try {
-            const { data: { session }, error: authError } = await supabase.auth.signInAnonymously();
-
-            if (authError) throw authError;
-            if (!session) throw new Error('Falha ao criar sessão anônima');
-
-            const { error: userError } = await supabase
-                .from('anonymous_users')
-                .insert([
-                    {
-                        auth_id: session.user.id,
-                        name: name,
-                        email: email
-                    }
-                ]);
-
-            if (userError) throw userError;
-
-            if (pendingClick) {
-                await handleImageClickUtil(
-                    pendingClick.x, 
-                    pendingClick.y, 
-                    pageId, 
-                    pins, 
-                    setPins, 
-                    setComments, 
-                    setEditingPinId, 
-                    statusFilter, 
-                    setStatusFilter, 
-                    setPendingClick, 
-                    setShowAuthPopup
-                );
-                setPendingClick(null);
-            }
-
-            setShowAuthPopup(false);
-
-        } catch (error: any) {
-            console.error('Erro ao criar usuário anônimo:', error.message);
-            throw new Error('Não foi possível criar o usuário. Tente novamente.');
-        }
-    };
-
     useEffect(() => {
         if (pageId) {
             console.log('Carregando comentários para a página:', pageId);
@@ -303,7 +260,7 @@ export const usePins = (pageId: string, session: any) => {
         setIsDragging,
         updatePinPosition,
         setShowAuthPopup,
-        handleAuth,
+        handleAuth: (name: string, email: string) => handleAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil),
         loadComments,
     };
 };
