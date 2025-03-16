@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CommentReaction } from '@/types/CommentReaction';
 import { supabase } from '@/utils/supabaseClient';
 
 interface CommentItemProps {
@@ -90,4 +91,4 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, ...props }) => {
             )}
         </div>
     );
-}; 
+};
