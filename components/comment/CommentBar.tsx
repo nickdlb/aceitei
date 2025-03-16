@@ -299,6 +299,7 @@ const CommentBar = ({
       };
       handleReplyLocal(pinId);
     }
+    // Note: The ESC key handling for replies is now in CommentListItem component
   };
 
   return (

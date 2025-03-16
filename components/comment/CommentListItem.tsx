@@ -52,6 +52,19 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       await handleCommentSave(pinId);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      // Check if this is a new pin (empty comment)
+      const commentText = localComments[pinId]?.trim() || '';
+      const pinComment = pin.comment?.trim() || '';
+      
+      if (!pinComment && !commentText) {
+        // If it's a new pin with no comment, delete it
+        await handleDeletePin(pinId);
+      } else {
+        // Otherwise just discard the edit
+        setEditingPinId(null);
+      }
     }
   };
 
@@ -90,7 +103,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           <textarea
             value={localComments[pin.id] || ''}
             onChange={(e) => handleCommentChange(pin.id, e.target.value)}
-            onKeyPress={(e) => handleKeyPress(e, pin.id)}
+            onKeyDown={(e) => handleKeyPress(e, pin.id)}
             className="w-full p-2 border rounded mb-2 min-h-[60px] resize-none text-sm"
             placeholder="Comentário..."
             autoFocus
@@ -174,7 +187,14 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           <textarea
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
-            onKeyPress={(e) => handleReplyKeyPressLocal(e, pin.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                e.preventDefault();
+                toggleReplies(pin.id); // Close replies section when ESC is pressed
+              } else {
+                handleReplyKeyPressLocal(e, pin.id);
+              }
+            }}
             placeholder="Digite sua resposta..."
             className="border rounded p-2 w-full"
           />

@@ -135,6 +135,45 @@ export default function Page() {
         loadComments();
     };
 
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const handleDeletePinLocal = async (pinId: string) => {
+        await handleDeletePin(
+            pinId,
+            pins,
+            setPins,
+            setComments,
+            setEditingPinId,
+            setRefreshKey
+        );
+    };
+
+    // Add keyboard event listener for ESC key
+    useEffect(() => {
+        const handleKeyDown = async (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                // If a pin is being edited, cancel the edit
+                if (editingPinId) {
+                    // Find the pin being edited
+                    const editingPin = pins.find(pin => pin.id === editingPinId);
+                    
+                    // If it's a new pin (no comment) or empty comment, delete it
+                    if (editingPin && (!editingPin.comment || editingPin.comment.trim() === '')) {
+                        await handleDeletePinLocal(editingPinId);
+                    } else {
+                        // Otherwise just cancel the edit
+                        setEditingPinId(null);
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [editingPinId, setEditingPinId, pins, handleDeletePinLocal]);
+
     const handleImageClick = async (xPercent: number, yPercent: number) => {
         await handleImageClickUtil(
             xPercent,
@@ -157,8 +196,6 @@ export default function Page() {
         handleCommentChange(pinId, value, setComments);
     };
 
-    const [refreshKey, setRefreshKey] = useState(0);
-
     const handleCommentSaveLocal = async (pinId: string) => {
         await handleCommentSave(
             pinId,
@@ -179,17 +216,6 @@ export default function Page() {
             setPins,
             session,
             loadComments
-        );
-    };
-
-    const handleDeletePinLocal = async (pinId: string) => {
-        await handleDeletePin(
-            pinId,
-            pins,
-            setPins,
-            setComments,
-            setEditingPinId,
-            setRefreshKey
         );
     };
 
