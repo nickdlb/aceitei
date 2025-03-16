@@ -65,20 +65,28 @@ const CommentBar = ({
   };
 
   const handleDeletePin = async (pinId: string) => {
-    await handleDeletePinUtil(
-      pinId,
-      pins,
-      (pinsOrUpdater) => {
-        // This is a simplified implementation
-        loadComments();
-      },
-      (commentsOrUpdater) => {
-        // This is a simplified implementation
-        loadComments();
-      },
-      setEditingPinId,
-      setRefreshKey
-    );
+    try {
+      // Chama a função de utilidade com todos os argumentos necessários
+      await handleDeletePinUtil(
+        pinId,
+        pins,
+        (updatedPins) => {
+          // Não precisamos atualizar os pins aqui, pois loadComments fará isso
+          console.log('Pins atualizados:', updatedPins);
+        },
+        (updatedComments) => {
+          // Não precisamos atualizar os comentários aqui, pois loadComments fará isso
+          console.log('Comentários atualizados:', updatedComments);
+        },
+        setEditingPinId,
+        setRefreshKey
+      );
+      
+      // Após a exclusão, recarrega os comentários para garantir sincronização
+      await loadComments();
+    } catch (error) {
+      console.error("Erro ao deletar pin:", error);
+    }
   };
 
   const handleStatusChange = async (pinId: string) => {

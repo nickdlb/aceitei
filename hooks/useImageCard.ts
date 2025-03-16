@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/imageUrl';
 import { useImages } from '@/contexts/ImagesContext';
+import { deleteCard } from '@/utils/deleteCard';
 
 export const useImageCard = (image: any, onDelete: (id: string) => void) => {
     const [isDeleting, setIsDeleting] = useState(false);
@@ -49,9 +50,20 @@ export const useImageCard = (image: any, onDelete: (id: string) => void) => {
 
         setIsDeleting(true);
         try {
-            // ... (manter a lógica de delete)
+            const result = await deleteCard(image.document_id, image.image_url);
+            
+            if (result.success) {
+                // Notificar o componente pai sobre a exclusão bem-sucedida
+                onDelete(image.id);
+                
+                // Atualizar a lista de imagens no contexto global
+                await refreshImages();
+            } else {
+                alert(`Falha ao excluir: ${result.message}`);
+            }
         } catch (error) {
             console.error('Erro ao deletar documento:', error);
+            alert('Ocorreu um erro ao excluir o documento. Por favor, tente novamente.');
         } finally {
             setIsDeleting(false);
         }

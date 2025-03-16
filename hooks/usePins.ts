@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Pin } from '@/types/Pin';
 import { supabase } from '@/utils/supabaseClient';
-import loadPins from '@/utils/loadPins';
-import { insertPin } from '@/utils/insertPinSupa';
-import { Comment } from '@/types/Document';
-import { CommentReaction } from '@/types/CommentReaction';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
-import { checkPermissions } from '@/utils/checkPermissions';
 import { handleAuth } from '@/utils/handleAuth';
 
 interface PageWithDocument {
@@ -29,6 +24,21 @@ export const usePins = (pageId: string, session: any) => {
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [loadAttempts, setLoadAttempts] = useState(0);
 
+    const loadPins = async (pageId: string) => {
+        try {
+            const { data, error } = await supabase
+                .from('comments')
+                .select('*')
+                .eq('page_id', pageId);
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error loading pins:', error);
+            return null;
+        }
+    };
+
     useEffect(() => {
         const fetchPins = async () => {
             const { data, error } = await supabase
@@ -48,72 +58,7 @@ export const usePins = (pageId: string, session: any) => {
     }, [pageId]);
 
     useEffect(() => {
-        const loadPins = async () => {
-            if (pageId) {
-                try {
-                    console.log('Loading pins, attempt:', loadAttempts + 1);
-                    const query = supabase
-                        .from('comments')
-                        .select(`
-                            id,
-                            content,
-                            pos_x,
-                            pos_y,
-                            pin_number,
-                            status,
-                            created_at,
-                            user_id,
-                            page_id
-                        `)
-                        .eq('page_id', pageId)
-                        .order('pin_number', { ascending: true });
-
-                    const { data: commentsData, error } = await query;
-
-                    if (error) {
-                        console.error('Error loading comments:', error);
-                        console.error('Error details:', error.message, error.stack);
-                        throw error;
-                    }
-
-                    const pinsData = commentsData?.map(comment => ({
-                        id: comment.id,
-                        x: comment.pos_x,
-                        y: comment.pos_y,
-                        num: comment.pin_number,
-                        comment: comment.content,
-                        created_at: comment.created_at,
-                        status: comment.status,
-                        user_id: comment.user_id,
-                        page_id: comment.page_id
-                    }));
-
-                    setPins(pinsData || []);
-
-                    const commentState = commentsData?.reduce((acc, comment) => ({
-                        ...acc,
-                        [comment.id]: comment.content || ''
-                    }), {} as { [key: string]: string });
-
-                    setComments(commentState || {});
-
-                    const hasEmptyComments = commentsData?.some(comment =>
-                        comment.content === undefined || comment.content === null
-                    );
-
-                    if (hasEmptyComments && loadAttempts < 3) {
-                        setTimeout(() => {
-                            setLoadAttempts(prev => prev + 1);
-                        }, 1000);
-                    }
-                } catch (error: any) {
-                    console.error('Error loading comments:', error);
-                    console.error('Error details:', error.message, error.stack);
-                }
-            }
-        };
-
-        loadPins();
+        loadPins(pageId);
     }, [pageId, refreshKey, loadAttempts]);
 
     useEffect(() => {
@@ -219,7 +164,7 @@ export const usePins = (pageId: string, session: any) => {
 
             const updatedPins = await loadPins(pageId);
             if (updatedPins) {
-                const pinsFormatados = updatedPins.map(pin => ({
+                const pinsFormatados = updatedPins.map((pin: any) => ({
                     id: pin.id,
                     x: pin.pos_x,
                     y: pin.pos_y,
