@@ -13,18 +13,14 @@ interface ImageGalleryProps {
     images: any[];
 }
 
-const ImageGallery: React.FC<ImageGalleryProps> = ({
-    IsLoading,
-    sortOrder,
-    searchTerm,
-    images
-}) => {
+const ImageGallery: React.FC<ImageGalleryProps> = React.memo(({IsLoading, sortOrder, searchTerm, images}) => {
     const { refreshImages } = useImages();
     const [localImages, setLocalImages] = useState(images);
 
-    // Atualizar imagens locais quando as props mudarem
     useEffect(() => {
-        setLocalImages(images);
+        if (JSON.stringify(images) !== JSON.stringify(localImages)) {
+            setLocalImages(images);
+        }
     }, [images]);
 
     const handleCardDelete = async (deletedId: string) => {
@@ -106,6 +102,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
             </div>
         </div>
     );
-};
+});  // Properly close the React.memo wrapper
 
 export default ImageGallery;

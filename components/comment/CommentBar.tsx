@@ -24,16 +24,13 @@ const CommentBar = ({
   loadComments,
   setShowAuthPopup
 }: CommentSidebarProps) => {
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const formattedDate = formatDate(dateString);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${formattedDate} ${hours}:${minutes}`;
-  };
-
   const [refreshKey, setRefreshKey] = useState(0);
   const [localComments, setLocalComments] = useState<{ [key: string]: string }>(comments || {});
+  const [permissions, setPermissions] = useState<{ [key: string]: boolean }>({});
+  const [isPageOwner, setIsPageOwner] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const [showReplies, setShowReplies] = useState<{ [key: string]: boolean }>({});
+  const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
 
   // Update localComments when comments prop changes
   useEffect(() => {
@@ -103,13 +100,6 @@ const CommentBar = ({
     );
   };
 
-  const handleKeyPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      await handleCommentSave(pinId);
-    }
-  };
-
   const checkOwner = async (pageId: string) => {
     if (!session?.user?.id) return false;
     const { data } = await supabase
@@ -124,12 +114,6 @@ const CommentBar = ({
     if (isOwner) return true;
     return session.user.id === pin.user_id;
   };
-
-  const [permissions, setPermissions] = useState<{ [key: string]: boolean }>({});
-  const [isPageOwner, setIsPageOwner] = useState(false);
-  const [replyText, setReplyText] = useState('');
-  const [showReplies, setShowReplies] = useState<{ [key: string]: boolean }>({});
-  const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const loadPermissions = async () => {
