@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ImageCard from './ImageCard';
 import { useImages } from '@/hooks/useImages';
 import { Document } from '@/types/Document';
@@ -15,18 +15,42 @@ interface ImageGalleryProps {
 
 const ImageGallery: React.FC<ImageGalleryProps> = React.memo(({IsLoading, sortOrder, searchTerm, images}) => {
     const { refreshImages } = useImages();
-    const [localImages, setLocalImages] = useState(images);
 
-    useEffect(() => {
-        if (JSON.stringify(images) !== JSON.stringify(localImages)) {
-            setLocalImages(images);
-        }
-    }, [images]);
+    const processedImages = useMemo(() => {
+        const validImages = images.filter((image): image is {
+            id: string;
+            document_id: string;
+            image_url: string;
+            imageTitle: string;
+            created_at: string;
+            page_id: string;
+            active_comments: number;
+            resolved_comments: number;
+            title: string;
+        } => {
+            return Boolean(image && image.id && (image.image_url || image.url));
+        });
+
+        const sortedImages = [...validImages].sort((a, b) => {
+            if (sortOrder === 'date') {
+                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            } else if (sortOrder === 'title') {
+                const titleA = (a.imageTitle || a.title || '').toLowerCase();
+                const titleB = (b.imageTitle || b.title || '').toLowerCase();
+                return titleA.localeCompare(titleB);
+            }
+            return 0;
+        });
+
+        if (!searchTerm) return sortedImages;
+
+        return sortedImages.filter(image => {
+            const searchableTitle = image.imageTitle || image.title || '';
+            return searchableTitle.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+    }, [images, sortOrder, searchTerm]);
 
     const handleCardDelete = async (deletedId: string) => {
-        // Atualizar estado local imediatamente
-        setLocalImages(prev => prev.filter(img => img.id !== deletedId));
-        // Atualizar estado global
         await refreshImages();
     };
 
@@ -48,50 +72,10 @@ const ImageGallery: React.FC<ImageGalleryProps> = React.memo(({IsLoading, sortOr
         );
     }
 
-    // Filtrar imagens nulas ou inválidas
-    const validImages = localImages.filter((image): image is {
-        id: string;
-        document_id: string;
-        image_url: string;
-        imageTitle: string;
-        created_at: string;
-        page_id: string;
-        active_comments: number;
-        resolved_comments: number;
-        title: string;
-    } => {
-        return Boolean(image && image.id && (image.image_url || image.url));
-    });
-
-    // No início da função de ordenação
-    console.log('Valor atual do sortOrder:', sortOrder);
-    console.log('Cards antes da ordenação:', validImages);
-
-    // Ordenar imagens
-    const sortedImages = [...validImages].sort((a, b) => {
-        if (sortOrder === 'date') {
-            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        } else if (sortOrder === 'title') {
-            const titleA = (a.imageTitle || a.title || '').toLowerCase();
-            const titleB = (b.imageTitle || b.title || '').toLowerCase();
-            return titleA.localeCompare(titleB);
-        }
-        return 0;
-    });
-
-    console.log('Cards após ordenação:', sortedImages);
-
-    // Filtrar por termo de busca
-    const filteredImages = sortedImages.filter(image => {
-        if (!searchTerm) return true;
-        const searchableTitle = image.imageTitle || image.title || '';
-        return searchableTitle.toLowerCase().includes(searchTerm.toLowerCase());
-    });
-
     return (
         <div className="container mx-auto px-1">
             <div className="flex flex-wrap gap-4 justify-start">
-                {filteredImages.map((page) => (
+                {processedImages.map((page) => (
                     <div key={page.id} className="flex justify-center">
                         <ImageCard
                             image={page}
@@ -102,6 +86,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = React.memo(({IsLoading, sortOr
             </div>
         </div>
     );
-});  // Properly close the React.memo wrapper
+});
 
 export default ImageGallery;
