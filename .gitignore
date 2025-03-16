@@ -44,3 +44,6 @@ next-env.d.ts
 # Next.js specific
 .next
 out
+
+# Cline memory bank
+/memory-bank/

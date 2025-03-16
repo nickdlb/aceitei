@@ -49,7 +49,7 @@ import React from 'react';
       };
 
       return (
-        <nav className="p-4 flex flex-col">
+        <nav className="p-4 flex flex-col h-full relative">
           <ul className="space-y-2">
               <SidebarMenuItem href="/" icon={<HomeIcon className="w-5 h-5" />} label="Dashboard" />
               <SidebarMenuItem href="/account" icon={<UserCircleIcon className="w-5 h-5" />} label="Minha Conta" />
@@ -62,7 +62,9 @@ import React from 'react';
               </button>
             </li>
           </ul>
-          <SidebarFooter />
+          <div className="absolute bottom-0 left-0 right-0">
+            <SidebarFooter />
+          </div>
         </nav>
       );
     };

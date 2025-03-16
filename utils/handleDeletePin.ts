@@ -20,9 +20,21 @@ export const handleDeletePin = async (
     setRefreshKey: (refreshKeyOrUpdater: number | ((prev: number) => number)) => void
 ) => {
     try {
-        await deletePinUtil(pinId);
+        // Chamar a função deletePinUtil e verificar o status de sucesso
+        const result = await deletePinUtil(pinId);
+        
+        if (!result.success) {
+            console.error("Falha ao deletar pin:", result.error);
+            return; // Sair da função se a exclusão falhar
+        }
+        
         const pinToDelete = pins.find(p => p.id === pinId);
-        const deletedNumber = pinToDelete?.num || 0;
+        if (!pinToDelete) {
+            console.warn("Pin não encontrado para exclusão:", pinId);
+            return;
+        }
+        
+        const deletedNumber = pinToDelete.num || 0;
 
         // Remove o pin excluído e reordena os números
         setPins(prevPins => {
@@ -47,13 +59,21 @@ export const handleDeletePin = async (
         const updatedPins = pins.filter(pin => pin.id !== pinId);
         for (const pin of updatedPins) {
             if (pin.num > deletedNumber) {
-                await supabase
-                    .from('comments')
-                    .update({ pin_number: pin.num - 1 })
-                    .eq('id', pin.id);
+                try {
+                    const { error } = await supabase
+                        .from('comments')
+                        .update({ pin_number: pin.num - 1 })
+                        .eq('id', pin.id);
+                        
+                    if (error) {
+                        console.error("Erro ao atualizar número do pin:", error);
+                    }
+                } catch (updateError) {
+                    console.error("Erro inesperado ao atualizar número do pin:", updateError);
+                }
             }
         }
     } catch (error) {
-        console.error("Erro ao deletar pin:", error);
+        console.error("Erro ao processar exclusão do pin:", error);
     }
 };
