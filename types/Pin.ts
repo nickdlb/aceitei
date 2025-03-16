@@ -9,6 +9,7 @@ export interface Pin {
     user_id: string;
     page_id: string;
     reactions?: CommentReaction[];
+    isEditing?: boolean;
 }
 
 export interface CommentReaction {

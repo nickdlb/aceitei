@@ -195,7 +195,7 @@ export const usePins = (pageId: string, session: any) => {
         setIsDragging,
         updatePinPosition,
         setShowAuthPopup,
-        handleAuth: (name: string, email: string) => handleAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil),
+        handleAuth: (name: string, email: string) => handleAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil, editingPinId),
         loadComments,
     };
 };

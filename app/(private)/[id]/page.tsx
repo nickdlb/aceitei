@@ -146,7 +146,8 @@ export default function Page() {
             statusFilter,
             setStatusFilter,
             setPendingClick,
-            setShowAuthPopup
+            setShowAuthPopup,
+            editingPinId
         );
     };
 

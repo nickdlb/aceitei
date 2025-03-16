@@ -1,6 +1,6 @@
 import { supabase } from '@/utils/supabaseClient';
 
-export const handleAuth = async (name: string, email: string, pageId: string, pins: any[], setPins: any, setComments: any, setEditingPinId: any, statusFilter: any, setStatusFilter: any, pendingClick: any, setShowAuthPopup: any, handleImageClickUtil: any) => {
+export const handleAuth = async (name: string, email: string, pageId: string, pins: any[], setPins: any, setComments: any, setEditingPinId: any, statusFilter: any, setStatusFilter: any, pendingClick: any, setShowAuthPopup: any, handleImageClickUtil: any, editingPinId: string | null = null) => {
     try {
         const { data: { session }, error: authError } = await supabase.auth.signInAnonymously();
 
@@ -31,7 +31,8 @@ export const handleAuth = async (name: string, email: string, pageId: string, pi
                 statusFilter,
                 setStatusFilter,
                 pendingClick,
-                setShowAuthPopup
+                setShowAuthPopup,
+                editingPinId
             );
             setShowAuthPopup(false);
         }

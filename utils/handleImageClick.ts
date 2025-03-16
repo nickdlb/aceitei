@@ -15,6 +15,7 @@ import { Pin } from '@/types/Pin';
  * @param setStatusFilter Function to update status filter
  * @param setPendingClick Function to set pending click coordinates
  * @param setShowAuthPopup Function to show authentication popup
+ * @param editingPinId ID of the pin being edited
  */
 export const handleImageClick = async (
   xPercent: number, 
@@ -27,7 +28,8 @@ export const handleImageClick = async (
   statusFilter: 'ativo' | 'resolvido',
   setStatusFilter: (filter: 'ativo' | 'resolvido') => void,
   setPendingClick: (click: { x: number, y: number } | null) => void,
-  setShowAuthPopup: (show: boolean) => void
+  setShowAuthPopup: (show: boolean) => void,
+  editingPinId: string | null
 ) => {
   const { data: { session } } = await supabase.auth.getSession();
 
@@ -37,18 +39,57 @@ export const handleImageClick = async (
     return;
   }
 
-  await createPin(
-    xPercent, 
-    yPercent, 
-    pageId, 
-    pins, 
-    setPins, 
-    setComments, 
-    setEditingPinId, 
-    statusFilter, 
-    setStatusFilter, 
-    session
-  );
+  // Check if there's already a pin being edited (with no comment)
+  const editingPin = pins.find(pin => pin.id === editingPinId);
+  const emptyCommentPin = editingPin && (!editingPin.comment || editingPin.comment.trim() === '');
+
+  if (emptyCommentPin) {
+    // If there's a pin being edited with no comment, move it instead of creating a new one
+    await updatePinPosition(editingPin.id, xPercent, yPercent, pageId, pins, setPins);
+  } else {
+    // Create a new pin
+    await createPin(
+      xPercent, 
+      yPercent, 
+      pageId, 
+      pins, 
+      setPins, 
+      setComments, 
+      setEditingPinId, 
+      statusFilter, 
+      setStatusFilter, 
+      session
+    );
+  }
+};
+
+/**
+ * Updates the position of an existing pin
+ */
+const updatePinPosition = async (
+  pinId: string,
+  xPercent: number,
+  yPercent: number,
+  pageId: string,
+  pins: Pin[],
+  setPins: (pins: Pin[] | ((prevPins: Pin[]) => Pin[])) => void
+) => {
+  try {
+    // Update the pin position in the database
+    await supabase
+      .from('comments')
+      .update({ pos_x: xPercent, pos_y: yPercent })
+      .eq('id', pinId);
+
+    // Update the pin position in the state
+    setPins(prevPins => prevPins.map(pin => 
+      pin.id === pinId 
+        ? { ...pin, x: xPercent, y: yPercent } 
+        : pin
+    ));
+  } catch (error) {
+    console.error("Error updating pin position:", error);
+  }
 };
 
 /**
@@ -74,8 +115,10 @@ const createPin = async (
       setStatusFilter('ativo');
     }
 
-    const pinBeingEdited = pins.find(pin => pin.id === null);
+    // Check for any pin being edited or created
+    const pinBeingEdited = pins.find(pin => pin.id === null || pin.isEditing);
     if (pinBeingEdited) {
+      console.log('A pin is currently being edited');
       return;
     }
 

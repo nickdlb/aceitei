@@ -153,7 +153,7 @@ const ImageArea: React.FC<ImageAreaProps> = ({
               alt={imageTitle || "Imagem para comentários"}
               className="max-h-[calc(100vh-5rem)] w-auto object-contain"
               onClick={(e) => {
-                if (zoomLevel === '100') {
+                if (zoomLevel === '100' && !isDragging && !draggingPin) {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = ((e.clientX - rect.left) / rect.width) * 100;
                   const y = ((e.clientY - rect.top) / rect.height) * 100;
