@@ -33,7 +33,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props })
 
             setReplies([...replies, data]);
             setReplyText('');
-            setIsReplying(false);
+            // Removed setIsReplying(false) to keep the reply section open
         } catch (error) {
             console.error('Erro ao adicionar resposta:', error);
         }
