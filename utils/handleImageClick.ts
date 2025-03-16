@@ -81,12 +81,17 @@ const updatePinPosition = async (
       .update({ pos_x: xPercent, pos_y: yPercent })
       .eq('id', pinId);
 
-    // Update the pin position in the state
-    setPins(prevPins => prevPins.map(pin => 
-      pin.id === pinId 
-        ? { ...pin, x: xPercent, y: yPercent } 
-        : pin
-    ));
+    // Find the pin to update
+    const pinToUpdate = pins.find(pin => pin.id === pinId);
+    
+    if (pinToUpdate) {
+      // Update the pin position in the state while preserving all other properties including reactions
+      setPins(prevPins => prevPins.map(pin => 
+        pin.id === pinId 
+          ? { ...pin, x: xPercent, y: yPercent } 
+          : pin
+      ));
+    }
   } catch (error) {
     console.error("Error updating pin position:", error);
   }
@@ -155,7 +160,8 @@ const createPin = async (
         created_at: new Date().toISOString(),
         status: 'ativo' as const,
         user_id: session.user.id,
-        page_id: pageId
+        page_id: pageId,
+        reactions: [] // Initialize with empty reactions array
       };
 
       setPins(prevPins => [...prevPins, newPin]);

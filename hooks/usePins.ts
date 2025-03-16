@@ -148,26 +148,31 @@ export const usePins = (pageId: string, session: any) => {
 
     const updatePinPosition = async (pinId: string, xPercent: number, yPercent: number) => {
         try {
+            // First, find the current pin with all its properties including reactions
+            const currentPin = pins.find(pin => pin.id === pinId);
+            
+            if (!currentPin) {
+                console.error('Pin não encontrado:', pinId);
+                return;
+            }
+            
+            // Update the pin position in the database
             await supabase
                 .from('comments')
                 .update({ pos_x: xPercent, pos_y: yPercent })
                 .eq('id', pinId);
-
-            const updatedPins = await loadPins(pageId);
-            if (updatedPins) {
-                const pinsFormatados = updatedPins.map((pin: any) => ({
-                    id: pin.id,
-                    x: pin.pos_x,
-                    y: pin.pos_y,
-                    num: pin.pin_number,
-                    comment: pin.comment,
-                    created_at: pin.created_at,
-                    status: pin.status || 'ativo',
-                    user_id: pin.user_id,
-                    page_id: pin.page_id
-                }));
-                setPins(pinsFormatados);
-            }
+            
+            // Update the pin in the local state to immediately reflect the change
+            // while preserving all properties, especially reactions
+            setPins(prevPins => prevPins.map(pin => 
+                pin.id === pinId 
+                    ? { ...pin, x: xPercent, y: yPercent } 
+                    : pin
+            ));
+            
+            // Optionally reload all comments to ensure everything is in sync
+            // This is a safety measure but might not be necessary with the above state update
+            await loadComments();
         } catch (error) {
             console.error('Erro ao atualizar posição do pin:', error);
         }
