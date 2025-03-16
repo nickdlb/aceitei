@@ -11,6 +11,10 @@ import { getImageUrl } from '@/utils/imageUrl';
 import ImageSidebar from '@/components/comment/ImageSidebar';
 import AuthPopup from '@/components/auth/AuthPopup';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
+import { handleStatusChange } from '@/utils/handleStatusChange';
+import { handleCommentChange } from '@/utils/handleCommentChange';
+import { handleCommentSave } from '@/utils/handleCommentSave';
+import { handleDeletePin } from '@/utils/handleDeletePin';
 import { type Page as DocumentPage } from '@/types/Document';
 
 export default function Page() {
@@ -110,10 +114,6 @@ export default function Page() {
         setEditingPinId,
         setDraggingPin,
         setIsDragging,
-        handleStatusChange,
-        handleCommentChange,
-        handleCommentSave,
-        handleDeletePin,
         updatePinPosition,
         showAuthPopup,
         setShowAuthPopup,
@@ -138,17 +138,58 @@ export default function Page() {
 
     const handleImageClick = async (xPercent: number, yPercent: number) => {
         await handleImageClickUtil(
-            xPercent, 
-            yPercent, 
-            pageId, 
-            pins, 
-            setPins, 
-            setComments, 
-            setEditingPinId, 
-            statusFilter, 
-            setStatusFilter, 
-            setPendingClick, 
+            xPercent,
+            yPercent,
+            pageId,
+            pins,
+            setPins,
+            setComments,
+            setEditingPinId,
+            statusFilter,
+            setStatusFilter,
+            setPendingClick,
             setShowAuthPopup
+        );
+    };
+
+    // Create local implementations that call the utility functions
+    const handleCommentChangeLocal = (pinId: string, value: string) => {
+        handleCommentChange(pinId, value, setComments);
+    };
+
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const handleCommentSaveLocal = async (pinId: string) => {
+        await handleCommentSave(
+            pinId,
+            pins,
+            comments,
+            setPins,
+            setEditingPinId,
+            loadComments,
+            setRefreshKey,
+            session
+        );
+    };
+
+    const handleStatusChangeLocal = async (pinId: string) => {
+        await handleStatusChange(
+            pinId,
+            pins,
+            setPins,
+            session,
+            loadComments
+        );
+    };
+
+    const handleDeletePinLocal = async (pinId: string) => {
+        await handleDeletePin(
+            pinId,
+            pins,
+            setPins,
+            setComments,
+            setEditingPinId,
+            setRefreshKey
         );
     };
 
@@ -202,10 +243,10 @@ export default function Page() {
         },
         editingPinId,
         comments,
-        handleCommentChange,
-        handleCommentSave,
-        handleDeletePin,
-        handleStatusChange,
+        handleCommentChange: handleCommentChangeLocal,
+        handleCommentSave: handleCommentSaveLocal,
+        handleDeletePin: handleDeletePinLocal,
+        handleStatusChange: handleStatusChangeLocal,
         setEditingPinId,
         userNames,
         session,

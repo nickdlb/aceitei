@@ -24,10 +24,6 @@ export interface CommentSidebarProps {
     setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => void;
     editingPinId: string | null;
     comments: { [key: string]: string };
-    handleCommentChange: (pinId: string, comment: string) => void;
-    handleCommentSave: (pinId: string) => Promise<void>;
-    handleDeletePin: (pinId: string) => void;
-    handleStatusChange: (pinId: string) => void;
     setEditingPinId: (pinId: string | null) => void;
     userNames: { [key: string]: string };
     session: Session | null;

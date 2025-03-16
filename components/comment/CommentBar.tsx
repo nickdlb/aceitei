@@ -7,6 +7,9 @@ import SidebarFooter from '../sidebar/SidebarFooter';
 import { CommentSidebarProps, CommentReaction } from '@/types/comments';
 import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
+import { handleCommentSave as handleCommentSaveUtil } from '@/utils/handleCommentSave';
+import { handleDeletePin as handleDeletePinUtil } from '@/utils/handleDeletePin';
+import { handleStatusChange as handleStatusChangeUtil } from '@/utils/handleStatusChange';
 
 const CommentBar = ({
   pins,
@@ -14,11 +17,8 @@ const CommentBar = ({
   setStatusFilter,
   editingPinId,
   comments,
-  handleCommentChange,
-  handleCommentSave,
-  handleDeletePin,
-  handleStatusChange,
   setEditingPinId,
+  userNames: initialUserNames,
   session,
   loadComments,
   setShowAuthPopup
@@ -29,6 +29,69 @@ const CommentBar = ({
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${formattedDate} ${hours}:${minutes}`;
+  };
+
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [localComments, setLocalComments] = useState<{ [key: string]: string }>(comments || {});
+
+  // Update localComments when comments prop changes
+  useEffect(() => {
+    setLocalComments(comments || {});
+  }, [comments]);
+
+  // Create local implementations that call the utility functions
+  const handleCommentChange = (pinId: string, value: string) => {
+    // Update local comments state directly
+    setLocalComments(prev => ({
+      ...prev,
+      [pinId]: value
+    }));
+  };
+
+  const handleCommentSave = async (pinId: string) => {
+    await handleCommentSaveUtil(
+      pinId,
+      pins,
+      localComments,
+      (pinsOrUpdater) => {
+        // This is a simplified implementation
+        loadComments();
+      },
+      setEditingPinId,
+      loadComments,
+      setRefreshKey,
+      session
+    );
+  };
+
+  const handleDeletePin = async (pinId: string) => {
+    await handleDeletePinUtil(
+      pinId,
+      pins,
+      (pinsOrUpdater) => {
+        // This is a simplified implementation
+        loadComments();
+      },
+      (commentsOrUpdater) => {
+        // This is a simplified implementation
+        loadComments();
+      },
+      setEditingPinId,
+      setRefreshKey
+    );
+  };
+
+  const handleStatusChange = async (pinId: string) => {
+    await handleStatusChangeUtil(
+      pinId,
+      pins,
+      (pinsOrUpdater) => {
+        // This is a simplified implementation
+        loadComments();
+      },
+      session,
+      loadComments
+    );
   };
 
   const handleKeyPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
@@ -82,7 +145,7 @@ const CommentBar = ({
     // Verificar se há pins sem comentários visíveis
     const checkComments = () => {
       const hasEmptyComments = pins.some(pin =>
-        !pin.comment && comments[pin.id]
+        !pin.comment && localComments[pin.id]
       );
 
       if (hasEmptyComments) {
@@ -90,7 +153,7 @@ const CommentBar = ({
         // atualizar os pins localmente
         const updatedPins = pins.map(pin => ({
           ...pin,
-          comment: comments[pin.id] || pin.comment || ''
+          comment: localComments[pin.id] || pin.comment || ''
         }));
 
         // Esta é uma solução temporária para forçar a re-renderização
@@ -101,7 +164,7 @@ const CommentBar = ({
     // Verificar após um curto período
     const timer = setTimeout(checkComments, 500);
     return () => clearTimeout(timer);
-  }, [pins, comments]);
+  }, [pins, localComments]);
 
   // Adicione este useEffect para verificar as respostas ao carregar
   useEffect(() => {
@@ -118,54 +181,52 @@ const CommentBar = ({
 
   useEffect(() => {
     const loadUserNames = async () => {
-      // Cria um conjunto de todos os IDs de usuários que precisamos buscar
-      const userIds = new Set<string>();
-
-      // Adiciona o usuário da sessão atual
-      if (session?.user?.id) {
-        userIds.add(session.user.id);
-      }
-
-      // Adiciona os usuários que criaram os pins
-      pins.forEach(pin => {
-        if (pin.user_id) userIds.add(pin.user_id);
-
-        // Adiciona os usuários que criaram reações
-        if (pin.reactions) {
-          pin.reactions.forEach(reaction => {
-            if (reaction.user_id) userIds.add(reaction.user_id);
-          });
-        }
-      });
+      // Identificar todos os user_ids únicos nos pins
+      const userIds = [...new Set(pins.map(pin => pin.user_id))];
+      
+      if (userIds.length === 0) return;
+      
+      // Criar um objeto para armazenar os nomes
+      const namesMap: { [key: string]: string } = {};
 
       // Busca os nomes de todos os usuários identificados
       for (const userId of userIds) {
-        // Buscar na tabela users
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('nome')
-          .eq('user_id', userId)
-          .single();
+        // Verificar se já temos o nome deste usuário
+        if (initialUserNames[userId]) {
+          namesMap[userId] = initialUserNames[userId];
+          continue;
+        }
+        
+        try {
+          // Buscar na tabela users
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('nome')
+            .eq('user_id', userId)
+            .single();
 
-        if (userError || !userData || !userData.nome) {
-          console.error(`Erro ao buscar nome do usuário ${userId}:`, userError);
-          // Usa nome padrão se não encontrou
-          setUserNames(prev => ({
-            ...prev,
-            [userId]: 'Usuário Anônimo',
-          }));
-        } else {
-          // Armazena o nome encontrado na tabela users
-          setUserNames(prev => ({
-            ...prev,
-            [userId]: userData.nome || 'Usuário Anônimo',
-          }));
+          if (userError || !userData || !userData.nome) {
+            // Não logar erro, apenas usar nome padrão
+            namesMap[userId] = 'Usuário Anônimo';
+          } else {
+            // Armazena o nome encontrado na tabela users
+            namesMap[userId] = userData.nome || 'Usuário Anônimo';
+          }
+        } catch (error) {
+          // Em caso de erro, usar nome padrão
+          namesMap[userId] = 'Usuário Anônimo';
         }
       }
+      
+      // Atualizar o estado uma única vez com todos os nomes
+      setUserNames(prev => ({
+        ...prev,
+        ...namesMap
+      }));
     };
 
     loadUserNames();
-  }, [pins, session]);
+  }, [pins]);
 
   const handleReply = async (pinId: string) => {
     if (!replyText.trim()) return;
@@ -387,7 +448,7 @@ const CommentBar = ({
                 {editingPinId === pin.id ? (
                   <div>
                     <textarea
-                      value={comments[pin.id] || ''}
+                      value={localComments[pin.id] || ''}
                       onChange={(e) => handleCommentChange(pin.id, e.target.value)}
                       onKeyPress={(e) => handleKeyPress(e, pin.id)}
                       className="w-full p-2 border rounded mb-2 min-h-[60px] resize-none text-sm"
@@ -396,7 +457,7 @@ const CommentBar = ({
                     />
                     <button
                       onClick={() => handleCommentSave(pin.id)}
-                      disabled={!comments[pin.id]?.trim()}
+                      disabled={!localComments[pin.id]?.trim()}
                       className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
                     >
                       Confirmar
@@ -407,7 +468,7 @@ const CommentBar = ({
                     <div className="flex flex-col">
                       {/* Usar o conteúdo do estado comments se pin.comment estiver vazio */}
                       <p className="text-sm text-gray-700">
-                        {pin.comment || comments[pin.id] || ''}
+                        {pin.comment || localComments[pin.id] || ''}
                       </p>
                     </div>
                     <div className="flex gap-2">

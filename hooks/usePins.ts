@@ -3,10 +3,10 @@ import { Pin } from '@/types/Pin';
 import { supabase } from '@/utils/supabaseClient';
 import loadPins from '@/utils/loadPins';
 import { insertPin } from '@/utils/insertPinSupa';
-import { deletePin } from '@/utils/deletePin';
 import { Comment } from '@/types/Document';
 import { CommentReaction } from '@/types/CommentReaction';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
+import { checkPermissions } from '@/utils/checkPermissions';
 
 interface PageWithDocument {
     documents: {
@@ -26,7 +26,6 @@ export const usePins = (pageId: string, session: any) => {
     const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
     const [showAuthPopup, setShowAuthPopup] = useState(false);
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
-    // Adicionar o estado loadAttempts
     const [loadAttempts, setLoadAttempts] = useState(0);
 
     useEffect(() => {
@@ -90,7 +89,6 @@ export const usePins = (pageId: string, session: any) => {
 
                     setPins(pinsData || []);
 
-                    // Garantir que o conteúdo dos comentários seja definido corretamente
                     const commentState = commentsData?.reduce((acc, comment) => ({
                         ...acc,
                         [comment.id]: comment.content || ''
@@ -98,7 +96,6 @@ export const usePins = (pageId: string, session: any) => {
 
                     setComments(commentState || {});
 
-                    // Verificar se há comentários sem conteúdo e tentar novamente se necessário
                     const hasEmptyComments = commentsData?.some(comment =>
                         comment.content === undefined || comment.content === null
                     );
@@ -138,144 +135,10 @@ export const usePins = (pageId: string, session: any) => {
         fetchUserNames();
     }, [pins]);
 
-    const createPin = async (xPercent: number, yPercent: number) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user?.id || !pageId) return;
-
-        try {
-            // Se estiver na aba Resolvidos, muda para Ativos
-            if (statusFilter === 'resolvido') {
-                setStatusFilter('ativo');
-            }
-
-            const pinBeingEdited = pins.find(pin => pin.id === editingPinId);
-            if (editingPinId && pinBeingEdited) {
-                return;
-            }
-
-            // Verificar se a página existe
-            const { data: pageExists, error: pageError } = await supabase
-                .from('pages')
-                .select('id')
-                .eq('id', pageId)
-                .single();
-
-            if (pageError || !pageExists) {
-                console.error('Página não encontrada:', pageError);
-                return;
-            }
-
-            const pin_Number = pins.length + 1;
-
-            const newPinData = await insertPin(
-                pageId,
-                xPercent,
-                yPercent,
-                pin_Number,
-                '', // Conteúdo inicial vazio
-                session.user.id
-            );
-
-            if (newPinData && newPinData[0]) {
-                const newPin: Pin = {
-                    id: newPinData[0].id,
-                    x: xPercent,
-                    y: yPercent,
-                    num: pin_Number,
-                    comment: '',
-                    created_at: new Date().toISOString(),
-                    status: 'ativo' as const,
-                    user_id: session.user.id,
-                    page_id: pageId
-                };
-
-                setPins(prevPins => [...prevPins, newPin]);
-                setComments(prev => ({ ...prev, [newPin.id]: '' }));
-                setEditingPinId(newPin.id);
-                return newPin;
-            }
-        } catch (error) {
-            console.error("Erro ao adicionar pin:", error);
-            throw error;
-        }
-    };
-
-    const checkPermissions = async (pin: Pin) => {
-        if (!session?.user?.id) {
-            // Se não houver usuário na sessão, não tem permissão.
-            return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
-        }
-
-        // 1. Busque o documento (página) no Supabase
-        const { data: documentData, error: documentError } = await supabase
-            .from('pages')
-            .select('user_id')
-            .eq('id', pin.page_id)  // Certifique-se que "id" é a chave primária da página
-            .single();
-
-        if (documentError) {
-            console.error("Erro ao buscar o documento:", documentError);
-            throw documentError;
-        }
-
-        const isDocumentOwner = documentData?.user_id === session.user.id;
-
-        // 2. Busque o pin (comentário) no Supabase
-        const { data: pinData, error: pinError } = await supabase
-            .from('comments')
-            .select('user_id')
-            .eq('id', pin.id)
-            .single();
-
-        if (pinError) {
-            console.error("Erro ao buscar o pin:", pinError);
-            throw pinError;
-        }
-
-        const isCommentOwner = pinData?.user_id === session.user.id;
-
-        // Se o usuário for dono do documento ou do comentário, ele tem permissão.
-        const hasPermission = isDocumentOwner || isCommentOwner;
-
-        return { isDocumentOwner, isCommentOwner, hasPermission };
-    };
-
-
-    // Ajustar handleStatusChange
-    const handleStatusChange = async (pinId: string) => {
-        try {
-            await checkPermissions(pins.find(p => p.id === pinId) as Pin);
-
-            const pin = pins.find(p => p.id === pinId);
-            if (!pin) return;
-
-            const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
-
-            const { error } = await supabase
-                .from('comments')
-                .update({ status: newStatus })
-                .eq('id', pinId);
-
-            if (error) throw error;
-
-            setPins(prevPins => prevPins.map(p =>
-                p.id === pinId ? { ...p, status: newStatus } : p
-            ));
-
-            await loadComments();
-
-        } catch (error: any) {
-            console.error("Erro ao atualizar status:", error.message);
-            alert(error.message || 'Erro ao atualizar status do comentário');
-        }
-    };
-
-    // Função auxiliar para recarregar comentários - melhorada
     const loadComments = async () => {
         try {
             console.log('Iniciando carregamento de comentários...');
 
-            // Primeiro carregamos os comentários
             const { data: commentsData, error: commentsError } = await supabase
                 .from('comments')
                 .select('*')
@@ -291,10 +154,8 @@ export const usePins = (pageId: string, session: any) => {
                 return;
             }
 
-            // Extrair os IDs dos comentários para filtrar as reações
             const commentIds = commentsData.map(comment => comment.id);
 
-            // Carregar apenas as reações relacionadas a esses comentários
             const { data: reactionsData, error: reactionsError } = await supabase
                 .from('comment_reactions')
                 .select('*')
@@ -304,11 +165,9 @@ export const usePins = (pageId: string, session: any) => {
 
             console.log('Reações carregadas:', reactionsData);
 
-            // Mapeamos as reações para cada comentário
             const commentReactionsMap = new Map();
 
             if (reactionsData) {
-                // Agrupar reações por comment_id
                 reactionsData.forEach(reaction => {
                     if (!commentReactionsMap.has(reaction.comment_id)) {
                         commentReactionsMap.set(reaction.comment_id, []);
@@ -317,9 +176,7 @@ export const usePins = (pageId: string, session: any) => {
                 });
             }
 
-            // Criamos os pins com suas reações
             const pinsData = commentsData.map(comment => {
-                // Obter reações para este comentário
                 const reactions = commentReactionsMap.get(comment.id) || [];
 
                 console.log(`Comentário ${comment.id} tem ${reactions.length} reações`);
@@ -352,90 +209,6 @@ export const usePins = (pageId: string, session: any) => {
         }
     };
 
-    const handleCommentChange = (pinId: string, value: string) => {
-        setComments(prev => ({ ...prev, [pinId]: value }));
-    };
-
-    // Ajustar handleCommentSave
-    const handleCommentSave = async (pinId: string) => {
-        try {
-            const pin = pins.find(p => p.id === pinId);
-            if (!pin) return;
-
-            const { hasPermission } = await checkPermissions(pin);
-            if (!hasPermission) {
-                alert('Você não tem permissão para editar este comentário.');
-                return;
-            }
-
-            const comment = comments[pinId];
-            if (!comment) return;
-
-            const { error } = await supabase
-                .from('comments')
-                .update({ content: comment })
-                .eq('id', pinId);
-
-            if (error) throw error;
-
-            // Atualizar o pin localmente também
-            setPins(prevPins => prevPins.map(p =>
-                p.id === pinId ? { ...p, comment: comment } : p
-            ));
-
-            setEditingPinId(null);
-
-            // Forçar recarregamento completo
-            await loadComments();
-            setRefreshKey(prev => prev + 1);
-
-        } catch (error: any) {
-            console.error("Erro ao salvar comentário:", error.message);
-            alert(error.message || 'Erro ao salvar comentário');
-        }
-    };
-
-
-    const handleDeletePin = async (pinId: string) => {
-        try {
-            await deletePin(pinId);
-            const pinToDelete = pins.find(p => p.id === pinId);
-            const deletedNumber = pinToDelete?.num || 0;
-
-            // Remove o pin excluído e reordena os números
-            setPins(prevPins => {
-                return prevPins
-                    .filter(pin => pin.id !== pinId)
-                    .map(pin => ({
-                        ...pin,
-                        num: pin.num > deletedNumber ? pin.num - 1 : pin.num
-                    }));
-            });
-
-            setComments(prev => {
-                const newComments = { ...prev };
-                delete newComments[pinId];
-                return newComments;
-            });
-
-            setEditingPinId(null);
-            setRefreshKey(prev => prev + 1);
-
-            // Atualiza os números no banco de dados
-            const updatedPins = pins.filter(pin => pin.id !== pinId);
-            for (const pin of updatedPins) {
-                if (pin.num > deletedNumber) {
-                    await supabase
-                        .from('comments')
-                        .update({ pin_number: pin.num - 1 })
-                        .eq('id', pin.id);
-                }
-            }
-        } catch (error) {
-            console.error("Erro ao deletar pin:", error);
-        }
-    };
-
     const updatePinPosition = async (pinId: string, xPercent: number, yPercent: number) => {
         try {
             await supabase
@@ -465,13 +238,11 @@ export const usePins = (pageId: string, session: any) => {
 
     const handleAuth = async (name: string, email: string) => {
         try {
-            // 1. Criar sessão anônima
             const { data: { session }, error: authError } = await supabase.auth.signInAnonymously();
 
             if (authError) throw authError;
             if (!session) throw new Error('Falha ao criar sessão anônima');
 
-            // 2. Salvar informações do usuário anônimo
             const { error: userError } = await supabase
                 .from('anonymous_users')
                 .insert([
@@ -484,7 +255,6 @@ export const usePins = (pageId: string, session: any) => {
 
             if (userError) throw userError;
 
-            // 3. Se tiver um click pendente, criar o pin
             if (pendingClick) {
                 await handleImageClickUtil(
                     pendingClick.x, 
@@ -502,7 +272,6 @@ export const usePins = (pageId: string, session: any) => {
                 setPendingClick(null);
             }
 
-            // 4. Fechar o popup
             setShowAuthPopup(false);
 
         } catch (error: any) {
@@ -511,7 +280,6 @@ export const usePins = (pageId: string, session: any) => {
         }
     };
 
-    // Modificar o useEffect para garantir que loadComments seja chamado quando pageId estiver disponível
     useEffect(() => {
         if (pageId) {
             console.log('Carregando comentários para a página:', pageId);
@@ -533,14 +301,9 @@ export const usePins = (pageId: string, session: any) => {
         setEditingPinId,
         setDraggingPin,
         setIsDragging,
-        handleStatusChange,
-        handleCommentChange,
-        handleCommentSave,
-        handleDeletePin,
         updatePinPosition,
         setShowAuthPopup,
         handleAuth,
         loadComments,
-        createPin
     };
 };
