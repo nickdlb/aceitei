@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { CommentReaction } from '@/types/CommentReaction';
+import { Comment } from '@/types/comments';
 import { supabase } from '@/utils/supabaseClient';
+import { Session } from '@supabase/supabase-js';
 
 interface CommentItemProps {
     comment: Comment;
+    session: Session | null;
     // ... outras props existentes
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({ comment, ...props }) => {
+const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props }) => {
     const [isReplying, setIsReplying] = useState(false);
     const [replyText, setReplyText] = useState('');
     const [replies, setReplies] = useState<CommentReaction[]>([]);

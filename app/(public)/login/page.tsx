@@ -19,7 +19,7 @@ const LoginPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuth = async (): Promise<void> => {
       const { data, error } = await supabase.auth.getSession();
       if (data.session) {
         router.push('/');

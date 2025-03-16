@@ -1,6 +1,10 @@
 import { Session } from '@supabase/supabase-js';
 import { Pin } from './Pin';
 
+export interface Comment {
+ id: string;
+}
+
 export interface ImageAreaProps {
     exibirImagem: string;
     imageTitle: string;
