@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { supabase } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/AuthProvider';
 
@@ -16,9 +16,14 @@ export function ImagesProvider({ children }: { children: React.ReactNode }) {
     const [images, setImages] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const { session } = useAuth();
+    const userId = useMemo(() => session?.user?.id, [session]);
 
     const refreshImages = useCallback(async () => {
-        if (!session?.user?.id) return;
+        if (!userId) {
+            setImages([]);
+            setLoading(false);
+            return;
+        }
 
         try {
             setLoading(true);
@@ -28,7 +33,7 @@ export function ImagesProvider({ children }: { children: React.ReactNode }) {
                     id,
                     title,
                     created_at,
-                    pages!inner (
+                    pages!pages_document_id_fkey (
                         id,
                         image_url,
                         imageTitle,
@@ -36,7 +41,7 @@ export function ImagesProvider({ children }: { children: React.ReactNode }) {
                         document_id
                     )
                 `)
-                .eq('user_id', session.user.id)
+                .eq('user_id', userId)
                 .eq('pages.page_number', 1)
                 .order('created_at', { ascending: false });
 
@@ -52,15 +57,25 @@ export function ImagesProvider({ children }: { children: React.ReactNode }) {
             })) || [];
 
             setImages(processedData);
-        } catch (error) {
-            console.error('Erro ao carregar imagens:', error);
+        } catch (error: any) {
+            console.error('Error loading images:', error.message);
         } finally {
             setLoading(false);
         }
-    }, [session?.user?.id]);
+    }, [userId]);
+
+    useEffect(() => {
+        refreshImages();
+    }, [refreshImages]);
+
+    const contextValue = useMemo(() => ({
+        images,
+        loading,
+        refreshImages
+    }), [images, loading, refreshImages]);
 
     return (
-        <ImagesContext.Provider value={{ images, loading, refreshImages }}>
+        <ImagesContext.Provider value={contextValue}>
             {children}
         </ImagesContext.Provider>
     );
@@ -72,4 +87,4 @@ export function useImages() {
         throw new Error('useImages must be used within a ImagesProvider');
     }
     return context;
-} 
+}

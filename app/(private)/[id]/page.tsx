@@ -34,8 +34,6 @@ export default function Page() {
     const router = useRouter();
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
 
-    console.log('ID da página:', pageId);
-
     useEffect(() => {
         const loadPage = async () => {
             if (!pageId) return;

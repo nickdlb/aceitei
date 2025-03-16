@@ -82,17 +82,15 @@ export const usePins = (pageId: string, session: any) => {
     }, [pins]);
 
     const loadComments = async () => {
-        try {
-            console.log('Iniciando carregamento de comentários...');
+        if (!pageId) return;
 
+        try {
             const { data: commentsData, error: commentsError } = await supabase
                 .from('comments')
                 .select('*')
                 .eq('page_id', pageId);
 
             if (commentsError) throw commentsError;
-
-            console.log('Comentários carregados:', commentsData);
 
             if (!commentsData || commentsData.length === 0) {
                 setPins([]);
@@ -109,8 +107,6 @@ export const usePins = (pageId: string, session: any) => {
 
             if (reactionsError) throw reactionsError;
 
-            console.log('Reações carregadas:', reactionsData);
-
             const commentReactionsMap = new Map();
 
             if (reactionsData) {
@@ -124,9 +120,6 @@ export const usePins = (pageId: string, session: any) => {
 
             const pinsData = commentsData.map(comment => {
                 const reactions = commentReactionsMap.get(comment.id) || [];
-
-                console.log(`Comentário ${comment.id} tem ${reactions.length} reações`);
-
                 return {
                     id: comment.id,
                     x: comment.pos_x,
@@ -141,8 +134,6 @@ export const usePins = (pageId: string, session: any) => {
                 };
             });
 
-            console.log('Pins com reações:', pinsData);
-
             setPins(pinsData);
 
             const commentState: { [key: string]: string } = {};
@@ -151,7 +142,7 @@ export const usePins = (pageId: string, session: any) => {
             });
             setComments(commentState);
         } catch (error) {
-            console.error('Erro ao carregar comentários:', error);
+            console.error('Error loading comments:', error);
         }
     };
 
@@ -184,7 +175,6 @@ export const usePins = (pageId: string, session: any) => {
 
     useEffect(() => {
         if (pageId) {
-            console.log('Carregando comentários para a página:', pageId);
             loadComments();
         }
     }, [pageId]);
