@@ -6,6 +6,7 @@ import { insertPin } from '@/utils/insertPinSupa';
 import { deletePin } from '@/utils/deletePin';
 import { Comment } from '@/types/Document';
 import { CommentReaction } from '@/types/CommentReaction';
+import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 
 interface PageWithDocument {
     documents: {
@@ -136,18 +137,6 @@ export const usePins = (pageId: string, session: any) => {
         };
         fetchUserNames();
     }, [pins]);
-
-    const handleImageClick = async (xPercent: number, yPercent: number) => {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (!session?.user) {
-            setPendingClick({ x: xPercent, y: yPercent });
-            setShowAuthPopup(true);
-            return;
-        }
-
-        await createPin(xPercent, yPercent);
-    };
 
     const createPin = async (xPercent: number, yPercent: number) => {
         const { data: { session } } = await supabase.auth.getSession();
@@ -497,7 +486,19 @@ export const usePins = (pageId: string, session: any) => {
 
             // 3. Se tiver um click pendente, criar o pin
             if (pendingClick) {
-                await createPin(pendingClick.x, pendingClick.y);
+                await handleImageClickUtil(
+                    pendingClick.x, 
+                    pendingClick.y, 
+                    pageId, 
+                    pins, 
+                    setPins, 
+                    setComments, 
+                    setEditingPinId, 
+                    statusFilter, 
+                    setStatusFilter, 
+                    setPendingClick, 
+                    setShowAuthPopup
+                );
                 setPendingClick(null);
             }
 
@@ -532,7 +533,6 @@ export const usePins = (pageId: string, session: any) => {
         setEditingPinId,
         setDraggingPin,
         setIsDragging,
-        handleImageClick,
         handleStatusChange,
         handleCommentChange,
         handleCommentSave,
@@ -540,6 +540,7 @@ export const usePins = (pageId: string, session: any) => {
         updatePinPosition,
         setShowAuthPopup,
         handleAuth,
-        loadComments
+        loadComments,
+        createPin
     };
 };

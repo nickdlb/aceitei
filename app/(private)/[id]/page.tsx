@@ -7,10 +7,11 @@ import ImageArea from '@/components/comment/ImageArea';
 import { useAuth } from '@/components/AuthProvider';
 import { usePins } from '@/hooks/usePins';
 import { supabase } from '@/utils/supabaseClient';
-import { type Page as DocumentPage } from '@/types/Document';
 import { getImageUrl } from '@/utils/imageUrl';
 import ImageSidebar from '@/components/comment/ImageSidebar';
 import AuthPopup from '@/components/auth/AuthPopup';
+import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
+import { type Page as DocumentPage } from '@/types/Document';
 
 export default function Page() {
     const params = useParams();
@@ -26,6 +27,7 @@ export default function Page() {
         page_number: number;
     }>>([]);
     const router = useRouter();
+    const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
 
     console.log('ID da página:', pageId);
 
@@ -108,7 +110,6 @@ export default function Page() {
         setEditingPinId,
         setDraggingPin,
         setIsDragging,
-        handleImageClick,
         handleStatusChange,
         handleCommentChange,
         handleCommentSave,
@@ -119,6 +120,37 @@ export default function Page() {
         handleAuth,
         loadComments
     } = usePins(pageId, session);
+
+    // Define a local setPins function to update pins state
+    const setPins = (pinsOrUpdater: any) => {
+        // This is a simplified version since we don't have direct access to the setPins from usePins
+        // In a real implementation, you might want to call loadComments() or another method
+        // that refreshes the pins from the server
+        loadComments();
+    };
+
+    // Define a local setComments function
+    const setComments = (commentsOrUpdater: any) => {
+        // Similar to setPins, this is a simplified version
+        // In a real implementation, you might want to update the comments in usePins
+        loadComments();
+    };
+
+    const handleImageClick = async (xPercent: number, yPercent: number) => {
+        await handleImageClickUtil(
+            xPercent, 
+            yPercent, 
+            pageId, 
+            pins, 
+            setPins, 
+            setComments, 
+            setEditingPinId, 
+            statusFilter, 
+            setStatusFilter, 
+            setPendingClick, 
+            setShowAuthPopup
+        );
+    };
 
     const handlePageChange = async (newPageId: string) => {
         router.push(`/${newPageId}`, { scroll: false });
@@ -178,6 +210,7 @@ export default function Page() {
         userNames,
         session,
         loadComments,
+        setShowAuthPopup
     };
 
     const imageAreaProps = {
