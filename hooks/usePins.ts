@@ -178,6 +178,34 @@ export const usePins = (pageId: string, session: any) => {
         }
     };
 
+    const loadRepliesForPin = async (pinId: string) => {
+        if (!pinId) return;
+
+        try {
+            // Fetch only the reactions for this specific pin
+            const { data: reactionsData, error: reactionsError } = await supabase
+                .from('comment_reactions')
+                .select('*')
+                .eq('comment_id', pinId);
+
+            if (reactionsError) throw reactionsError;
+
+            // Update only the reactions for this pin in the pins state
+            setPins(prevPins => prevPins.map(pin => {
+                if (pin.id === pinId) {
+                    return {
+                        ...pin,
+                        reactions: reactionsData || []
+                    };
+                }
+                return pin;
+            }));
+
+        } catch (error) {
+            console.error('Error loading replies for pin:', error);
+        }
+    };
+
     useEffect(() => {
         if (pageId) {
             loadComments();
@@ -199,6 +227,7 @@ export const usePins = (pageId: string, session: any) => {
         setDraggingPin,
         setIsDragging,
         updatePinPosition,
+        loadRepliesForPin,
         setShowAuthPopup,
         handleAuth: (name: string, email: string) => handleAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil, editingPinId),
         loadComments,

@@ -37,12 +37,11 @@ export const handleReply = async (
         }
 
         setReplyText('');
+        
+        // Load all comments
         await loadComments();
-        // Keep replies section open
-        setShowReplies(prev => ({
-            ...prev,
-            [pinId]: true
-        }));
+        
+        // The open state of replies is now managed by the ref in CommentBar
 
     } catch (error: any) {
         console.error('Error adding reply:', error);

@@ -18,7 +18,7 @@ import { Pin } from '@/types/Pin';
  * @param editingPinId ID of the pin being edited
  */
 export const handleImageClick = async (
-  xPercent: number, 
+  xPercent: number,
   yPercent: number,
   pageId: string,
   pins: Pin[],
@@ -46,18 +46,20 @@ export const handleImageClick = async (
   if (emptyCommentPin) {
     // If there's a pin being edited with no comment, move it instead of creating a new one
     await updatePinPosition(editingPin.id, xPercent, yPercent, pageId, pins, setPins);
+    // Keep the pin in editing state to preserve comment text
+    setEditingPinId(editingPin.id);
   } else {
     // Create a new pin
     await createPin(
-      xPercent, 
-      yPercent, 
-      pageId, 
-      pins, 
-      setPins, 
-      setComments, 
-      setEditingPinId, 
-      statusFilter, 
-      setStatusFilter, 
+      xPercent,
+      yPercent,
+      pageId,
+      pins,
+      setPins,
+      setComments,
+      setEditingPinId,
+      statusFilter,
+      setStatusFilter,
       session
     );
   }
@@ -83,12 +85,12 @@ const updatePinPosition = async (
 
     // Find the pin to update
     const pinToUpdate = pins.find(pin => pin.id === pinId);
-    
+
     if (pinToUpdate) {
       // Update the pin position in the state while preserving all other properties including reactions
-      setPins(prevPins => prevPins.map(pin => 
-        pin.id === pinId 
-          ? { ...pin, x: xPercent, y: yPercent } 
+      setPins(prevPins => prevPins.map(pin =>
+        pin.id === pinId
+          ? { ...pin, x: xPercent, y: yPercent }
           : pin
       ));
     }
@@ -101,7 +103,7 @@ const updatePinPosition = async (
  * Creates a new pin at the specified coordinates
  */
 const createPin = async (
-  xPercent: number, 
+  xPercent: number,
   yPercent: number,
   pageId: string,
   pins: Pin[],

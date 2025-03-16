@@ -116,7 +116,8 @@ export default function Page() {
         updatePinPosition,
         showAuthPopup,
         setShowAuthPopup,
-        loadComments
+        loadComments,
+        loadRepliesForPin
     } = usePins(pageId, session);
 
     // Define a local setPins function to update pins state
@@ -250,6 +251,7 @@ export default function Page() {
         userNames,
         session,
         loadComments,
+        loadRepliesForPin,
         setShowAuthPopup
     };
 

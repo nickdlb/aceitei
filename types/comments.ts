@@ -32,6 +32,7 @@ export interface CommentSidebarProps {
     userNames: { [key: string]: string };
     session: Session | null;
     loadComments: () => Promise<void>;
+    loadRepliesForPin?: (pinId: string) => Promise<void>;
     setShowAuthPopup: (show: boolean) => void;
 }
 
