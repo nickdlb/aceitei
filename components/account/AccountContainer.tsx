@@ -2,11 +2,13 @@
 
     import React, { useState, useEffect } from 'react';
     import { supabase } from '@/utils/supabaseClient';
+import { isAnonymous } from '@/utils/handleAnonymousCheck';
     import ProfilePhoto from './ProfilePhoto';
     import UserInfo from './UserInfo';
     import { useAuth } from '@/components/AuthProvider';
 
     const AccountContainer = () => {
+      isAnonymous();
       const [photoURL, setPhotoURL] = useState('');
       const [userData, setUserData] = useState({
         nome: '',
