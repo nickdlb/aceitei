@@ -7,7 +7,6 @@ import { useAuth } from '@/components/AuthProvider';
 
 const MinhaConta = () => {
   const { session, loading } = useAuth();
-
   if (loading) {
     return <div className="flex h-screen items-center justify-center">Loading...</div>;
   }
