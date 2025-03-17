@@ -137,7 +137,7 @@ export default function Page() {
 
     const [refreshKey, setRefreshKey] = useState(0);
 
-    const handleDeletePinLocal = async (pinId: string) => {
+    const handleDeletePinPin = async (pinId: string) => {
         await handleDeletePin(
             pinId,
             pins,
@@ -159,7 +159,7 @@ export default function Page() {
                     
                     // If it's a new pin (no comment) or empty comment, delete it
                     if (editingPin && (!editingPin.comment || editingPin.comment.trim() === '')) {
-                        await handleDeletePinLocal(editingPinId);
+                        await handleDeletePinPin(editingPinId);
                     } else {
                         // Otherwise just cancel the edit
                         setEditingPinId(null);
@@ -172,9 +172,9 @@ export default function Page() {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [editingPinId, setEditingPinId, pins, handleDeletePinLocal]);
+    }, [editingPinId, setEditingPinId, pins, handleDeletePinPin]);
 
-    const handleImageClick = async (xPercent: number, yPercent: number) => {
+    const handleImageClickPin = async (xPercent: number, yPercent: number) => {
         await handleImageClickUtil(
             xPercent,
             yPercent,
@@ -192,11 +192,11 @@ export default function Page() {
     };
 
     // Create local implementations that call the utility functions
-    const handleCommentChangeLocal = (pinId: string, value: string) => {
+    const handleCommentChangePin = (pinId: string, value: string) => {
         handleCommentChange(pinId, value, setComments);
     };
 
-    const handleCommentSaveLocal = async (pinId: string) => {
+    const handleCommentSavePin = async (pinId: string) => {
         await handleCommentSave(
             pinId,
             pins,
@@ -209,7 +209,7 @@ export default function Page() {
         );
     };
 
-    const handleStatusChangeLocal = async (pinId: string) => {
+    const handleStatusChangePin = async (pinId: string) => {
         await handleStatusChange(
             pinId,
             pins,
@@ -269,10 +269,10 @@ export default function Page() {
         },
         editingPinId,
         comments,
-        handleCommentChange: handleCommentChangeLocal,
-        handleCommentSave: handleCommentSaveLocal,
-        handleDeletePin: handleDeletePinLocal,
-        handleStatusChange: handleStatusChangeLocal,
+        handleCommentChange: handleCommentChangePin,
+        handleCommentSave: handleCommentSavePin,
+        handleDeletePin: handleDeletePinPin,
+        handleStatusChange: handleStatusChangePin,
         setEditingPinId,
         userNames,
         session,
@@ -286,7 +286,7 @@ export default function Page() {
         imageTitle: pageData.imageTitle || 'Sem título',
         imageId: pageId,
         pins: filteredPins,
-        handleImageClick: handleImageClick,
+        handleImageClick: handleImageClickPin,
         draggingPin: draggingPin,
         setDraggingPin: setDraggingPin,
         isDragging: isDragging,
@@ -298,7 +298,7 @@ export default function Page() {
         isPagesOpen: isPagesOpen
     };
 
-    const handleAuthSubmit = async (name: string, email: string) => {
+    const handleAuthSubmitAnonForm = async (name: string, email: string) => {
         await handleAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
     };
 
@@ -324,7 +324,7 @@ export default function Page() {
             <AuthPopup
                 isOpen={showAuthPopup}
                 onClose={() => setShowAuthPopup(false)}
-                onSubmit={handleAuthSubmit}
+                onSubmit={handleAuthSubmitAnonForm}
             />
         </div>
     );
