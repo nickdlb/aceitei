@@ -8,14 +8,12 @@ export const handleAuth = async (name: string, email: string, pageId: string, pi
         if (!session) throw new Error('Falha ao criar sessão anônima');
 
         const { error: userError } = await supabase
-            .from('anonymous_users')
-            .insert([
-                {
-                    auth_id: session.user.id,
-                    name: name,
-                    email: email
-                }
-            ]);
+            .from('users')
+            .update({
+                nome: name,
+                email: email
+            })
+            .eq('user_id', session.user.id);
 
         if (userError) throw userError;
 
