@@ -55,11 +55,11 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
   const handleEscapePress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
     event.preventDefault();
-    
+
     // Check if this is a new pin by looking at the original pin.comment
     // If pin.comment is empty/null, it means this pin hasn't been saved yet
     const pinComment = pin.comment?.trim() || '';
-    
+
     if (!pinComment) {
       // If it's a new pin (not yet saved), delete it
       await handleDeletePin(pinId);
