@@ -30,19 +30,42 @@ export const checkPermissions = async (pin: Pin, session: any) => {
         const isDocumentOwner = documentData?.user_id === session.user.id;
 
         // 2. Busque o pin (comentário) no Supabase
-        const { data: pinData, error: pinError } = await supabase
-            .from('comments')
-            .select('user_id')
-            .eq('id', pin.id)
-            .single();
-
-        if (pinError) {
-            console.error("Erro ao buscar o pin:", pinError);
-            // Em vez de lançar o erro, apenas registramos e continuamos
-            // Se o usuário for dono do documento, ele ainda tem permissão
+        // Verificar se o pin existe antes de tentar buscá-lo
+        if (!pin || !pin.id) {
+            // Se o pin não existir, retornar permissões baseadas apenas na propriedade do documento
             return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
         }
+        
+        // Declarar a variável fora do bloco try para poder acessá-la depois
+        let pinData: any = null;
+        
+        try {
+            const { data, error: pinError } = await supabase
+                .from('comments')
+                .select('user_id')
+                .eq('id', pin.id)
+                .single();
+                
+            pinData = data;
 
+            if (pinError) {
+                // Se o erro for 'not found', significa que o pin foi excluído
+                if (pinError.code === 'PGRST116') {
+                    // Pin não encontrado (provavelmente foi excluído)
+                    return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+                }
+                
+                console.error("Erro ao buscar o pin:", pinError);
+                // Em vez de lançar o erro, apenas registramos e continuamos
+                // Se o usuário for dono do documento, ele ainda tem permissão
+                return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+            }
+        } catch (error) {
+            console.error("Erro inesperado ao buscar o pin:", error);
+            return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+        }
+        
+        // Se chegamos aqui, temos os dados do pin
         const isCommentOwner = pinData?.user_id === session.user.id;
 
         // Se o usuário for dono do documento ou do comentário, ele tem permissão.

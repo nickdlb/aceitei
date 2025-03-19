@@ -48,23 +48,32 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
     return `${formattedDate} ${hours}:${minutes}`;
   };
 
+  const handleEnterPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
+    event.preventDefault();
+    await handleCommentSave(pinId);
+  };
+
+  const handleEscapePress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
+    event.preventDefault();
+    
+    // Check if this is a new pin by looking at the original pin.comment
+    // If pin.comment is empty/null, it means this pin hasn't been saved yet
+    const pinComment = pin.comment?.trim() || '';
+    
+    if (!pinComment) {
+      // If it's a new pin (not yet saved), delete it
+      await handleDeletePin(pinId);
+    } else {
+      // If it's an existing pin being edited, just discard the edit
+      setEditingPinId(null);
+    }
+  };
+
   const handleKeyPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
     if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      await handleCommentSave(pinId);
+      await handleEnterPress(event, pinId);
     } else if (event.key === 'Escape') {
-      event.preventDefault();
-      // Check if this is a new pin (empty comment)
-      const commentText = localComments[pinId]?.trim() || '';
-      const pinComment = pin.comment?.trim() || '';
-      
-      if (!pinComment && !commentText) {
-        // If it's a new pin with no comment, delete it
-        await handleDeletePin(pinId);
-      } else {
-        // Otherwise just discard the edit
-        setEditingPinId(null);
-      }
+      await handleEscapePress(event, pinId);
     }
   };
 
