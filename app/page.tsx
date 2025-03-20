@@ -2,15 +2,20 @@
     import { useState, useCallback, useEffect } from 'react';
     import Sidebar from '@/components/sidebar/Sidebar';
     import Header from '@/components/dashboard/Header';
-    import ImageGallery from '@/components/dashboard/ImageGallery';
+    import ImageGallery from '@/components/dashboard/CardGallery';
     import RightSidebarButton from '@/components/sidebar/RightSidebarButton';
     import RightSidebar from '@/components/sidebar/RightSidebar';
     import { useAuth } from '@/components/AuthProvider';
     import { useImages } from '@/hooks/useImages';
     import { useRouter } from 'next/navigation';
+import { deleteCard } from '@/utils/deleteCard';
 
-    const App = () => {
-        const [isLoading, setIsLoading] = useState(false);
+const App = () => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleCardDeleteWrapper = async (id: string, imageUrl?: string) => {
+        await deleteCard(id, imageUrl);
+    };
         const [sortOrder, setSortOrder] = useState('date');
         const [searchTerm, setSearchTerm] = useState('');
         const [showSearchForm, setShowSearchForm] = useState(false);
@@ -106,11 +111,9 @@
                     />
                     <main className="p-6 flex-1 overflow-y-auto h-[calc(100vh - 65px)] pb-30">
                         <ImageGallery
-                            StatusValue={() => { }}
-                            IsLoading={isLoading}
-                            sortOrder={sortOrder}
-                            searchTerm={searchTerm}
+                            isLoading={isLoading}
                             images={images}
+                            handleCardDelete={handleCardDeleteWrapper}
                         />
                     </main>
                 </div>

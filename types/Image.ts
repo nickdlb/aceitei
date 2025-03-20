@@ -1,11 +1,15 @@
 export interface Image {
     id: string;
     image_url: string;
-    imageTitle?: string;
+    imageTitle: string;
     created_at: string;
-    document_id?: string;
+    document_id: string;
     page_number?: number;
     user_id: string;
+    page_id: string;
+    title: string;
+    active_comments: number;
+    resolved_comments: number;
     documents?: {
         id: string;
         title: string;

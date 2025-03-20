@@ -1,6 +1,6 @@
 import { useImageCard } from '@/hooks/useImageCard';
-import { ImageCardHeader } from './ImageCardHeader';
-import { ImageCardContent } from './ImageCardContent';
+import { ImageCardHeader } from './CardHeader';
+import { ImageCardContent } from './CardContent';
 import { supabase } from '@/utils/supabaseClient';
 import { useEffect, useState } from 'react';
 
