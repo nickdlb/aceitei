@@ -1,4 +1,4 @@
-import { Pin } from '@/types/Pin';
+import PinProps from '@/types/Pin';
 import { supabase } from '@/utils/supabaseClient';
 import { deletePin as deletePinUtil } from '@/utils/deletePin';
 
@@ -13,8 +13,8 @@ import { deletePin as deletePinUtil } from '@/utils/deletePin';
  */
 export const handleDeletePin = async (
     pinId: string,
-    pins: Pin[],
-    setPins: (pins: Pin[] | ((prevPins: Pin[]) => Pin[])) => void,
+    pins: PinProps[],
+    setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void,
     setEditingPinId: (id: string | null) => void,
     setRefreshKey: (refreshKeyOrUpdater: number | ((prev: number) => number)) => void
@@ -22,18 +22,18 @@ export const handleDeletePin = async (
     try {
         // Chamar a função deletePinUtil e verificar o status de sucesso
         const result = await deletePinUtil(pinId);
-        
+
         if (!result.success) {
             console.error("Falha ao deletar pin:", result.error);
             return; // Sair da função se a exclusão falhar
         }
-        
+
         const pinToDelete = pins.find(p => p.id === pinId);
         if (!pinToDelete) {
             console.warn("Pin não encontrado para exclusão:", pinId);
             return;
         }
-        
+
         const deletedNumber = pinToDelete.num || 0;
 
         // Remove o pin excluído e reordena os números
@@ -64,7 +64,7 @@ export const handleDeletePin = async (
                         .from('comments')
                         .update({ pin_number: pin.num - 1 })
                         .eq('id', pin.id);
-                        
+
                     if (error) {
                         console.error("Erro ao atualizar número do pin:", error);
                     }

@@ -1,4 +1,4 @@
-import { Pin } from '@/types/Pin';
+import PinProps from '@/types/Pin';
 import { supabase } from '@/utils/supabaseClient';
 
 /**
@@ -7,7 +7,7 @@ import { supabase } from '@/utils/supabaseClient';
  * @param session The current user session
  * @returns Object with permission details
  */
-export const checkPermissions = async (pin: Pin, session: any) => {
+export const checkPermissions = async (pin: PinProps, session: any) => {
     if (!session?.user?.id) {
         // Se não houver usuário na sessão, não tem permissão.
         return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
@@ -35,17 +35,17 @@ export const checkPermissions = async (pin: Pin, session: any) => {
             // Se o pin não existir, retornar permissões baseadas apenas na propriedade do documento
             return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
         }
-        
+
         // Declarar a variável fora do bloco try para poder acessá-la depois
         let pinData: any = null;
-        
+
         try {
             const { data, error: pinError } = await supabase
                 .from('comments')
                 .select('user_id')
                 .eq('id', pin.id)
                 .single();
-                
+
             pinData = data;
 
             if (pinError) {
@@ -54,7 +54,7 @@ export const checkPermissions = async (pin: Pin, session: any) => {
                     // Pin não encontrado (provavelmente foi excluído)
                     return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
                 }
-                
+
                 console.error("Erro ao buscar o pin:", pinError);
                 // Em vez de lançar o erro, apenas registramos e continuamos
                 // Se o usuário for dono do documento, ele ainda tem permissão
@@ -64,7 +64,7 @@ export const checkPermissions = async (pin: Pin, session: any) => {
             console.error("Erro inesperado ao buscar o pin:", error);
             return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
         }
-        
+
         // Se chegamos aqui, temos os dados do pin
         const isCommentOwner = pinData?.user_id === session.user.id;
 

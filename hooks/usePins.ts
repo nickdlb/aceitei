@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Pin } from '@/types/Pin';
+import PinProps from '@/types/Pin';
 import { supabase } from '@/utils/supabaseClient';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { handleAuth } from '@/utils/handleAuth';
@@ -15,13 +15,13 @@ interface PageWithDocument {
 }
 
 export const usePins = (pageId: string, session: any) => {
-    const [pins, setPins] = useState<Pin[]>([]);
+    const [pins, setPins] = useState<PinProps[]>([]);
     const [editingPinId, setEditingPinId] = useState<string | null>(null);
     const [comments, setComments] = useState<{ [key: string]: string }>({});
     const [parentComments, setParentComments] = useState<{ [key: string]: Comment[] }>({});
     const [statusFilter, setStatusFilter] = useState<'ativo' | 'resolvido'>('ativo');
     const [refreshKey, setRefreshKey] = useState(0);
-    const [draggingPin, setDraggingPin] = useState<Pin | null>(null);
+    const [draggingPin, setDraggingPin] = useState<PinProps | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
     const [showAuthPopup, setShowAuthPopup] = useState(false);

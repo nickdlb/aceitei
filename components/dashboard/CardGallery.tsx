@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Card from './Card';
-import { Image } from '@/types/Image';
+import ImageProps from '@/types/ImageProps';
 
 interface CardGalleryProps {
-  images: Image[];
+  images: ImageProps[];
   handleCardDelete: (id: string, imageUrl?: string) => Promise<void>;
   isLoading: boolean;
 }
 
 const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isLoading }) => {
-  const [localImages, setLocalImages] = useState<Image[]>(images);
+  const [localImages, setLocalImages] = useState<ImageProps[]>(images);
 
   useEffect(() => {
     setLocalImages(images);

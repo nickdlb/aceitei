@@ -1,6 +1,6 @@
 import { supabase } from '@/utils/supabaseClient';
 import { insertPin } from '@/utils/insertPinSupa';
-import { Pin } from '@/types/Pin';
+import PinProps from '@/types/Pin';
 
 /**
  * Handles a click on an image to create a new pin
@@ -21,8 +21,8 @@ export const handleImageClick = async (
     xPercent: number,
     yPercent: number,
     pageId: string,
-    pins: Pin[],
-    setPins: (pins: Pin[] | ((prevPins: Pin[]) => Pin[])) => void,
+    pins: PinProps[],
+    setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void,
     setEditingPinId: (id: string | null) => void,
     statusFilter: 'ativo' | 'resolvido',
@@ -73,8 +73,8 @@ const updatePinPosition = async (
     xPercent: number,
     yPercent: number,
     pageId: string,
-    pins: Pin[],
-    setPins: (pins: Pin[] | ((prevPins: Pin[]) => Pin[])) => void
+    pins: PinProps[],
+    setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void
 ) => {
     try {
         // Update the pin position in the database
@@ -106,8 +106,8 @@ const createPin = async (
     xPercent: number,
     yPercent: number,
     pageId: string,
-    pins: Pin[],
-    setPins: (pins: Pin[] | ((prevPins: Pin[]) => Pin[])) => void,
+    pins: PinProps[],
+    setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void,
     setEditingPinId: (id: string | null) => void,
     statusFilter: 'ativo' | 'resolvido',
@@ -153,7 +153,7 @@ const createPin = async (
         );
 
         if (newPinData && newPinData[0]) {
-            const newPin: Pin = {
+            const newPin: PinProps = {
                 id: newPinData[0].id,
                 x: xPercent,
                 y: yPercent,

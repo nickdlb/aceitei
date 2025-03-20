@@ -1,18 +1,18 @@
 import { Session } from '@supabase/supabase-js';
-import { Pin } from './Pin';
+import PinProps from './Pin';
 
 export interface Comment {
- id: string;
+    id: string;
 }
 
 export interface ImageAreaProps {
     exibirImagem: string;
     imageTitle: string;
     imageId: string;
-    pins: Pin[];
+    pins: PinProps[];
     handleImageClick: (x: number, y: number) => void;
-    draggingPin: Pin | null;
-    setDraggingPin: (pin: Pin | null) => void;
+    draggingPin: PinProps | null;
+    setDraggingPin: (pin: PinProps | null) => void;
     isDragging: boolean;
     setIsDragging: (isDragging: boolean) => void;
     updatePinPosition: (pinId: string, x: number, y: number) => void;
@@ -23,7 +23,7 @@ export interface ImageAreaProps {
 }
 
 export interface CommentSidebarProps {
-    pins: Pin[];
+    pins: PinProps[];
     statusFilter: 'ativo' | 'resolvido' | null;
     setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => void;
     editingPinId: string | null;
@@ -37,7 +37,7 @@ export interface CommentSidebarProps {
 }
 
 export interface CommentItemProps {
-    pin: Pin;
+    pin: PinProps;
     comment: string;
     isEditing: boolean;
     userName: string;
@@ -49,9 +49,9 @@ export interface CommentItemProps {
 }
 
 export interface ImagePinProps {
-    pin: Pin;
-    draggingPin: Pin | null;
-    setDraggingPin: (pin: Pin | null) => void;
+    pin: PinProps;
+    draggingPin: PinProps | null;
+    setDraggingPin: (pin: PinProps | null) => void;
     isDragging: boolean;
     setIsDragging: (isDragging: boolean) => void;
     updatePinPosition: (pinId: string, x: number, y: number) => void;

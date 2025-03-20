@@ -1,4 +1,4 @@
-interface CardContentProps {
+export default interface CardContentProps {
     title: string;
     created_at: string;
     active_comments: number;
@@ -8,5 +8,3 @@ interface CardContentProps {
     handleTitleEdit: () => void;
     setIsEditing: (isEditing: boolean) => void;
 }
-
-export default CardContentProps;

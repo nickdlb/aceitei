@@ -1,9 +1,9 @@
-import { Pin } from '@/types/Pin';
+import PinProps from '@/types/PinProps';
 import { PencilIcon, CheckIcon, CogIcon, XMarkIcon, ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 import { formatDate } from '@/utils/formatDate';
 
 interface CommentListItemProps {
-  pin: Pin;
+  pin: PinProps;
   localComments: { [key: string]: string };
   editingPinId: string | null;
   permissions: { [key: string]: boolean };

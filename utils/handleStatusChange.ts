@@ -1,4 +1,4 @@
-import { Pin } from '@/types/Pin';
+import PinProps from '@/types/Pin';
 import { supabase } from '@/utils/supabaseClient';
 import { checkPermissions } from '@/utils/checkPermissions';
 
@@ -12,8 +12,8 @@ import { checkPermissions } from '@/utils/checkPermissions';
  */
 export const handleStatusChange = async (
     pinId: string,
-    pins: Pin[],
-    setPins: (pins: Pin[] | ((prevPins: Pin[]) => Pin[])) => void,
+    pins: PinProps[],
+    setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     session: any,
     loadComments: () => Promise<void>
 ) => {

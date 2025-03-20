@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CommentReaction } from '@/types/CommentReaction';
+import CommentReactionProps from '@/types/CommentReactionProps';
 import { Comment } from '@/types/CommentsProps';
 import { supabase } from '@/utils/supabaseClient';
 import { Session } from '@supabase/supabase-js';
@@ -13,7 +13,7 @@ interface CommentItemProps {
 const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props }) => {
     const [isReplying, setIsReplying] = useState(false);
     const [replyText, setReplyText] = useState('');
-    const [replies, setReplies] = useState<CommentReaction[]>([]);
+    const [replies, setReplies] = useState<CommentReactionProps[]>([]);
 
     const handleReply = async () => {
         if (!replyText.trim()) return;

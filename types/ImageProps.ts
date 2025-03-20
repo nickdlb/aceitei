@@ -1,4 +1,4 @@
-export interface Image {
+export default interface ImageProps {
     id: string;
     image_url: string;
     imageTitle: string;

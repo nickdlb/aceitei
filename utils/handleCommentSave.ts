@@ -1,4 +1,4 @@
-import { Pin } from '@/types/Pin';
+import PinProps from '@/types/Pin';
 import { supabase } from '@/utils/supabaseClient';
 import { checkPermissions } from '@/utils/checkPermissions';
 
@@ -15,9 +15,9 @@ import { checkPermissions } from '@/utils/checkPermissions';
  */
 export const handleCommentSave = async (
     pinId: string,
-    pins: Pin[],
+    pins: PinProps[],
     comments: { [key: string]: string },
-    setPins: (pins: Pin[] | ((prevPins: Pin[]) => Pin[])) => void,
+    setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     setEditingPinId: (id: string | null) => void,
     loadComments: () => Promise<void>,
     setRefreshKey: (refreshKeyOrUpdater: number | ((prev: number) => number)) => void,
