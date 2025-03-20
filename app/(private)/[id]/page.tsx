@@ -13,7 +13,6 @@ import { handleStatusChange } from '@/utils/handleStatusChange';
 import { handleCommentChange } from '@/utils/handleCommentChange';
 import { handleCommentSave } from '@/utils/handleCommentSave';
 import { handleDeletePin } from '@/utils/handleDeletePin';
-import { type Page as DocumentPage } from '@/types/Document';
 import { handleAuth } from '@/utils/handleAuth';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
