@@ -2,14 +2,12 @@
 'use client'
 import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from 'react';
-import CommentBar from '@/components/comment/CommentBar';
-import ImageArea from '@/components/comment/ImageArea';
 import { useAuth } from '@/components/AuthProvider';
 import { usePins } from '@/hooks/usePins';
+import { usePageData } from '@/hooks/usePageData';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { supabase } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/imageUrl';
-import ImageSidebar from '@/components/comment/ImageSidebar';
-import AuthPopup from '@/components/auth/AuthPopup';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { handleStatusChange } from '@/utils/handleStatusChange';
 import { handleCommentChange } from '@/utils/handleCommentChange';
@@ -27,84 +25,12 @@ export default function Page() {
     const { session } = useAuth();
     const imageRef = useRef<HTMLImageElement>(null);
     const [isPagesOpen, setIsPagesOpen] = useState(true);
-    const [loading, setLoading] = useState(true);
-    const [pageData, setPageData] = useState<DocumentPage | null>(null);
-    const [pages, setPages] = useState<Array<{
-        id: string;
-        image_url: string;
-        page_number: number;
-    }>>([]);
+    const { loading, pageData, pages } = usePageData(pageId);
     const router = useRouter();
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
+    const [refreshKey, setRefreshKey] = useState(0);
 
-    useEffect(() => {
-        const loadPage = async () => {
-            if (!pageId) return;
-
-            try {
-                const { data: document } = await supabase
-                    .from('documents')
-                    .select('id')
-                    .eq('id', pageId)
-                    .single();
-
-                let targetPageId = pageId;
-
-                if (document) {
-                    const { data: firstPage } = await supabase
-                        .from('pages')
-                        .select('id')
-                        .eq('document_id', document.id)
-                        .eq('page_number', 1)
-                        .single();
-
-                    if (firstPage) {
-                        targetPageId = firstPage.id;
-                    }
-                }
-
-                const { data: page } = await supabase
-                    .from('pages')
-                    .select(`
-                        *,
-                        documents!pages_document_id_fkey (
-                            id,
-                            title,
-                            created_at,
-                            user_id
-                        )
-                    `)
-                    .eq('id', targetPageId)
-                    .single();
-
-                if (!page) {
-                    console.error('Page not found');
-                    return;
-                }
-
-                const { data: allPages } = await supabase
-                    .from('pages')
-                    .select('id, image_url, page_number')
-                    .eq('document_id', page.document_id)
-                    .order('page_number');
-
-                if (document && targetPageId !== pageId) {
-                    router.replace(`/${targetPageId}`, { scroll: false });
-                }
-
-                setPages(allPages || []);
-                setPageData(page);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error in loadPage:', error);
-                setLoading(false);
-            }
-        };
-
-        loadPage();
-    }, [pageId, router]);
-
-    const {
+     const {
         pins,
         editingPinId,
         comments,
@@ -138,9 +64,7 @@ export default function Page() {
         loadComments();
     };
 
-    const [refreshKey, setRefreshKey] = useState(0);
-
-    const handleDeletePinPin = async (pinId: string) => {
+   const handleDeletePinPin = async (pinId: string) => {
         await handleDeletePin(
             pinId,
             pins,
@@ -151,31 +75,7 @@ export default function Page() {
         );
     };
 
-    // Add keyboard event listener for ESC key
-    useEffect(() => {
-        const handleKeyDown = async (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                // If a pin is being edited, cancel the edit
-                if (editingPinId) {
-                    // Find the pin being edited
-                    const editingPin = pins.find(pin => pin.id === editingPinId);
-                    
-                    // If it's a new pin (no comment) or empty comment, delete it
-                    if (editingPin && (!editingPin.comment || editingPin.comment.trim() === '')) {
-                        await handleDeletePinPin(editingPinId);
-                    } else {
-                        // Otherwise just cancel the edit
-                        setEditingPinId(null);
-                    }
-                }
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [editingPinId, setEditingPinId, pins, handleDeletePinPin]);
+    useEscapeKey(editingPinId, setEditingPinId, pins, handleDeletePinPin);
 
     const handleImageClickPin = async (xPercent: number, yPercent: number) => {
         await handleImageClickUtil(
@@ -225,6 +125,7 @@ export default function Page() {
     const handlePageChange = async (newPageId: string) => {
         router.push(`/${newPageId}`, { scroll: false });
     };
+
     const handleTitleUpdate = async (newTitle: string) => {
         if (pageData) {
             try {
@@ -237,16 +138,18 @@ export default function Page() {
                     console.error('Erro ao atualizar o título:', error);
                     return;
                 }
+                // Use pageData and update it, checking for null
+                if (pageData) {
+                  pageData.imageTitle = newTitle;
+                }
 
-                setPageData({ ...pageData, imageTitle: newTitle });
             } catch (error) {
                 console.error('Erro na atualização do título:', error);
             }
         }
     };
 
-
-    if (loading || !pageData) {
+   if (loading || !pageData) {
         return (
             <PageLoadingSpinner />
         );
@@ -257,6 +160,7 @@ export default function Page() {
     if (!imageUrl) {
         return <PageImageNotFound />;
     }
+
 
     const filteredPins = pins.filter(pin => pin.status === statusFilter);
 
