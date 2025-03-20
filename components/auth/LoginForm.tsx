@@ -1,16 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-
-interface LoginFormProps {
-  email: string;
-  setEmail: (email: string) => void;
-  password: string;
-  setPassword: (password: string) => void;
-  loading: boolean;
-  error: string;
-  handleLogin: (e: React.FormEvent) => void;
-  handleGoogleLogin: () => void;
-}
+import LoginFormProps from '@/types/LoginFormProps';
 
 const LoginForm: React.FC<LoginFormProps> = ({
   email,

@@ -5,10 +5,7 @@ import { useAuth } from '../../AuthProvider';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import MultipleUploadModal from './MultipleUploadModal';
 import { supabase } from '@/utils/supabaseClient';
-
-interface UploadZoneProps {
-    onUploadSuccess: (data: any) => void;
-}
+import UploadZoneProps from '@/types/UploadZoneProps';
 
 export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
     const { session } = useAuth();

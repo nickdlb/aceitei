@@ -1,14 +1,9 @@
 'use client';
+import ProfilePhotoProps from '@/types/ProfilePhotoProps';
 
 import React, { useState } from 'react';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/utils/supabaseClient';
-
-interface ProfilePhotoProps {
-  photoURL: string;
-  onUpdatePhoto: (url: string) => void;
-  userId: string | null;
-}
 
 const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, userId }) => {
   const [newPhoto, setNewPhoto] = useState<File | null>(null);

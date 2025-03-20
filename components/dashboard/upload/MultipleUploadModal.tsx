@@ -1,12 +1,5 @@
 import { DocumentDuplicateIcon, DocumentIcon } from '@heroicons/react/24/outline';
-
-interface MultipleUploadModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSeparate: () => void;
-    onCombine: () => void;
-    filesCount: number;
-}
+import MultipleUploadModalProps from '@/types/MultipleUploadModalProps';
 
 export default function MultipleUploadModal({
     isOpen,

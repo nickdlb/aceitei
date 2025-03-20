@@ -1,14 +1,7 @@
 import { useState } from 'react';
 import CommentReactionProps from '@/types/CommentReactionProps';
-import { Comment } from '@/types/CommentsProps';
 import { supabase } from '@/utils/supabaseClient';
-import { Session } from '@supabase/supabase-js';
-
-interface CommentItemProps {
-    comment: Comment;
-    session: Session | null;
-    // ... outras props existentes
-}
+import CommentItemProps from '@/types/CommentItemProps';
 
 const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props }) => {
     const [isReplying, setIsReplying] = useState(false);

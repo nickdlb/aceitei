@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-
-interface AuthPopupProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSubmit: (name: string, email: string) => Promise<void>;
-}
+import AuthPopupProps from '@/types/AuthPopupProps';
 
 const AuthPopup = ({ isOpen, onClose, onSubmit }: AuthPopupProps) => {
     const [name, setName] = useState('');

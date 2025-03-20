@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Card from './Card';
 import ImageProps from '@/types/ImageProps';
-
-interface CardGalleryProps {
-  images: ImageProps[];
-  handleCardDelete: (id: string, imageUrl?: string) => Promise<void>;
-  isLoading: boolean;
-}
+import CardGalleryProps from '@/types/CardGalleryProps';
 
 const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isLoading }) => {
   const [localImages, setLocalImages] = useState<ImageProps[]>(images);

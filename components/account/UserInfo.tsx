@@ -3,15 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/AuthProvider';
-
-interface UserInfoProps {
-  userData: {
-    nome: string;
-    email: string;
-  };
-  onUpdateName: (newName: string) => void;
-  userId: string | null;
-}
+import UserInfoProps from '@/types/UserInfoProps';
 
 const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) => {
   const [editingName, setEditingName] = useState(false);
