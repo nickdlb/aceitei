@@ -1,4 +1,4 @@
-import PinProps from '@/types/Pin';
+import PinProps from '@/types/PinProps';
 import { supabase } from '@/utils/supabaseClient';
 import { deletePin as deletePinUtil } from '@/utils/deletePin';
 
