@@ -1,5 +1,5 @@
-// page.tsx
 'use client'
+
 import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
