@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CommentReaction } from '@/types/CommentReaction';
-import { Comment } from '@/types/Comments';
+import { Comment } from '@/types/CommentsProps';
 import { supabase } from '@/utils/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 
