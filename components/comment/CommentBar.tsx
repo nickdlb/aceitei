@@ -1,12 +1,12 @@
 // CommentBar.tsx
 import SidebarFooter from '../sidebar/SidebarFooter';
-import { CommentSidebarProps, CommentReaction } from '@/types/CommentsProps';
+import { CommentSidebarProps} from '@/types/CommentsProps';
 import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { handleCommentSave as handleCommentSaveUtil } from '@/utils/handleCommentSave';
 import { handleDeletePin as handleDeletePinUtil } from '@/utils/handleDeletePin';
 import { handleStatusChange as handleStatusChangeUtil } from '@/utils/handleStatusChange';
-import { handleReply, handleReplyKeyPress, toggleReplies } from '@/utils/handleReplyFunctions';
+import { handleReply} from '@/utils/handleReplyFunctions';
 import { handleCommentChange as handleCommentChangeUtil } from '@/utils/handleCommentChange';
 import { checkPermissions as checkPermissionsUtil } from '@/utils/checkPermissions';
 import CommentFilter from './CommentFilter';
@@ -35,7 +35,6 @@ const CommentBar = ({
   const openRepliesRef = useRef<{ [key: string]: boolean }>({});
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
 
-  // Update localComments when comments prop changes
   useEffect(() => {
     setLocalComments(comments || {});
   }, [comments]);
@@ -81,7 +80,6 @@ const CommentBar = ({
     loadPermissions();
   }, [pins, session]);
 
-  // Adicionar useEffect para verificar se os comentários estão visíveis
   useEffect(() => {
     // Verificar se há pins sem comentários visíveis
     const checkComments = () => {
@@ -107,7 +105,6 @@ const CommentBar = ({
     return () => clearTimeout(timer);
   }, [pins, localComments]);
 
-  // Adicione este useEffect para verificar as respostas ao carregar
   useEffect(() => {
     // Inicializar o estado de showReplies com base nos pins carregados
     const initialShowReplies: { [key: string]: boolean } = {};
@@ -174,12 +171,10 @@ const CommentBar = ({
     loadUserNames();
   }, [pins, initialUserNames]);
 
-  // Usar a função de utilidade para handleCommentChange
   const handleCommentChange = (pinId: string, value: string) => {
     handleCommentChangeUtil(pinId, value, setLocalComments);
   };
 
-  // Usar a função de utilidade para handleCommentSave
   const handleCommentSave = async (pinId: string) => {
     await handleCommentSaveUtil(
       pinId,
@@ -193,7 +188,6 @@ const CommentBar = ({
     );
   };
 
-  // Usar a função de utilidade para handleDeletePin
   const handleDeletePin = async (pinId: string) => {
     try {
       await handleDeletePinUtil(
@@ -212,7 +206,6 @@ const CommentBar = ({
     }
   };
 
-  // Usar a função de utilidade para handleStatusChange
   const handleStatusChange = async (pinId: string) => {
     await handleStatusChangeUtil(
       pinId,
@@ -278,7 +271,6 @@ const CommentBar = ({
     };
   };
 
-  // Função para lidar com o pressionamento de tecla nas respostas
   const handleReplyKeyPressLocal = (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
