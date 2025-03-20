@@ -1,7 +1,6 @@
 import { Pin } from '@/types/Pin';
 import { PencilIcon, CheckIcon, CogIcon, XMarkIcon, ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 import { formatDate } from '@/utils/formatDate';
-import { useState } from 'react';
 
 interface CommentListItemProps {
   pin: Pin;

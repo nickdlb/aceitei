@@ -95,3 +95,5 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props })
         </div>
     );
 };
+
+export default CommentItem;

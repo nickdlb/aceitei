@@ -1,6 +1,4 @@
 // CommentBar.tsx
-import { formatDate } from '@/utils/formatDate';
-import { Pin } from '@/types/Pin';
 import SidebarFooter from '../sidebar/SidebarFooter';
 import { CommentSidebarProps, CommentReaction } from '@/types/comments';
 import { supabase } from '@/utils/supabaseClient';
@@ -28,14 +26,6 @@ const CommentBar = ({
   loadRepliesForPin,
   setShowAuthPopup
 }: CommentSidebarProps) => {
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const formattedDate = formatDate(dateString);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${formattedDate} ${hours}:${minutes}`;
-  };
-
   const [refreshKey, setRefreshKey] = useState(0);
   const [localComments, setLocalComments] = useState<{ [key: string]: string }>(comments || {});
   const [permissions, setPermissions] = useState<{ [key: string]: boolean }>({});
@@ -128,7 +118,7 @@ const CommentBar = ({
         initialShowReplies[pin.id] = showReplies[pin.id] || openRepliesRef.current[pin.id] || false;
       }
     });
-    
+
     // Mesclar com o estado atual para preservar pins que já estão abertos
     setShowReplies(prev => ({
       ...initialShowReplies,
@@ -246,7 +236,7 @@ const CommentBar = ({
       ...openRepliesRef.current,
       [pinId]: true
     };
-    
+
     await handleReply(
       pinId,
       replyText,
@@ -256,14 +246,14 @@ const CommentBar = ({
       loadComments,
       setShowReplies
     );
-    
+
     // Ensure replies stay open after sending
     setTimeout(() => {
       openRepliesRef.current = {
         ...openRepliesRef.current,
         [pinId]: true
       };
-      
+
       setShowReplies(prev => ({
         ...prev,
         [pinId]: true

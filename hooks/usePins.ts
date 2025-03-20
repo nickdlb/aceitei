@@ -7,7 +7,6 @@ import { loadPins } from './usePins/loadPins';
 import { loadComments } from './usePins/loadComments';
 import { updatePinPosition } from './usePins/updatePinPosition';
 import { loadRepliesForPin } from './usePins/loadRepliesForPin';
-import { Dispatch, SetStateAction } from 'react';
 
 interface PageWithDocument {
     documents: {

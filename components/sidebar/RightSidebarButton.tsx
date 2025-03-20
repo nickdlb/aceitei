@@ -44,4 +44,3 @@ const RightSidebarButton: React.FC<RightSidebarButtonProps> = ({
 };
 
 export default RightSidebarButton;
-

@@ -76,4 +76,4 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
         console.error('Error in uploadImage:', error);
         return null;
     }
-}; 
+};
