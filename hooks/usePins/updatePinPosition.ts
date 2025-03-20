@@ -1,5 +1,5 @@
 import { supabase } from '@/utils/supabaseClient';
-import PinProps from '@/types/Pin';
+import PinProps from '@/types/PinProps';
 import { Dispatch, SetStateAction } from 'react';
 
 export const updatePinPosition = async (pinId: string, xPercent: number, yPercent: number, pins: PinProps[], setPins: Dispatch<SetStateAction<PinProps[]>>, loadComments: () => Promise<void>) => {

@@ -1,5 +1,5 @@
 import { supabase } from '@/utils/supabaseClient';
-import PinProps from '@/types/Pin';
+import PinProps from '@/types/PinProps';
 
 interface LoadCommentsResult {
     pins: PinProps[];
