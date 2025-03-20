@@ -1,6 +1,6 @@
 import { supabase } from '@/utils/supabaseClient';
 import { insertPin } from '@/utils/insertPinSupa';
-import PinProps from '@/types/Pin';
+import PinProps from '@/types/PinProps';
 
 /**
  * Handles a click on an image to create a new pin
