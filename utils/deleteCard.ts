@@ -19,8 +19,26 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
         // 2. Se houver páginas, buscar todos os comentários associados a essas páginas
         if (pages && pages.length > 0) {
             const pageIds = pages.map(page => page.id);
+
+            // 3. Excluir todas as reações de comentários associadas aos comentários
+            const { data: comments, error: commentsFetchError } = await supabase
+                .from('comments')
+                .select('id')
+                .in('page_id', pageIds);
+
+            if (commentsFetchError) throw commentsFetchError;
+
+            if (comments && comments.length > 0) {
+                const commentIds = comments.map(comment => comment.id);
+                const { error: reactionsError } = await supabase
+                    .from('comment_reactions')
+                    .delete()
+                    .in('comment_id', commentIds);
+
+                if (reactionsError) throw reactionsError;
+            }
             
-            // 3. Excluir todos os comentários associados às páginas
+            // 4. Excluir todos os comentários associados às páginas
             const { error: commentsError } = await supabase
                 .from('comments')
                 .delete()
@@ -28,7 +46,7 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
 
             if (commentsError) throw commentsError;
             
-            // 4. Excluir todas as páginas associadas ao documento
+            // 5. Excluir todas as páginas associadas ao documento
             const { error: deletePageError } = await supabase
                 .from('pages')
                 .delete()
@@ -37,7 +55,7 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
             if (deletePageError) throw deletePageError;
         }
 
-        // 5. Excluir o documento
+        // 6. Excluir o documento
         const { error: documentError } = await supabase
             .from('documents')
             .delete()
@@ -45,7 +63,7 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
 
         if (documentError) throw documentError;
 
-        // 6. Se houver uma URL de imagem, excluir a imagem do storage
+        // 7. Se houver uma URL de imagem, excluir a imagem do storage
         if (imageUrl) {
             // Extrair o caminho da imagem da URL completa
             const imagePath = imageUrl.split('/').pop();
