@@ -17,6 +17,9 @@ import { handleCommentSave } from '@/utils/handleCommentSave';
 import { handleDeletePin } from '@/utils/handleDeletePin';
 import { type Page as DocumentPage } from '@/types/Document';
 import { handleAuth } from '@/utils/handleAuth';
+import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
+import PageImageNotFound from '@/components/common/PageImageNotFound';
+import PageLayout from '@/components/layouts/PageLayout';
 
 export default function Page() {
     const params = useParams();
@@ -245,16 +248,14 @@ export default function Page() {
 
     if (loading || !pageData) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
+            <PageLoadingSpinner />
         );
     }
 
     const imageUrl = getImageUrl(pageData.image_url);
 
     if (!imageUrl) {
-        return <div className="flex h-screen items-center justify-center">Imagem não encontrada</div>;
+        return <PageImageNotFound />;
     }
 
     const filteredPins = pins.filter(pin => pin.status === statusFilter);
@@ -302,30 +303,17 @@ export default function Page() {
         await handleAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
     };
 
-
     return (
-        <div className="w-full h-screen flex">
-            {/* Sidebar de Comentários */}
-            <div className="w-96 flex-shrink-0 bg-gray-100 border-r border-gray-300"> {/* Mantém a largura fixa aqui */}
-                <CommentBar {...commentBarProps} />
-            </div>
-
-            {/* Conteúdo Principal */}
-            <div className="flex-1 flex">
-                <ImageArea {...imageAreaProps} />
-                {pages.length > 1 && isPagesOpen && (
-                    <ImageSidebar
-                        pages={pages}
-                        currentPage={pageId}
-                        onPageChange={handlePageChange}
-                    />
-                )}
-            </div>
-            <AuthPopup
-                isOpen={showAuthPopup}
-                onClose={() => setShowAuthPopup(false)}
-                onSubmit={handleAuthSubmitAnonForm}
-            />
-        </div>
+        <PageLayout
+            commentBarProps={commentBarProps}
+            imageAreaProps={imageAreaProps}
+            pages={pages}
+            pageId={pageId}
+            isPagesOpen={isPagesOpen}
+            showAuthPopup={showAuthPopup}
+            setShowAuthPopup={setShowAuthPopup}
+            handleAuthSubmitAnonForm={handleAuthSubmitAnonForm}
+            handlePageChange={handlePageChange}
+        />
     );
 }
