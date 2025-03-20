@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabaseClient';
-import { type Page as DocumentPage } from '@/types/Document';
+import { type Page as DocumentPage } from '@/types/DocumentProps';
 import { useRouter } from 'next/navigation';
 
 export function usePageData(pageId: string) {
