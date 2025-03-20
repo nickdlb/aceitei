@@ -1,24 +1,16 @@
 import { EyeIcon, ShareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useState } from 'react';
+import CardHeaderProps from '@/types/CardHeaderProps';
 
-interface ImageCardHeaderProps {
-    imageUrl: string;
-    imageTitle: string;
-    pageId: string | null;
-    handleShare: () => void;
-    handleDelete: (e: React.MouseEvent) => void;
-    isDeleting: boolean;
-}
-
-export const ImageCardHeader = ({
+export const CardHeader = ({
     imageUrl,
     imageTitle,
     pageId,
     handleShare,
     handleDelete,
     isDeleting
-}: ImageCardHeaderProps) => {
+}: CardHeaderProps) => {
     const [isNavigating, setIsNavigating] = useState(false);
 
     const handleClick = (e: React.MouseEvent) => {
@@ -70,4 +62,4 @@ export const ImageCardHeader = ({
             </div>
         </div>
     );
-}; 
+};

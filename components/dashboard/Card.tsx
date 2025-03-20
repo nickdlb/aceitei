@@ -1,23 +1,9 @@
 import { useImageCard } from '@/hooks/useImageCard';
-import { ImageCardHeader } from './CardHeader';
-import { ImageCardContent } from './CardContent';
+import { CardHeader } from './CardHeader';
+import { CardContent } from './CardContent';
 import { supabase } from '@/utils/supabaseClient';
 import { useEffect, useState } from 'react';
-
-interface ImageCardProps {
-    image: {
-        id: string;
-        document_id: string;
-        image_url: string;
-        imageTitle: string;
-        created_at: string;
-        page_id: string;
-        title: string;
-        active_comments: number;
-        resolved_comments: number;
-    };
-    onDelete: (id: string) => void;
-}
+import ImageCardProps from '@/types/CardProps';
 
 export default function ImageCard({ image, onDelete }: ImageCardProps) {
     const [firstPageId, setFirstPageId] = useState<string | null>(null);
@@ -63,7 +49,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
 
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-80">
-            <ImageCardHeader
+            <CardHeader
                 imageUrl={imageUrl}
                 imageTitle={image.imageTitle}
                 pageId={firstPageId || image.document_id}
@@ -72,7 +58,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
                 isDeleting={isDeleting}
             />
 
-            <ImageCardContent
+            <CardContent
                 title={title}
                 created_at={image.created_at}
                 active_comments={image.active_comments}

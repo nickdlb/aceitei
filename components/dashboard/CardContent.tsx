@@ -1,19 +1,9 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { PencilIcon, ChatBubbleLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import CardContentProps from '@/types/CardContentProps';
 
-interface ImageCardContentProps {
-    title: string;
-    created_at: string;
-    active_comments: number;
-    resolved_comments: number;
-    isEditing: boolean;
-    setTitle: (title: string) => void;
-    handleTitleEdit: () => void;
-    setIsEditing: (isEditing: boolean) => void;
-}
-
-export const ImageCardContent = ({
+export const CardContent = ({
     title,
     created_at,
     active_comments,
@@ -22,7 +12,7 @@ export const ImageCardContent = ({
     setTitle,
     handleTitleEdit,
     setIsEditing
-}: ImageCardContentProps) => {
+}: CardContentProps) => {
     return (
         <div className="p-4">
             <div className="flex flex-col">
@@ -72,4 +62,4 @@ export const ImageCardContent = ({
             </div>
         </div>
     );
-}; 
+};
