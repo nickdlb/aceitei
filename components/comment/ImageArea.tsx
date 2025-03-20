@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import ImagePin from './ImagePin';
-import { ImageAreaProps } from '@/types/comments';
+import { ImageAreaProps } from '@/types/Comments';
 import { ArrowDownTrayIcon, PencilIcon, Squares2X2Icon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/utils/supabaseClient';
 

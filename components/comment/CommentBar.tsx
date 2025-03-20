@@ -1,6 +1,6 @@
 // CommentBar.tsx
 import SidebarFooter from '../sidebar/SidebarFooter';
-import { CommentSidebarProps, CommentReaction } from '@/types/comments';
+import { CommentSidebarProps, CommentReaction } from '@/types/Comments';
 import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { handleCommentSave as handleCommentSaveUtil } from '@/utils/handleCommentSave';

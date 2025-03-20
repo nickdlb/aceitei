@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ImagePinProps } from '@/types/comments';
+import { ImagePinProps } from '@/types/Comments';
 
 interface ExtendedImagePinProps extends ImagePinProps {
   style?: React.CSSProperties;
