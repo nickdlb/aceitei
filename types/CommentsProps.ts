@@ -1,5 +1,5 @@
 import { Session } from '@supabase/supabase-js';
-import PinProps from './Pin';
+import PinProps from './PinProps';
 
 export interface Comment {
     id: string;
