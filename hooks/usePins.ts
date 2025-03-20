@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import PinProps from '@/types/Pin';
+import PinProps from '@/types/PinProps';
 import { supabase } from '@/utils/supabaseClient';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { handleAuth } from '@/utils/handleAuth';
