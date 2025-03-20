@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-import { Page } from '@/types/Document';
+import { Page } from '@/types/DocumentProps';
 
 export const loadImages = async (userId?: string): Promise<Page[]> => {
     try {
@@ -45,7 +45,12 @@ export const loadImages = async (userId?: string): Promise<Page[]> => {
             created_at: item.created_at,
             user_id: item.user_id,
             documents: Array.isArray(item.documents) && item.documents[0]
-                ? item.documents[0]
+                ? {
+                    id: item.documents[0].id,
+                    title: item.documents[0].title,
+                    created_at: item.documents[0].created_at,
+                    user_id: item.documents[0].user_id,
+                }
                 : undefined
         })) || [];
 

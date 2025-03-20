@@ -6,5 +6,12 @@ export interface Page {
     imageTitle: string;
     created_at: string;
     user_id: string;
-    documents?: Document;
+    documents?: DocumentProps;
+}
+
+export interface DocumentProps {
+    id: any;
+    title: any;
+    created_at: any;
+    user_id: any;
 }
