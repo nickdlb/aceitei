@@ -1,5 +1,5 @@
 import { supabase } from '@/utils/supabaseClient';
-import { createComment } from '@/utils/createPin';
+import { CommentCreate } from '@/utils/commentUtils';
 import PinProps from '@/types/PinProps';
 
 /**
@@ -50,7 +50,7 @@ export const handleImageClick = async (
         setEditingPinId(editingPin.id);
     } else {
         // Create a new pin
-        await createComment(
+        await CommentCreate(
             xPercent,
             yPercent,
             pageId,

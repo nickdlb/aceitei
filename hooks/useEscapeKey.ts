@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
 
-export function useEscapeKey(editingPinId: string | null, setEditingPinId: (id: string | null) => void, pins: any[], handleDeletePin: (pinId: string) => Promise<void>) {
+export function useEscapeKey(editingPinId: string | null, setEditingPinId: (id: string | null) => void, pins: any[], CommentDelete: (pinId: string) => Promise<void>) {
     useEffect(() => {
         const handleKeyDown = async (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 if (editingPinId) {
                     const editingPin = pins.find(pin => pin.id === editingPinId);
-                    
+
                     if (editingPin && (!editingPin.comment || editingPin.comment.trim() === '')) {
-                        await handleDeletePin(editingPinId);
+                        await CommentDelete(editingPinId);
                     } else {
                         setEditingPinId(null);
                     }
@@ -20,5 +20,5 @@ export function useEscapeKey(editingPinId: string | null, setEditingPinId: (id: 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [editingPinId, setEditingPinId, pins, handleDeletePin]);
+    }, [editingPinId, setEditingPinId, pins, CommentDelete]);
 }

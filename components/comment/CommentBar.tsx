@@ -1,13 +1,11 @@
 // CommentBar.tsx
 import SidebarFooter from '../sidebar/SidebarFooter';
-import { CommentSidebarProps} from '@/types/CommentsProps';
+import { CommentSidebarProps } from '@/types/CommentsProps';
 import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
-import { handleCommentSave as handleCommentSaveUtil } from '@/utils/handleCommentSave';
-import { handleDeletePin as handleDeletePinUtil } from '@/utils/handleDeletePin';
-import { handleStatusChange as handleStatusChangeUtil } from '@/utils/handleStatusChange';
-import { handleReply} from '@/utils/handleReplyFunctions';
-import { handleCommentChange as handleCommentChangeUtil } from '@/utils/handleCommentChange';
+import { CommentSaveUtil as CommentSaveUtil } from '@/utils/commentUtils';
+import { CommentDeleteUtil, CommentStatusChangeUtil, CommentChangeUtil } from '@/utils/commentUtils';
+import { handleReply } from '@/utils/handleReplyFunctions';
 import { checkPermissions as checkPermissionsUtil } from '@/utils/checkPermissions';
 import CommentFilter from './CommentFilter';
 import CommentHeader from './CommentHeader';
@@ -171,12 +169,12 @@ const CommentBar = ({
     loadUserNames();
   }, [pins, initialUserNames]);
 
-  const handleCommentChange = (pinId: string, value: string) => {
-    handleCommentChangeUtil(pinId, value, setLocalComments);
+  const CommentChange = (pinId: string, value: string) => {
+    CommentChangeUtil(pinId, value, setLocalComments);
   };
 
-  const handleCommentSave = async (pinId: string) => {
-    await handleCommentSaveUtil(
+  const CommentSave = async (pinId: string) => {
+    await CommentSaveUtil(
       pinId,
       pins,
       localComments,
@@ -188,9 +186,9 @@ const CommentBar = ({
     );
   };
 
-  const handleDeletePin = async (pinId: string) => {
+  const CommentDelete = async (pinId: string) => {
     try {
-      await handleDeletePinUtil(
+      await CommentDeleteUtil(
         pinId,
         pins,
         () => loadComments(),
@@ -206,8 +204,8 @@ const CommentBar = ({
     }
   };
 
-  const handleStatusChange = async (pinId: string) => {
-    await handleStatusChangeUtil(
+  const CommentStatusChange = async (pinId: string) => {
+    await CommentStatusChangeUtil(
       pinId,
       pins,
       () => loadComments(),
@@ -219,7 +217,7 @@ const CommentBar = ({
   const handleKeyPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      await handleCommentSave(pinId);
+      await CommentSave(pinId);
     }
   };
 
@@ -309,10 +307,10 @@ const CommentBar = ({
                 userNames={userNames}
                 showReplies={showReplies}
                 replyText={replyText}
-                handleCommentChange={handleCommentChange}
-                handleCommentSave={handleCommentSave}
-                handleDeletePin={handleDeletePin}
-                handleStatusChange={handleStatusChange}
+                CommentChange={CommentChange}
+                CommentSave={CommentSave}
+                CommentDelete={CommentDelete}
+                CommentStatusChange={CommentStatusChange}
                 setEditingPinId={setEditingPinId}
                 handleReplyLocal={handleReplyLocal}
                 setReplyText={setReplyText}

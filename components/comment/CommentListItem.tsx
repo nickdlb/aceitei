@@ -10,10 +10,10 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   userNames,
   showReplies,
   replyText,
-  handleCommentChange,
-  handleCommentSave,
-  handleDeletePin,
-  handleStatusChange,
+  CommentChange,
+  CommentSave,
+  CommentDelete,
+  CommentStatusChange,
   setEditingPinId,
   handleReplyLocal,
   setReplyText,
@@ -30,7 +30,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
   const handleEnterPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
     event.preventDefault();
-    await handleCommentSave(pinId);
+    await CommentSave(pinId);
   };
 
   const handleEscapePress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
@@ -42,7 +42,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
     if (!pinComment) {
       // If it's a new pin (not yet saved), delete it
-      await handleDeletePin(pinId);
+      await CommentDelete(pinId);
     } else {
       // If it's an existing pin being edited, just discard the edit
       setEditingPinId(null);
@@ -78,7 +78,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           )}
           {permissions[pin.id] && (
             <button
-              onClick={() => handleDeletePin(pin.id)}
+              onClick={() => CommentDelete(pin.id)}
               className="text-gray-400 hover:text-gray-600"
             >
               <XMarkIcon className="w-4 h-4" />
@@ -91,14 +91,14 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         <div>
           <textarea
             value={localComments[pin.id] || ''}
-            onChange={(e) => handleCommentChange(pin.id, e.target.value)}
+            onChange={(e) => CommentChange(pin.id, e.target.value)}
             onKeyDown={(e) => handleKeyPress(e, pin.id)}
             className="w-full p-2 border rounded mb-2 min-h-[60px] resize-none text-sm"
             placeholder="Comentário..."
             autoFocus
           />
           <button
-            onClick={() => handleCommentSave(pin.id)}
+            onClick={() => CommentSave(pin.id)}
             disabled={!localComments[pin.id]?.trim()}
             className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
           >
@@ -123,7 +123,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
             )}
             {permissions[pin.id] && (
               <button
-                onClick={() => handleStatusChange(pin.id)}
+                onClick={() => CommentStatusChange(pin.id)}
                 className={`${pin.status === 'ativo'
                   ? 'text-yellow-500 hover:text-yellow-600'
                   : 'text-green-500 hover:text-green-600'

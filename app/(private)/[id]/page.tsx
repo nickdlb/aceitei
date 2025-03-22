@@ -10,10 +10,7 @@ import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { supabase } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/imageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
-import { handleStatusChange } from '@/utils/handleStatusChange';
-import { handleCommentChange } from '@/utils/handleCommentChange';
-import { handleCommentSave } from '@/utils/handleCommentSave';
-import { handleDeletePin } from '@/utils/handleDeletePin';
+import { CommentStatusChangeUtil, CommentChangeUtil, CommentSaveUtil, CommentDeleteUtil } from '@/utils/commentUtils';
 import { handleAuth } from '@/utils/handleAuth';
 import { updatePageLastAccessed } from '@/utils/updatePageLastAccessed';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
@@ -59,7 +56,7 @@ export default function Page() {
         loadComments,
         loadRepliesForPin
     } = usePins(pageId, session);
-    
+
     useRealtimeComments(pageId, loadComments);
 
     // Define a local setPins function to update pins state
@@ -77,8 +74,8 @@ export default function Page() {
         loadComments();
     };
 
-   const handleDeletePinPin = async (pinId: string) => {
-        await handleDeletePin(
+    const CommentDeletePin = async (pinId: string) => {
+        await CommentDeleteUtil(
             pinId,
             pins,
             setPins,
@@ -88,7 +85,7 @@ export default function Page() {
         );
     };
 
-    useEscapeKey(editingPinId, setEditingPinId, pins, handleDeletePinPin);
+    useEscapeKey(editingPinId, setEditingPinId, pins, CommentDeletePin);
 
     const handleImageClickPin = async (xPercent: number, yPercent: number) => {
         await handleImageClickUtil(
@@ -108,12 +105,12 @@ export default function Page() {
     };
 
     // Create local implementations that call the utility functions
-    const handleCommentChangePin = (pinId: string, value: string) => {
-        handleCommentChange(pinId, value, setComments);
+    const CommentChangePin = (pinId: string, value: string) => {
+        CommentChangeUtil(pinId, value, setComments);
     };
 
-    const handleCommentSavePin = async (pinId: string) => {
-        await handleCommentSave(
+    const CommentSavePin = async (pinId: string) => {
+        await CommentSaveUtil(
             pinId,
             pins,
             comments,
@@ -125,8 +122,8 @@ export default function Page() {
         );
     };
 
-    const handleStatusChangePin = async (pinId: string) => {
-        await handleStatusChange(
+    const CommentStatusChangePin = async (pinId: string) => {
+        await CommentStatusChangeUtil(
             pinId,
             pins,
             setPins,
@@ -153,7 +150,7 @@ export default function Page() {
                 }
                 // Use pageData and update it, checking for null
                 if (pageData) {
-                  pageData.imageTitle = newTitle;
+                    pageData.imageTitle = newTitle;
                 }
 
             } catch (error) {
@@ -162,7 +159,7 @@ export default function Page() {
         }
     };
 
-   if (loading || !pageData) {
+    if (loading || !pageData) {
         return (
             <PageLoadingSpinner />
         );
@@ -186,10 +183,10 @@ export default function Page() {
         },
         editingPinId,
         comments,
-        handleCommentChange: handleCommentChangePin,
-        handleCommentSave: handleCommentSavePin,
-        handleDeletePin: handleDeletePinPin,
-        handleStatusChange: handleStatusChangePin,
+        CommentChange: CommentChangePin,
+        CommentSave: CommentSavePin,
+        CommentDelete: CommentDeletePin,
+        CommentStatusChange: CommentStatusChangePin,
         setEditingPinId,
         userNames,
         session,

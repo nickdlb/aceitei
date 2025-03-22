@@ -8,10 +8,10 @@ export default interface CommentListItemProps {
   userNames: { [key: string]: string };
   showReplies: { [key: string]: boolean };
   replyText: string;
-  handleCommentChange: (pinId: string, value: string) => void;
-  handleCommentSave: (pinId: string) => Promise<void>;
-  handleDeletePin: (pinId: string) => Promise<void>;
-  handleStatusChange: (pinId: string) => Promise<void>;
+  CommentChange: (pinId: string, value: string) => void;
+  CommentSave: (pinId: string) => Promise<void>;
+  CommentDelete: (pinId: string) => Promise<void>;
+  CommentStatusChange: (pinId: string) => Promise<void>;
   setEditingPinId: (pinId: string | null) => void;
   handleReplyLocal: (pinId: string) => Promise<void>;
   setReplyText: (text: string) => void;
