@@ -3,7 +3,7 @@
 import React from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import AccountContainer from '@/components/account/AccountContainer';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 const MinhaConta = () => {
   const { session, loading } = useAuth();

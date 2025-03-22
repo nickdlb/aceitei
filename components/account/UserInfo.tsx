@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
 import UserInfoProps from '@/types/UserInfoProps';
 
 const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) => {

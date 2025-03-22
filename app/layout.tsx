@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import './globals.css';
-import { AuthProvider } from '@/components/AuthProvider';
+import { AuthProvider } from '@/components/auth/AuthProvider';
 import { ImagesProvider } from '@/contexts/ImagesContext';
 
 export const metadata: Metadata = {

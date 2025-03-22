@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { usePins } from '@/hooks/usePins';
 import { usePageData } from '@/hooks/usePageData';
 import { useEscapeKey } from '@/hooks/useEscapeKey';

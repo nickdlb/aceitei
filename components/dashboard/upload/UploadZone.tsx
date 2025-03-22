@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { uploadImage } from '@/utils/uploadImage';
-import { useAuth } from '../../AuthProvider';
+import { useAuth } from '../../auth/AuthProvider';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import MultipleUploadModal from './MultipleUploadModal';
 import { createSupabaseClient } from '@/utils/supabaseClient';

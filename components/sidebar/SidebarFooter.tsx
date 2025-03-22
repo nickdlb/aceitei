@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
 

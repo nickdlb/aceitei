@@ -4,11 +4,11 @@ import {
   HomeIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import { createSupabaseClient } from '../../utils/supabaseClient'; // Import supabase client
+import { createSupabaseClient } from '../../utils/supabaseClient.js'; // Import supabase client
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { useState, useEffect } from 'react';
-import SidebarFooter from './SidebarFooter';
+import SidebarFooter from './SidebarFooter.jsx';
 
 const SidebarNav = () => {
   const router = useRouter();

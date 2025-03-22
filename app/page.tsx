@@ -6,7 +6,7 @@ import Header from '@/components/dashboard/Header';
 import ImageGallery from '@/components/dashboard/CardGallery';
 import RightSidebarButton from '@/components/sidebar/RightSidebarButton';
 import RightSidebar from '@/components/sidebar/RightSidebar';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { useImages } from '@/hooks/useImages';
 import { useRouter } from 'next/navigation';
 import { CardDelete } from '@/utils/cardDelete';

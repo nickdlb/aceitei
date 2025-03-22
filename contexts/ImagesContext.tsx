@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 interface ImagesContextType {
     images: any[];

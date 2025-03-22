@@ -5,7 +5,7 @@ import { createSupabaseClient } from '@/utils/supabaseClient';
 import { isAnonymous } from '@/utils/isAnonymousCheck';
 import ProfilePhoto from './ProfilePhoto';
 import UserInfo from './UserInfo';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 const AccountContainer = () => {
   const [photoURL, setPhotoURL] = useState('');
