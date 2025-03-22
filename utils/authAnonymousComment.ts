@@ -1,6 +1,6 @@
 import { createSupabaseClient } from '@/utils/supabaseClient';
 
-export const anonymousCommentAuth = async (
+export const authAnonymousComment = async (
     name: string,
     email: string,
     pageId: string,

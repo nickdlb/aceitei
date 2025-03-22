@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PinProps from '@/types/PinProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
-import { anonymousCommentAuth } from '@/utils/anonymousCommentAuth';
+import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import { loadPins } from './usePins/loadPins';
 import { loadComments } from './usePins/loadComments';
 import { updatePinPosition } from './usePins/updatePinPosition';
@@ -109,7 +109,7 @@ export const usePins = (pageId: string, session: any) => {
         updatePinPosition: (pinId: string, xPercent: number, yPercent: number) => updatePinPosition(pinId, xPercent, yPercent, pins, setPins, () => loadComments(pageId, setPins, setComments)),
         loadRepliesForPin: (pinId: string) => loadRepliesForPin(pinId, setPins),
         setShowAuthPopup,
-        handleAuth: (name: string, email: string) => anonymousCommentAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil, editingPinId),
+        handleAuth: (name: string, email: string) => authAnonymousComment(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil, editingPinId),
         loadComments: () => loadComments(pageId, setPins, setComments),
     };
 };

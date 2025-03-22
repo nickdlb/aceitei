@@ -6,7 +6,7 @@ import { createSupabaseClient } from './supabaseClient';
  * @param imageUrl URL da imagem associada ao documento (para exclusão do storage)
  * @returns Um objeto com status de sucesso e mensagem
  */
-export const CardDelete = async (documentId: string, imageUrl?: string) => {
+export const deleteCard = async (documentId: string, imageUrl?: string) => {
     try {
         // 1. Primeiro, buscar todas as páginas associadas ao documento
         const { data: pages, error: pagesError } = await createSupabaseClient

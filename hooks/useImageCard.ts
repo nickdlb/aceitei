@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { useImages } from '@/contexts/ImagesContext';
-import { CardDelete } from '@/utils/cardDelete';
+import { deleteCard } from '@/utils/deleteCard';
 
 export const useImageCard = (image: any, onDelete: (id: string) => void) => {
     const [isDeleting, setIsDeleting] = useState(false);
@@ -50,7 +50,7 @@ export const useImageCard = (image: any, onDelete: (id: string) => void) => {
 
         setIsDeleting(true);
         try {
-            const result = await CardDelete(image.document_id, image.image_url);
+            const result = await deleteCard(image.document_id, image.image_url);
 
             if (result.success) {
                 // Notificar o componente pai sobre a exclusão bem-sucedida

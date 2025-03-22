@@ -1,7 +1,7 @@
 import { createSupabaseClient } from './supabaseClient';
 import { redirect } from 'next/navigation';
 
-export async function isAnonymous() {
+export async function checkIsAnonymous() {
     const { data: { session } } = await createSupabaseClient.auth.getSession();
 
     if (session?.user?.id) {

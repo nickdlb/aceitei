@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import { isAnonymous } from '@/utils/isAnonymousCheck';
+import { checkIsAnonymous } from '@/utils/checkIsAnonymous';
 import ProfilePhoto from './ProfilePhoto';
 import UserInfo from './UserInfo';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -16,7 +16,7 @@ const AccountContainer = () => {
   const { session, loading } = useAuth();
 
   useEffect(() => {
-    isAnonymous();
+    checkIsAnonymous();
     const fetchUserProfile = async () => {
       try {
         if (session?.user?.id) {

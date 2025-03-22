@@ -10,8 +10,8 @@ import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
-import { CommentStatusChangeUtil, CommentEditUtil, CommentSaveUtil, CommentDeleteUtil } from '@/utils/commentUtils';
-import { anonymousCommentAuth } from '@/utils/anonymousCommentAuth';
+import { changeCommentStatus, editComment, saveComment, CommentDeleteUtil } from '@/utils/commentUtils';
+import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import { updatePageLastAccessed } from '@/utils/updatePageLastAccessed';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
@@ -106,11 +106,11 @@ export default function Page() {
 
     // Create local implementations that call the utility functions
     const CommentChangePin = (pinId: string, value: string) => {
-        CommentEditUtil(pinId, value, setComments);
+        editComment(pinId, value, setComments);
     };
 
     const CommentSavePin = async (pinId: string) => {
-        await CommentSaveUtil(
+        await saveComment(
             pinId,
             pins,
             comments,
@@ -123,7 +123,7 @@ export default function Page() {
     };
 
     const CommentStatusChangePin = async (pinId: string) => {
-        await CommentStatusChangeUtil(
+        await changeCommentStatus(
             pinId,
             pins,
             setPins,
@@ -213,7 +213,7 @@ export default function Page() {
     };
 
     const handleAuthSubmitAnonForm = async (name: string, email: string) => {
-        await anonymousCommentAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
+        await authAnonymousComment(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
     };
 
     return (

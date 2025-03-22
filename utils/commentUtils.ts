@@ -1,7 +1,7 @@
 import PinProps from '@/types/PinProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 
-export const CommentCreate = async (
+export const createComment = async (
     xPercent: number,
     yPercent: number,
     pageId: string,
@@ -93,7 +93,7 @@ export const CommentCreate = async (
  * @param value New comment value
  * @param setComments Function to update comments state
  */
-export const CommentEditUtil = (
+export const editComment = (
     pinId: string,
     value: string,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void
@@ -101,7 +101,7 @@ export const CommentEditUtil = (
     setComments(prev => ({ ...prev, [pinId]: value }));
 };
 
-export const CommentEditPermissions = async (pin: PinProps, session: any) => {
+export const checkEditCommentPermissions = async (pin: PinProps, session: any) => {
     if (!session?.user?.id) {
         return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
     }
@@ -157,7 +157,7 @@ export const CommentEditPermissions = async (pin: PinProps, session: any) => {
  * @param loadComments Function to reload comments
  */
 
-export const CommentStatusChangeUtil = async (
+export const changeCommentStatus = async (
     pinId: string,
     pins: PinProps[],
     setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
@@ -168,7 +168,7 @@ export const CommentStatusChangeUtil = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        await CommentEditPermissions(pin, session);
+        await checkEditCommentPermissions(pin, session);
 
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
 
@@ -202,7 +202,7 @@ export const CommentStatusChangeUtil = async (
  * @param setRefreshKey Function to update refresh key
  * @param session Current user session
  */
-export const CommentSaveUtil = async (
+export const saveComment = async (
     pinId: string,
     pins: PinProps[],
     comments: { [key: string]: string },
@@ -216,7 +216,7 @@ export const CommentSaveUtil = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        const { hasPermission } = await CommentEditPermissions(pin, session);
+        const { hasPermission } = await checkEditCommentPermissions(pin, session);
         if (!hasPermission) {
             alert('Você não tem permissão para editar este comentário.');
             return;
@@ -258,7 +258,7 @@ export const CommentSaveUtil = async (
  * @param setEditingPinId Function to set the currently editing pin ID
  * @param setRefreshKey Function to update refresh key
  */
-export const CommentDeleteUtil = async (
+export const deleteComment = async (
     pinId: string,
     pins: PinProps[],
     setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
