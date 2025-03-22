@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from "next/navigation";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { usePins } from '@/hooks/usePins';
 import { usePageData } from '@/hooks/usePageData';
@@ -15,6 +15,7 @@ import { handleCommentChange } from '@/utils/handleCommentChange';
 import { handleCommentSave } from '@/utils/handleCommentSave';
 import { handleDeletePin } from '@/utils/handleDeletePin';
 import { handleAuth } from '@/utils/handleAuth';
+import { updatePageLastAccessed } from '@/utils/updatePageLastAccessed';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
 import PageLayout from '@/components/layouts/PageLayout';
@@ -30,7 +31,18 @@ export default function Page() {
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
 
-     const {
+    // Add useEffect to update last accessed time when page loads
+    useEffect(() => {
+        const updateLastAccessed = async () => {
+            if (pageData && session) {
+                await updatePageLastAccessed(pageId, session);
+            }
+        };
+
+        updateLastAccessed();
+    }, [pageId, pageData, session]);
+
+    const {
         pins,
         editingPinId,
         comments,
