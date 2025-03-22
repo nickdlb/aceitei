@@ -4,7 +4,7 @@ import { createSupabaseClient } from './supabaseClient';
 /**
  * Handles submitting a reply to a comment
  */
-export const replyUtil = async (
+export const createReply = async (
     pinId: string,
     replyText: string,
     session: Session | null,
@@ -35,13 +35,9 @@ export const replyUtil = async (
             console.error('Detailed error:', error);
             throw error;
         }
-
         setReplyText('');
-
         // Load all comments
         await loadComments();
-
-        // The open state of replies is now managed by the ref in CommentBar
 
     } catch (error: any) {
         console.error('Error adding reply:', error);
@@ -49,9 +45,7 @@ export const replyUtil = async (
     }
 };
 
-/**
- * Toggles the visibility of replies for a specific pin
- */
+
 export const replyToggle = (
     pinId: string,
     setShowReplies: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>
@@ -62,9 +56,6 @@ export const replyToggle = (
     }));
 };
 
-/**
- * Handles keyboard events for reply input
- */
 export const replyKeyPress = (
     event: React.KeyboardEvent<HTMLTextAreaElement>,
     pinId: string,

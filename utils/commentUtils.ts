@@ -1,6 +1,5 @@
 import PinProps from '@/types/PinProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import { checkPermissionsEditPin } from '@/utils/checkPermissionsEditPin';
 
 export const CommentCreate = async (
     xPercent: number,
@@ -94,12 +93,59 @@ export const CommentCreate = async (
  * @param value New comment value
  * @param setComments Function to update comments state
  */
-export const CommentChangeUtil = (
+export const CommentEditUtil = (
     pinId: string,
     value: string,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void
 ) => {
     setComments(prev => ({ ...prev, [pinId]: value }));
+};
+
+export const CommentEditPermissions = async (pin: PinProps, session: any) => {
+    if (!session?.user?.id) {
+        return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
+    }
+
+    try {
+        const { data: pageData, error: pageError } = await createSupabaseClient
+            .from('pages')
+            .select('user_id')
+            .eq('id', pin.page_id)
+            .single();
+
+        if (pageError) {
+            console.error('Error fetching page:', pageError);
+            return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
+        }
+
+        const isDocumentOwner = pageData?.user_id === session.user.id;
+
+        if (!pin || !pin.id) {
+            return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+        }
+
+        const { data: commentData, error: commentError } = await createSupabaseClient
+            .from('comments')
+            .select('user_id')
+            .eq('id', pin.id)
+            .single();
+
+        if (commentError) {
+            if (commentError.code === 'PGRST116') {
+                return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+            }
+            console.error('Error fetching comment:', commentError);
+            return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+        }
+
+        const isCommentOwner = commentData?.user_id === session.user.id;
+        const hasPermission = isDocumentOwner || isCommentOwner;
+
+        return { isDocumentOwner, isCommentOwner, hasPermission };
+    } catch (error) {
+        console.error('Unexpected error checking permissions:', error);
+        return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
+    }
 };
 
 /**
@@ -122,7 +168,7 @@ export const CommentStatusChangeUtil = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        await checkPermissionsEditPin(pin, session);
+        await CommentEditPermissions(pin, session);
 
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
 
@@ -170,7 +216,7 @@ export const CommentSaveUtil = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        const { hasPermission } = await checkPermissionsEditPin(pin, session);
+        const { hasPermission } = await CommentEditPermissions(pin, session);
         if (!hasPermission) {
             alert('Você não tem permissão para editar este comentário.');
             return;

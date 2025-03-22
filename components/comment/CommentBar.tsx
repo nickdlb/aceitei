@@ -4,9 +4,8 @@ import { CommentSidebarProps } from '@/types/CommentsProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { CommentSaveUtil as CommentSaveUtil } from '@/utils/commentUtils';
-import { CommentDeleteUtil, CommentStatusChangeUtil, CommentChangeUtil } from '@/utils/commentUtils';
-import { replyUtil } from '@/utils/replyUtils';
-import { checkPermissionsEditPin as checkPermissionsUtil } from '@/utils/checkPermissionsEditPin';
+import { CommentDeleteUtil, CommentStatusChangeUtil, CommentEditUtil, CommentEditPermissions } from '@/utils/commentUtils';
+import { createReply } from '@/utils/replyUtils';
 import CommentFilter from './CommentFilter';
 import CommentHeader from './CommentHeader';
 import CommentListItem from './CommentListItem';
@@ -60,7 +59,7 @@ const CommentBar = ({
       if (pins.length > 0) {
         // Obter o primeiro pin para verificar a propriedade do documento
         const firstPin = pins[0];
-        const { isDocumentOwner } = await checkPermissionsUtil(firstPin, session);
+        const { isDocumentOwner } = await CommentEditPermissions(firstPin, session);
         isPageOwner = isDocumentOwner;
       }
 
@@ -68,7 +67,7 @@ const CommentBar = ({
 
       // Verificar permissões para cada pin
       for (const pin of pins) {
-        const { hasPermission } = await checkPermissionsUtil(pin, session);
+        const { hasPermission } = await CommentEditPermissions(pin, session);
         perms[pin.id] = hasPermission;
       }
 
@@ -170,7 +169,7 @@ const CommentBar = ({
   }, [pins, initialUserNames]);
 
   const CommentChange = (pinId: string, value: string) => {
-    CommentChangeUtil(pinId, value, setLocalComments);
+    CommentEditUtil(pinId, value, setLocalComments);
   };
 
   const CommentSave = async (pinId: string) => {
@@ -228,7 +227,7 @@ const CommentBar = ({
       [pinId]: true
     };
 
-    await replyUtil(
+    await createReply(
       pinId,
       replyText,
       session,
@@ -237,19 +236,6 @@ const CommentBar = ({
       loadComments,
       setShowReplies
     );
-
-    // Ensure replies stay open after sending
-    setTimeout(() => {
-      openRepliesRef.current = {
-        ...openRepliesRef.current,
-        [pinId]: true
-      };
-
-      setShowReplies(prev => ({
-        ...prev,
-        [pinId]: true
-      }));
-    }, 100);
   };
 
   const toggleRepliesLocal = (pinId: string) => {

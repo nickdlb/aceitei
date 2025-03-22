@@ -10,7 +10,7 @@ import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
-import { CommentStatusChangeUtil, CommentChangeUtil, CommentSaveUtil, CommentDeleteUtil } from '@/utils/commentUtils';
+import { CommentStatusChangeUtil, CommentEditUtil, CommentSaveUtil, CommentDeleteUtil } from '@/utils/commentUtils';
 import { anonymousCommentAuth } from '@/utils/anonymousCommentAuth';
 import { updatePageLastAccessed } from '@/utils/updatePageLastAccessed';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
@@ -106,7 +106,7 @@ export default function Page() {
 
     // Create local implementations that call the utility functions
     const CommentChangePin = (pinId: string, value: string) => {
-        CommentChangeUtil(pinId, value, setComments);
+        CommentEditUtil(pinId, value, setComments);
     };
 
     const CommentSavePin = async (pinId: string) => {
