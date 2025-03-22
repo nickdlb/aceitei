@@ -1,6 +1,6 @@
 import PinProps from '@/types/PinProps';
 import { supabase } from '@/utils/supabaseClient';
-import { checkPermissions } from '@/utils/checkPermissions';
+import { checkPermissionsEditPin } from '@/utils/checkPermissionsEditPin';
 
 export const CommentCreate = async (
     xPercent: number,
@@ -122,7 +122,7 @@ export const CommentStatusChangeUtil = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        await checkPermissions(pin, session);
+        await checkPermissionsEditPin(pin, session);
 
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
 
@@ -170,7 +170,7 @@ export const CommentSaveUtil = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        const { hasPermission } = await checkPermissions(pin, session);
+        const { hasPermission } = await checkPermissionsEditPin(pin, session);
         if (!hasPermission) {
             alert('Você não tem permissão para editar este comentário.');
             return;

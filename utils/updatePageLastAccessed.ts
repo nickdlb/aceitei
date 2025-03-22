@@ -1,5 +1,5 @@
 import { supabase } from '@/utils/supabaseClient';
-import { checkPermissions } from '@/utils/checkPermissions';
+import { checkPermissionsEditPin } from '@/utils/checkPermissionsEditPin';
 import PinProps from '@/types/PinProps';
 
 /**
@@ -27,7 +27,7 @@ export const updatePageLastAccessed = async (pageId: string, session: any): Prom
             user_id: session.user.id,
             page_id: pageId
         };
-        const { isDocumentOwner } = await checkPermissions(pinDummy, session);
+        const { isDocumentOwner } = await checkPermissionsEditPin(pinDummy, session);
 
         // If not the page owner, return false
         if (!isDocumentOwner) {
@@ -37,8 +37,8 @@ export const updatePageLastAccessed = async (pageId: string, session: any): Prom
         // Update the last_accessed_at timestamp
         const { error } = await supabase
             .from('pages')
-            .update({ 
-                last_accessed_at: new Date().toISOString() 
+            .update({
+                last_accessed_at: new Date().toISOString()
             })
             .eq('id', pageId);
 

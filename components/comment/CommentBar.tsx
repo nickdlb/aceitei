@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { CommentSaveUtil as CommentSaveUtil } from '@/utils/commentUtils';
 import { CommentDeleteUtil, CommentStatusChangeUtil, CommentChangeUtil } from '@/utils/commentUtils';
 import { replyUtil } from '@/utils/replyUtils';
-import { checkPermissions as checkPermissionsUtil } from '@/utils/checkPermissions';
+import { checkPermissionsEditPin as checkPermissionsUtil } from '@/utils/checkPermissionsEditPin';
 import CommentFilter from './CommentFilter';
 import CommentHeader from './CommentHeader';
 import CommentListItem from './CommentListItem';

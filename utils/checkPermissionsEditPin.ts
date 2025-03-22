@@ -7,7 +7,7 @@ import { supabase } from '@/utils/supabaseClient';
  * @param session The current user session
  * @returns Object with permission details
  */
-export const checkPermissions = async (pin: PinProps, session: any) => {
+export const checkPermissionsEditPin = async (pin: PinProps, session: any) => {
     if (!session?.user?.id) {
         // Se não houver usuário na sessão, não tem permissão.
         return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
