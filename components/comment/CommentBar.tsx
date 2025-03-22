@@ -4,7 +4,7 @@ import { CommentSidebarProps } from '@/types/CommentsProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { saveComment as saveComment } from '@/utils/commentUtils';
-import { CommentDeleteUtil, changeCommentStatus, editComment, checkEditCommentPermissions } from '@/utils/commentUtils';
+import { deleteComment, changeCommentStatus, editComment, checkEditCommentPermissions } from '@/utils/commentUtils';
 import { createReply } from '@/utils/replyUtils';
 import CommentFilter from './CommentFilter';
 import CommentHeader from './CommentHeader';
@@ -187,7 +187,7 @@ const CommentBar = ({
 
   const CommentDelete = async (pinId: string) => {
     try {
-      await CommentDeleteUtil(
+      await deleteComment(
         pinId,
         pins,
         () => loadComments(),
