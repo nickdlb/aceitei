@@ -1,11 +1,11 @@
-import { supabase } from './supabaseClient';
+import { createSupabaseClient } from './supabaseClient';
 import { redirect } from 'next/navigation';
 
 export async function isAnonymous() {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await createSupabaseClient.auth.getSession();
 
     if (session?.user?.id) {
-        const { data: user, error } = await supabase
+        const { data: user, error } = await createSupabaseClient
             .from('users')
             .select('isAnonymous')
             .eq('user_id', session.user.id)

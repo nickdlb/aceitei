@@ -1,7 +1,7 @@
 import React from 'react';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/components/AuthProvider';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -13,7 +13,7 @@ const SidebarLogo = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (session?.user?.id) {
-        const { data, error } = await supabase
+        const { data, error } = await createSupabaseClient
           .from('users')
           .select('fotoperfil, nome')
           .eq('user_id', session.user.id)

@@ -1,8 +1,8 @@
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 
 export const loadPins = async (pageId: string) => {
     try {
-        const { data, error } = await supabase
+        const { data, error } = await createSupabaseClient
             .from('comments')
             .select('*')
             .eq('page_id', pageId);

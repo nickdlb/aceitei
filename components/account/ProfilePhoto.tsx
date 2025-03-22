@@ -3,7 +3,7 @@ import ProfilePhotoProps from '@/types/ProfilePhotoProps';
 
 import React, { useState } from 'react';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 
 const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, userId }) => {
   const [newPhoto, setNewPhoto] = useState<File | null>(null);
@@ -21,7 +21,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
     setUploading(true);
     try {
       const fileName = `profile-${Date.now()}-${file.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await createSupabaseClient.storage
         .from('fotoperfil')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -35,11 +35,11 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
       if (photoURL && photoURL.includes('fotoperfil')) {
         const oldFileName = photoURL.split('/').pop();
         if (oldFileName) {
-          await supabase.storage.from('fotoperfil').remove([oldFileName]);
+          await createSupabaseClient.storage.from('fotoperfil').remove([oldFileName]);
         }
       }
 
-      const { error: updateError } = await supabase
+      const { error: updateError } = await createSupabaseClient
         .from('users')
         .update({ fotoperfil: url })
         .eq('user_id', userId);
@@ -61,11 +61,11 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
       if (photoURL && photoURL.includes('fotoperfil')) {
         const oldFileName = photoURL.split('/').pop();
         if (oldFileName) {
-          await supabase.storage.from('fotoperfil').remove([oldFileName]);
+          await createSupabaseClient.storage.from('fotoperfil').remove([oldFileName]);
         }
       }
 
-      const { error } = await supabase
+      const { error } = await createSupabaseClient
         .from('users')
         .update({ fotoperfil: null })
         .eq('user_id', userId);

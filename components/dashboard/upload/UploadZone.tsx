@@ -4,7 +4,7 @@ import { uploadImage } from '@/utils/uploadImage';
 import { useAuth } from '../../AuthProvider';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import MultipleUploadModal from './MultipleUploadModal';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import UploadZoneProps from '@/types/UploadZoneProps';
 
 export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
@@ -18,7 +18,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
         try {
             if (combine) {
                 // Criar um único documento para todas as imagens
-                const { data: document, error: documentError } = await supabase
+                const { data: document, error: documentError } = await createSupabaseClient
                     .from('documents')
                     .insert({
                         title: 'Documento Combinado',
@@ -36,7 +36,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
                     const fileName = `${Math.random()}.${fileExt}`;
 
                     // Upload da imagem para o storage
-                    const { error: storageError } = await supabase.storage
+                    const { error: storageError } = await createSupabaseClient.storage
                         .from('images')
                         .upload(fileName, file);
 
@@ -46,7 +46,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
                     }
 
                     // Criar página vinculada ao documento
-                    const { error: pageError } = await supabase
+                    const { error: pageError } = await createSupabaseClient
                         .from('pages')
                         .insert({
                             image_url: fileName,
@@ -58,12 +58,12 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
                     if (pageError) {
                         console.error('Erro ao criar página:', pageError);
-                        await supabase.storage.from('images').remove([fileName]);
+                        await createSupabaseClient.storage.from('images').remove([fileName]);
                     }
                 }
 
                 // Notificar sucesso apenas uma vez para o documento combinado
-                const { data: firstPage } = await supabase
+                const { data: firstPage } = await createSupabaseClient
                     .from('pages')
                     .select('*')
                     .eq('document_id', document.id)

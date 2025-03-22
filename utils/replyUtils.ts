@@ -1,5 +1,5 @@
 import { Session } from '@supabase/supabase-js';
-import { supabase } from './supabaseClient';
+import { createSupabaseClient } from './supabaseClient';
 
 /**
  * Handles submitting a reply to a comment
@@ -22,7 +22,7 @@ export const replyUtil = async (
     }
 
     try {
-        const { error } = await supabase
+        const { error } = await createSupabaseClient
             .from('comment_reactions')
             .insert({
                 comment_id: pinId,

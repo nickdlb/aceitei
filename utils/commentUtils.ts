@@ -1,5 +1,5 @@
 import PinProps from '@/types/PinProps';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { checkPermissionsEditPin } from '@/utils/checkPermissionsEditPin';
 
 export const CommentCreate = async (
@@ -30,7 +30,7 @@ export const CommentCreate = async (
         }
 
         // Verificar se a página existe
-        const { data: pageExists, error: pageError } = await supabase
+        const { data: pageExists, error: pageError } = await createSupabaseClient
             .from('pages')
             .select('id')
             .eq('id', pageId)
@@ -44,7 +44,7 @@ export const CommentCreate = async (
         const pin_Number = pins.length + 1;
 
         // Inserir o comentário
-        const { data: newPinData, error } = await supabase
+        const { data: newPinData, error } = await createSupabaseClient
             .from('comments')
             .insert([
                 {
@@ -126,7 +126,7 @@ export const CommentStatusChangeUtil = async (
 
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
 
-        const { error } = await supabase
+        const { error } = await createSupabaseClient
             .from('comments')
             .update({ status: newStatus })
             .eq('id', pinId);
@@ -179,7 +179,7 @@ export const CommentSaveUtil = async (
         const comment = comments[pinId];
         if (!comment) return;
 
-        const { error } = await supabase
+        const { error } = await createSupabaseClient
             .from('comments')
             .update({ content: comment })
             .eq('id', pinId);
@@ -222,7 +222,7 @@ export const CommentDeleteUtil = async (
 ) => {
     try {
         // First, delete related records from comment_reactions
-        const { error: reactionsError } = await supabase
+        const { error: reactionsError } = await createSupabaseClient
             .from('comment_reactions')
             .delete()
             .eq('comment_id', pinId);
@@ -233,7 +233,7 @@ export const CommentDeleteUtil = async (
         }
 
         // Then, delete the comment itself
-        const { error } = await supabase
+        const { error } = await createSupabaseClient
             .from('comments')
             .delete()
             .eq('id', pinId);
@@ -274,7 +274,7 @@ export const CommentDeleteUtil = async (
         for (const pin of updatedPins) {
             if (pin.num > deletedNumber) {
                 try {
-                    const { error } = await supabase
+                    const { error } = await createSupabaseClient
                         .from('comments')
                         .update({ pin_number: pin.num - 1 })
                         .eq('id', pin.id);

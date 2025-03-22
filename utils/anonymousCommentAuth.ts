@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 
 export const anonymousCommentAuth = async (
     name: string,
@@ -16,12 +16,12 @@ export const anonymousCommentAuth = async (
     editingPinId: string | null = null
 ) => {
     try {
-        const { data: { session }, error: authError } = await supabase.auth.signInAnonymously();
+        const { data: { session }, error: authError } = await createSupabaseClient.auth.signInAnonymously();
 
         if (authError) throw authError;
         if (!session) throw new Error('Falha ao criar sessão anônima');
 
-        const { error: userError } = await supabase
+        const { error: userError } = await createSupabaseClient
             .from('users')
             .update({
                 nome: name,

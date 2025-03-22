@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient';
+import { createSupabaseClient } from './supabaseClient';
 
 /**
  * Deleta um card (documento) e todos os seus recursos associados no Supabase
@@ -9,7 +9,7 @@ import { supabase } from './supabaseClient';
 export const CardDelete = async (documentId: string, imageUrl?: string) => {
     try {
         // 1. Primeiro, buscar todas as páginas associadas ao documento
-        const { data: pages, error: pagesError } = await supabase
+        const { data: pages, error: pagesError } = await createSupabaseClient
             .from('pages')
             .select('id')
             .eq('document_id', documentId);
@@ -21,7 +21,7 @@ export const CardDelete = async (documentId: string, imageUrl?: string) => {
             const pageIds = pages.map(page => page.id);
 
             // 3. Excluir todas as reações de comentários associadas aos comentários
-            const { data: comments, error: commentsFetchError } = await supabase
+            const { data: comments, error: commentsFetchError } = await createSupabaseClient
                 .from('comments')
                 .select('id')
                 .in('page_id', pageIds);
@@ -30,7 +30,7 @@ export const CardDelete = async (documentId: string, imageUrl?: string) => {
 
             if (comments && comments.length > 0) {
                 const commentIds = comments.map(comment => comment.id);
-                const { error: reactionsError } = await supabase
+                const { error: reactionsError } = await createSupabaseClient
                     .from('comment_reactions')
                     .delete()
                     .in('comment_id', commentIds);
@@ -39,7 +39,7 @@ export const CardDelete = async (documentId: string, imageUrl?: string) => {
             }
 
             // 4. Excluir todos os comentários associados às páginas
-            const { error: commentsError } = await supabase
+            const { error: commentsError } = await createSupabaseClient
                 .from('comments')
                 .delete()
                 .in('page_id', pageIds);
@@ -47,7 +47,7 @@ export const CardDelete = async (documentId: string, imageUrl?: string) => {
             if (commentsError) throw commentsError;
 
             // 5. Excluir todas as páginas associadas ao documento
-            const { error: deletePageError } = await supabase
+            const { error: deletePageError } = await createSupabaseClient
                 .from('pages')
                 .delete()
                 .eq('document_id', documentId);
@@ -56,7 +56,7 @@ export const CardDelete = async (documentId: string, imageUrl?: string) => {
         }
 
         // 6. Excluir o documento
-        const { error: documentError } = await supabase
+        const { error: documentError } = await createSupabaseClient
             .from('documents')
             .delete()
             .eq('id', documentId);
@@ -68,7 +68,7 @@ export const CardDelete = async (documentId: string, imageUrl?: string) => {
             // Extrair o caminho da imagem da URL completa
             const imagePath = imageUrl.split('/').pop();
             if (imagePath) {
-                const { error: storageError } = await supabase
+                const { error: storageError } = await createSupabaseClient
                     .storage
                     .from('images')
                     .remove([imagePath]);

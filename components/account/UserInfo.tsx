@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/AuthProvider';
 import UserInfoProps from '@/types/UserInfoProps';
 
@@ -31,7 +31,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
 
   const handleSaveName = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await createSupabaseClient
         .from('users')
         .update({ nome: tempName })
         .eq('user_id', userId)

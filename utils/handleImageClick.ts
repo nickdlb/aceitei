@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { CommentCreate } from '@/utils/commentUtils';
 import PinProps from '@/types/PinProps';
 
@@ -31,7 +31,7 @@ export const handleImageClick = async (
     setShowAuthPopup: (show: boolean) => void,
     editingPinId: string | null
 ) => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await createSupabaseClient.auth.getSession();
 
     if (!session?.user) {
         setPendingClick({ x: xPercent, y: yPercent });
@@ -78,7 +78,7 @@ const updatePinPosition = async (
 ) => {
     try {
         // Update the pin position in the database
-        await supabase
+        await createSupabaseClient
             .from('comments')
             .update({ pos_x: xPercent, pos_y: yPercent })
             .eq('id', pinId);

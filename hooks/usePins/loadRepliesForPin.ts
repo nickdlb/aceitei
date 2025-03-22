@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import PinProps from '@/types/PinProps';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -7,7 +7,7 @@ export const loadRepliesForPin = async (pinId: string, setPins: Dispatch<SetStat
 
     try {
         // Fetch only the reactions for this specific pin
-        const { data: reactionsData, error: reactionsError } = await supabase
+        const { data: reactionsData, error: reactionsError } = await createSupabaseClient
             .from('comment_reactions')
             .select('*')
             .eq('comment_id', pinId);

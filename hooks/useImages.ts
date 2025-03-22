@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/components/AuthProvider';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 
 interface ProcessedDocument {
     id: string;
@@ -28,7 +28,7 @@ export const useImages = () => {
         try {
             setLoading(true);
 
-            const { data: documents, error: documentsError } = await supabase
+            const { data: documents, error: documentsError } = await createSupabaseClient
                 .from('documents')
                 .select(`
                     id,

@@ -7,8 +7,8 @@ import { usePins } from '@/hooks/usePins';
 import { usePageData } from '@/hooks/usePageData';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useRealtimeComments } from '@/hooks/useRealtimeComments';
-import { supabase } from '@/utils/supabaseClient';
-import { getImageUrl } from '@/utils/imageUrl';
+import { createSupabaseClient } from '@/utils/supabaseClient';
+import { getImageUrl } from '@/utils/getImageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { CommentStatusChangeUtil, CommentChangeUtil, CommentSaveUtil, CommentDeleteUtil } from '@/utils/commentUtils';
 import { anonymousCommentAuth } from '@/utils/anonymousCommentAuth';
@@ -139,7 +139,7 @@ export default function Page() {
     const handleTitleUpdate = async (newTitle: string) => {
         if (pageData) {
             try {
-                const { error } = await supabase
+                const { error } = await createSupabaseClient
                     .from('pages')
                     .update({ imageTitle: newTitle })
                     .eq('id', pageId);

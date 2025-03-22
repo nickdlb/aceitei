@@ -4,7 +4,7 @@ import {
   HomeIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import { supabase } from '../../utils/supabaseClient'; // Import supabase client
+import { createSupabaseClient } from '../../utils/supabaseClient'; // Import supabase client
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { useState, useEffect } from 'react';
@@ -19,7 +19,7 @@ const SidebarNav = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (session?.user?.id) {
-        const { data, error } = await supabase
+        const { data, error } = await createSupabaseClient
           .from('users')
           .select('fotoperfil, nome')
           .eq('user_id', session.user.id)
@@ -41,7 +41,7 @@ const SidebarNav = () => {
 
   const handleSupabaseSignOut = async () => {
     try {
-      await supabase.auth.signOut();
+      await createSupabaseClient.auth.signOut();
       router.push('/login'); // Redirect to login page after logout
     } catch (error) {
       console.error('Error signing out:', error);

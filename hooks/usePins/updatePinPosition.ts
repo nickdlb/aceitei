@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import PinProps from '@/types/PinProps';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -13,7 +13,7 @@ export const updatePinPosition = async (pinId: string, xPercent: number, yPercen
         }
 
         // Update the pin position in the database
-        await supabase
+        await createSupabaseClient
             .from('comments')
             .update({ pos_x: xPercent, pos_y: yPercent })
             .eq('id', pinId);

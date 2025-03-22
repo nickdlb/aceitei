@@ -1,9 +1,9 @@
-import { supabase } from './supabaseClient';
+import { createSupabaseClient } from './supabaseClient';
 
 export const uploadImage = async (file: File, userId: string, title: string) => {
     try {
         // 1. Criar um novo documento
-        const { data: documentData, error: documentError } = await supabase
+        const { data: documentData, error: documentError } = await createSupabaseClient
             .from('documents')
             .insert([
                 {
@@ -23,18 +23,18 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
 
-        const { error: storageError } = await supabase.storage
+        const { error: storageError } = await createSupabaseClient.storage
             .from('images')
             .upload(fileName, file);
 
         if (storageError) {
             console.error('Error uploading file:', storageError);
-            await supabase.from('documents').delete().eq('id', documentData.id);
+            await createSupabaseClient.from('documents').delete().eq('id', documentData.id);
             return null;
         }
 
         // 3. Criar uma nova página
-        const { data: pageData, error: pageError } = await supabase
+        const { data: pageData, error: pageError } = await createSupabaseClient
             .from('pages')
             .insert([
                 {
@@ -50,13 +50,13 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
 
         if (pageError) {
             console.error('Error creating page:', pageError);
-            await supabase.from('documents').delete().eq('id', documentData.id);
-            await supabase.storage.from('images').remove([fileName]);
+            await createSupabaseClient.from('documents').delete().eq('id', documentData.id);
+            await createSupabaseClient.storage.from('images').remove([fileName]);
             return null;
         }
 
         // 4. Buscar os dados do documento separadamente
-        const { data: documentWithPage, error: documentFetchError } = await supabase
+        const { data: documentWithPage, error: documentFetchError } = await createSupabaseClient
             .from('documents')
             .select('id, title, created_at, user_id')
             .eq('id', documentData.id)

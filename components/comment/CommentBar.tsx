@@ -1,7 +1,7 @@
 // CommentBar.tsx
 import SidebarFooter from '../sidebar/SidebarFooter';
 import { CommentSidebarProps } from '@/types/CommentsProps';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { CommentSaveUtil as CommentSaveUtil } from '@/utils/commentUtils';
 import { CommentDeleteUtil, CommentStatusChangeUtil, CommentChangeUtil } from '@/utils/commentUtils';
@@ -142,7 +142,7 @@ const CommentBar = ({
 
         try {
           // Buscar na tabela users
-          const { data: userData, error: userError } = await supabase
+          const { data: userData, error: userError } = await createSupabaseClient
             .from('users')
             .select('nome')
             .eq('user_id', userId)

@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { checkPermissionsEditPin } from '@/utils/checkPermissionsEditPin';
 import PinProps from '@/types/PinProps';
 
@@ -35,7 +35,7 @@ export const updatePageLastAccessed = async (pageId: string, session: any): Prom
         }
 
         // Update the last_accessed_at timestamp
-        const { error } = await supabase
+        const { error } = await createSupabaseClient
             .from('pages')
             .update({
                 last_accessed_at: new Date().toISOString()

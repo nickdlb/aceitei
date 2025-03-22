@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import ImagePin from './ImagePin';
 import { ImageAreaProps } from '@/types/CommentsProps';
 import { ArrowDownTrayIcon, PencilIcon, Squares2X2Icon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 
 const ImageArea: React.FC<ImageAreaProps> = ({
   exibirImagem,

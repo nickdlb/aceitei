@@ -7,7 +7,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Supabase URL and Anon Key must be defined');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const createSupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
         autoRefreshToken: true,
         persistSession: true,

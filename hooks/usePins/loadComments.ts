@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import PinProps from '@/types/PinProps';
 
 interface LoadCommentsResult {
@@ -10,7 +10,7 @@ export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) =
     if (!pageId) return;
 
     try {
-        const { data: commentsData, error: commentsError } = await supabase
+        const { data: commentsData, error: commentsError } = await createSupabaseClient
             .from('comments')
             .select('*')
             .eq('page_id', pageId);
@@ -25,7 +25,7 @@ export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) =
 
         const commentIds = commentsData.map(comment => comment.id);
 
-        const { data: reactionsData, error: reactionsError } = await supabase
+        const { data: reactionsData, error: reactionsError } = await createSupabaseClient
             .from('comment_reactions')
             .select('*')
             .in('comment_id', commentIds);

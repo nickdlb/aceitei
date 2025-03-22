@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/utils/supabaseClient';
-import { getImageUrl } from '@/utils/imageUrl';
+import { createSupabaseClient } from '@/utils/supabaseClient';
+import { getImageUrl } from '@/utils/getImageUrl';
 import { useImages } from '@/contexts/ImagesContext';
 import { CardDelete } from '@/utils/cardDelete';
 
@@ -28,7 +28,7 @@ export const useImageCard = (image: any, onDelete: (id: string) => void) => {
 
     const handleTitleEdit = async () => {
         try {
-            const { error } = await supabase
+            const { error } = await createSupabaseClient
                 .from('pages')
                 .update({ imageTitle: title })
                 .eq('id', image.page_id);

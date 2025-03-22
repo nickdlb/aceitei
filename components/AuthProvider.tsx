@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { usePathname, useRouter, redirect } from 'next/navigation';
 
 interface AuthContextType {
@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Buscar sessão inicial
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    createSupabaseClient.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
     });
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Escutar mudanças na autenticação
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = createSupabaseClient.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
     });

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { getImageUrl } from '@/utils/imageUrl';
+import { getImageUrl } from '@/utils/getImageUrl';
 import ImageSidebarProps from '@/types/ImageSidebarProps';
 
 const ImageSidebar = ({ pages, currentPage, onPageChange }: ImageSidebarProps) => {
@@ -21,9 +21,8 @@ const ImageSidebar = ({ pages, currentPage, onPageChange }: ImageSidebarProps) =
                     return (
                         <div
                             key={page.id}
-                            className={`relative p-1.5 cursor-pointer hover:bg-gray-50 transition-colors ${
-                                isActive ? 'bg-blue-50' : ''
-                            }`}
+                            className={`relative p-1.5 cursor-pointer hover:bg-gray-50 transition-colors ${isActive ? 'bg-blue-50' : ''
+                                }`}
                             onClick={() => onPageChange(page.id)}
                         >
                             {/* Container para miniatura e número */}

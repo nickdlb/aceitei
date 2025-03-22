@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import CommentReactionProps from '@/types/CommentReactionProps';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import CommentItemProps from '@/types/CommentItemProps';
 
 const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props }) => {
@@ -12,7 +12,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props })
         if (!replyText.trim()) return;
 
         try {
-            const { data, error } = await supabase
+            const { data, error } = await createSupabaseClient
                 .from('comment_reactions')
                 .insert({
                     comment_id: comment.id,

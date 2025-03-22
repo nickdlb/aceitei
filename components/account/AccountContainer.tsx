@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { isAnonymous } from '@/utils/isAnonymousCheck';
 import ProfilePhoto from './ProfilePhoto';
 import UserInfo from './UserInfo';
@@ -20,7 +20,7 @@ const AccountContainer = () => {
     const fetchUserProfile = async () => {
       try {
         if (session?.user?.id) {
-          const { data, error } = await supabase
+          const { data, error } = await createSupabaseClient
             .from('users')
             .select('fotoperfil, nome')
             .eq('user_id', session.user.id)

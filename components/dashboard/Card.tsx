@@ -1,7 +1,7 @@
 import { useImageCard } from '@/hooks/useImageCard';
 import { CardHeader } from './CardHeader';
 import { CardContent } from './CardContent';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useEffect, useState } from 'react';
 import ImageCardProps from '@/types/CardProps';
 
@@ -23,7 +23,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
 
     useEffect(() => {
         const fetchFirstPageId = async () => {
-            const { data, error } = await supabase
+            const { data, error } = await createSupabaseClient
                 .from('pages')
                 .select('id')
                 .eq('document_id', image.document_id)

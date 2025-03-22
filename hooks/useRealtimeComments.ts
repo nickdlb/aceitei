@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 
 export function useRealtimeComments(pageId: string, loadComments: () => void) {
   useEffect(() => {
-    const channel = supabase
+    const channel = createSupabaseClient
       .channel('debug-realtime-comments')
       .on(
         'postgres_changes',
@@ -31,9 +31,9 @@ export function useRealtimeComments(pageId: string, loadComments: () => void) {
 
       .subscribe((status: any) => {
       });
-  
+
     return () => {
-      supabase.removeChannel(channel);
+      createSupabaseClient.removeChannel(channel);
     };
   }, [pageId, loadComments]);
 }

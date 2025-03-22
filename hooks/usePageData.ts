@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { type Page as DocumentPage } from '@/types/DocumentProps';
 import { useRouter } from 'next/navigation';
 
@@ -18,7 +18,7 @@ export function usePageData(pageId: string) {
             if (!pageId) return;
 
             try {
-                const { data: document } = await supabase
+                const { data: document } = await createSupabaseClient
                     .from('documents')
                     .select('id')
                     .eq('id', pageId)
@@ -27,7 +27,7 @@ export function usePageData(pageId: string) {
                 let targetPageId = pageId;
 
                 if (document) {
-                    const { data: firstPage } = await supabase
+                    const { data: firstPage } = await createSupabaseClient
                         .from('pages')
                         .select('id')
                         .eq('document_id', document.id)
@@ -39,7 +39,7 @@ export function usePageData(pageId: string) {
                     }
                 }
 
-                const { data: page } = await supabase
+                const { data: page } = await createSupabaseClient
                     .from('pages')
                     .select(`
                         *,
@@ -58,13 +58,13 @@ export function usePageData(pageId: string) {
                     return;
                 }
 
-                const { data: allPages } = await supabase
+                const { data: allPages } = await createSupabaseClient
                     .from('pages')
                     .select('id, image_url, page_number')
                     .eq('document_id', page.document_id)
                     .order('page_number');
 
-                if(document && targetPageId !== pageId){
+                if (document && targetPageId !== pageId) {
                     router.replace(`/${targetPageId}`, { scroll: false });
                 }
 

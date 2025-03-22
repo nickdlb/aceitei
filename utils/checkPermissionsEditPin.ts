@@ -1,5 +1,5 @@
 import PinProps from '@/types/PinProps';
-import { supabase } from '@/utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 
 /**
  * Checks if the current user has permission to modify a pin
@@ -15,7 +15,7 @@ export const checkPermissionsEditPin = async (pin: PinProps, session: any) => {
 
     try {
         // 1. Busque o documento (página) no Supabase
-        const { data: documentData, error: documentError } = await supabase
+        const { data: documentData, error: documentError } = await createSupabaseClient
             .from('pages')
             .select('user_id')
             .eq('id', pin.page_id)  // Certifique-se que "id" é a chave primária da página
@@ -40,7 +40,7 @@ export const checkPermissionsEditPin = async (pin: PinProps, session: any) => {
         let pinData: any = null;
 
         try {
-            const { data, error: pinError } = await supabase
+            const { data, error: pinError } = await createSupabaseClient
                 .from('comments')
                 .select('user_id')
                 .eq('id', pin.id)
