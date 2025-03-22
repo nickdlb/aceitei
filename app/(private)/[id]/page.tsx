@@ -10,7 +10,7 @@ import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
-import { changeCommentStatus, editComment, saveComment, CommentDeleteUtil } from '@/utils/commentUtils';
+import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/utils/commentUtils';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import { updatePageLastAccessed } from '@/utils/updatePageLastAccessed';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
@@ -59,23 +59,16 @@ export default function Page() {
 
     useRealtimeComments(pageId, loadComments);
 
-    // Define a local setPins function to update pins state
     const setPins = (pinsOrUpdater: any) => {
-        // This is a simplified version since we don't have direct access to the setPins from usePins
-        // In a real implementation, you might want to call loadComments() or another method
-        // that refreshes the pins from the server
         loadComments();
     };
 
-    // Define a local setComments function
     const setComments = (commentsOrUpdater: any) => {
-        // Similar to setPins, this is a simplified version
-        // In a real implementation, you might want to update the comments in usePins
         loadComments();
     };
 
     const CommentDeletePin = async (pinId: string) => {
-        await CommentDeleteUtil(
+        await deleteComment(
             pinId,
             pins,
             setPins,
@@ -148,7 +141,6 @@ export default function Page() {
                     console.error('Erro ao atualizar o título:', error);
                     return;
                 }
-                // Use pageData and update it, checking for null
                 if (pageData) {
                     pageData.imageTitle = newTitle;
                 }
