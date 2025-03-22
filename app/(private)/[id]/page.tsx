@@ -31,7 +31,6 @@ export default function Page() {
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
 
-    // Add useEffect to update last accessed time when page loads
     useEffect(() => {
         const updateLastAccessed = async () => {
             if (pageData && session) {
@@ -60,8 +59,7 @@ export default function Page() {
         loadComments,
         loadRepliesForPin
     } = usePins(pageId, session);
-
-    // Use the new real-time comments hook
+    
     useRealtimeComments(pageId, loadComments);
 
     // Define a local setPins function to update pins state
