@@ -61,8 +61,8 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   };
 
   return (
-    <Card key={pin.id} className="p-4 bg-white shadow">
-      <div className="flex justify-between items-center mb-3">
+    <Card key={pin.id} className="p-4 bg-white shadow" id={`comment-list-item-${pin.id}`}>
+      <div id={`comment-header-${pin.id}`} className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
           <span className="text-black">{pin.num}</span>
           <Badge
@@ -81,6 +81,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               variant="ghost"
               size="icon"
               onClick={() => CommentDelete(pin.id)}
+              className="hover:text-red-500"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -89,7 +90,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
       </div>
 
       {editingPinId === pin.id ? (
-        <div>
+        <div id={`comment-edit-${pin.id}`}>
           <textarea
             value={localComments[pin.id] || ''}
             onChange={(e) => CommentChange(pin.id, e.target.value)}
@@ -106,36 +107,19 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           </Button>
         </div>
       ) : (
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start" id={`comment-content-${pin.id}`}>
           <div className="flex flex-col">
             <p className="text-sm text-gray-700">
               {pin.comment || localComments[pin.id] || ''}
             </p>
           </div>
-        </div>
-      )}
-
-      <div className='flex justify-between'>
-        <div className="flex">
-          <Button
-            variant="link"
-            onClick={() => toggleReplies(pin.id)}
-            className="!pl-0 text-xs text-blue-600 hover:text-blue-800 flex items-center"
-          >
-            <MessageCircle className="w-4 h-4" />
-            {showReplies[pin.id]
-              ? 'Ocultar respostas'
-              : pin.reactions && pin.reactions.length > 0
-                ? `Ver respostas (${pin.reactions.length})`
-                : 'Responder'}
-          </Button>
-        </div>
-        <div className="flex items-center">
+          <div className="flex gap-2 items-center">
             {permissions[pin.id] && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setEditingPinId(pin.id)}
+                className="hover:text-orange-500"
               >
                 <Pencil className="w-4 h-4" />
               </Button>
@@ -145,22 +129,40 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => CommentStatusChange(pin.id)}
+                className=""
               >
                 {pin.status === 'ativo' ? (
-                  <Check className="w-4 h-4" />
+                  <Check className="w-4 h-4 hover:text-green-500" />
                 ) : (
-                  <Cog className="w-4 h-4" />
+                  <Cog className="w-4 h-4 hover:text-green-500" />
                 )}
               </Button>
             )}
+          </div>
         </div>
+      )}
+
+      <div className="mt-2 flex items-center gap-2" id={`comment-replies-toggle-${pin.id}`}>
+        <Button
+          variant="link"
+          onClick={() => toggleReplies(pin.id)}
+          className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+        >
+          <MessageCircle className="w-4 h-4" />
+          {showReplies[pin.id]
+            ? 'Ocultar respostas'
+            : pin.reactions && pin.reactions.length > 0
+              ? `Ver respostas (${pin.reactions.length})`
+              : 'Responder'}
+        </Button>
       </div>
+
       {showReplies[pin.id] && (
-        <div className="mt-3">
+        <div className="mt-3" id={`comment-replies-${pin.id}`}>
           {pin.reactions && pin.reactions.length > 0 && (
             <div className="pl-4 border-l-2 border-gray-200 mb-3">
               {pin.reactions.map((reaction) => (
-                <div key={reaction.id} className="mt-2 text-sm">
+                <div key={reaction.id} className="mt-2 text-sm" id={`comment-reply-${reaction.id}`}>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs font-medium text-gray-700">
                       {userNames[reaction.user_id] || 'Usuário'}
