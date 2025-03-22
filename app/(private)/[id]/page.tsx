@@ -1,11 +1,12 @@
 'use client'
 
 import { useParams, useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { usePins } from '@/hooks/usePins';
 import { usePageData } from '@/hooks/usePageData';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { supabase } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/imageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
@@ -47,6 +48,9 @@ export default function Page() {
         loadComments,
         loadRepliesForPin
     } = usePins(pageId, session);
+
+    // Use the new real-time comments hook
+    useRealtimeComments(pageId, loadComments);
 
     // Define a local setPins function to update pins state
     const setPins = (pinsOrUpdater: any) => {
@@ -159,7 +163,6 @@ export default function Page() {
     if (!imageUrl) {
         return <PageImageNotFound />;
     }
-
 
     const filteredPins = pins.filter(pin => pin.status === statusFilter);
 
