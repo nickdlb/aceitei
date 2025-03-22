@@ -272,7 +272,7 @@ const CommentBar = ({
     <div className="flex flex-col h-full bg-gray-100 border-r border-gray-300 relative">
       <div className="flex-1 overflow-y-auto pb-8 ">
         {/* Cabeçalho com contagem de comentários */}
-        <CommentHeader/>
+        <CommentHeader totalComments={pins.length} />
 
         {/* Filtros de status */}
         <CommentFilter

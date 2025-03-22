@@ -2,6 +2,9 @@ import { useState } from 'react';
 import CommentReactionProps from '@/types/CommentReactionProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import CommentItemProps from '@/types/CommentItemProps';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card"
 
 const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props }) => {
     const [isReplying, setIsReplying] = useState(false);
@@ -33,39 +36,42 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props })
     };
 
     return (
-        <div className="bg-white rounded-lg p-4 shadow">
+        <Card className="p-4">
             {/* Conteúdo existente do comentário */}
             <div className="mt-2 flex items-center gap-2">
-                <button
+                <Button
+                    variant="link"
                     onClick={() => setIsReplying(!isReplying)}
                     className="text-sm text-blue-600 hover:text-blue-800"
                 >
                     Responder
-                </button>
+                </Button>
             </div>
 
             {isReplying && (
                 <div className="mt-3">
-                    <textarea
+                    <div className="relative">
+                      <textarea
                         value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        className="w-full p-2 border rounded-md"
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setReplyText(e.target.value)}
                         placeholder="Digite sua resposta..."
-                        rows={2}
-                    />
+                        rows={2} className="w-full p-2 border rounded-md"
+                      />
+                    </div>
                     <div className="mt-2 flex justify-end gap-2">
-                        <button
+                        <Button
+                            variant="ghost"
                             onClick={() => setIsReplying(false)}
                             className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
                         >
                             Cancelar
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             onClick={handleReply}
                             className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
                         >
                             Enviar
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}
@@ -85,7 +91,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, session, ...props })
                     ))}
                 </div>
             )}
-        </div>
+        </Card>
     );
 };
 
