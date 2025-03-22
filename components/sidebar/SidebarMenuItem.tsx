@@ -2,7 +2,14 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const SidebarMenuItem = ({ icon, label, href, badge }) => {
+interface SidebarMenuItemProps {
+  icon: React.ReactNode;
+  label: string;
+  href: string;
+  badge?: string;
+}
+
+const SidebarMenuItem = ({ icon, label, href, badge }: SidebarMenuItemProps) => {
   const pathname = usePathname();
   const isActive = pathname === href;
 
