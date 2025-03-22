@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const SidebarFooter = () => {
   const { session } = useAuth();
@@ -24,7 +25,7 @@ const SidebarFooter = () => {
 
         if (data) {
           setUserName(data.nome);
-          setUserPhoto(data.fotoperfil || ''); // Se você tiver um campo photo
+          setUserPhoto(data.fotoperfil || '');
         }
       }
     };
@@ -36,13 +37,14 @@ const SidebarFooter = () => {
     <div className="p-4 border-t bg-white border-t-gray-300">
       <div className="flex items-center gap-2">
         {userPhoto ? (
-          <img
-            src={userPhoto}
-            alt="Foto do Usuário"
-            className="w-8 h-8 rounded-full mr-2"
-          />
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={userPhoto} alt="Foto do Usuário" />
+            <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
         ) : (
-          <div className="w-8 h-8 bg-blue-600 rounded"></div>
+          <Avatar className="w-8 h-8">
+            <AvatarFallback>U</AvatarFallback>
+          </Avatar>
         )}
         <div className="flex items-center justify-between flex-1">
           <span className="font-medium">

@@ -1,12 +1,17 @@
 interface CommentFilterProps {
   statusFilter: 'ativo' | 'resolvido' | null;
   setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => void;
+  totalComments: number;
 }
 
-const CommentFilter: React.FC<CommentFilterProps> = ({ statusFilter, setStatusFilter }) => {
+const CommentFilter: React.FC<CommentFilterProps> = ({ statusFilter, setStatusFilter, totalComments }) => {
   return (
-    <div className="px-4 py-3 bg-white border-b border-b-gray-300">
-      <div className="flex gap-2">
+    <div className="p-4 bg-white">
+      <div className="flex flex-wrap gap-2">
+        <span className=" font-semibold w-full text-sm ">
+            Total de Comentários: {totalComments}
+        </span>
+
         <button
           onClick={() => setStatusFilter('ativo')}
           className={`px-3 py-1 rounded text-sm ${statusFilter === 'ativo'

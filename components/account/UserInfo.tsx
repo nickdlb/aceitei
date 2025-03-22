@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/auth/AuthProvider';
 import UserInfoProps from '@/types/UserInfoProps';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) => {
   const [editingName, setEditingName] = useState(false);
@@ -52,6 +54,12 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
     setEditingName(false);
   };
 
+    const handleBlur = async () => {
+        if(editingName) {
+            await handleSaveName();
+        }
+    }
+
   const handleKeyPress = async (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       event.preventDefault();
@@ -63,14 +71,14 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
     <div className="mt-4">
       <div className="flex items-center gap-2">
         {editingName ? (
-          <input
+          <Input
             ref={nameInputRef}
             type="text"
             value={tempName}
             onChange={handleNameChange}
             onKeyPress={handleKeyPress}
-            className="border rounded px-2 py-1 focus:outline-none"
-            onBlur={handleSaveName}
+            className="w-auto"
+            onBlur={handleBlur}
           />
         ) : (
           <p>
@@ -78,20 +86,14 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
           </p>
         )}
         {!editingName && (
-          <button
-            onClick={handleEditName}
-            className="text-blue-500 hover:text-blue-700"
-          >
+          <Button onClick={handleEditName} variant="outline" size="sm">
             Editar
-          </button>
+          </Button>
         )}
         {editingName && (
-          <button
-            onClick={handleCancelEdit}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <Button onClick={handleCancelEdit} variant="ghost" size="sm">
             Cancelar
-          </button>
+          </Button>
         )}
       </div>
       <p>

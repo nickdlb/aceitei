@@ -4,6 +4,7 @@ import { CardContent } from './CardContent';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useEffect, useState } from 'react';
 import ImageCardProps from '@/types/CardProps';
+import ImageProps from '@/types/ImageProps';
 
 export default function ImageCard({ image, onDelete }: ImageCardProps) {
     const [firstPageId, setFirstPageId] = useState<string | null>(null);
@@ -19,7 +20,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
         handleDelete,
         setTitle,
         setIsEditing
-    } = useImageCard(image, onDelete);
+    } = useImageCard(image as ImageProps, onDelete);
 
     useEffect(() => {
         const fetchFirstPageId = async () => {
@@ -56,6 +57,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
                 handleShare={handleShare}
                 handleDelete={handleDelete}
                 isDeleting={isDeleting}
+                imageId={image.id}
             />
 
             <CardContent

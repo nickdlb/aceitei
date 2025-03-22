@@ -6,6 +6,8 @@ import { checkIsAnonymous } from '@/utils/checkIsAnonymous';
 import ProfilePhoto from './ProfilePhoto';
 import UserInfo from './UserInfo';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const AccountContainer = () => {
   const [photoURL, setPhotoURL] = useState('');
@@ -59,25 +61,33 @@ const AccountContainer = () => {
   };
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Skeleton className="w-[300px] h-[200px]" />
+      </div>
+    );
   }
 
   return (
-    <div className="flex-1 p-6">
-      <h1 className="text-2xl font-bold mb-4">Minha Conta</h1>
-      <div className="bg-white rounded-lg shadow p-6">
-        <ProfilePhoto
-          photoURL={photoURL}
-          onUpdatePhoto={handleUpdatePhoto}
-          userId={session?.user?.id || null}
-        />
-        <UserInfo
-          userData={userData}
-          onUpdateName={handleUpdateName}
-          userId={session?.user?.id || null}
-        />
-      </div>
-    </div>
+    <Card className="flex-1">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-2xl font-bold">Minha Conta</CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="bg-white rounded-lg shadow p-6">
+          <ProfilePhoto
+            photoURL={photoURL}
+            onUpdatePhoto={handleUpdatePhoto}
+            userId={session?.user?.id || null}
+          />
+          <UserInfo
+            userData={userData}
+            onUpdateName={handleUpdateName}
+            userId={session?.user?.id || null}
+          />
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

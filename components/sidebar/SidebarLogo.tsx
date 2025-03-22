@@ -1,5 +1,4 @@
 import React from 'react';
-import { UserCircleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
@@ -34,12 +33,11 @@ const SidebarLogo = () => {
   }, [session]);
 
   return (
-    <div className="p-4 border-b">
+    <div className="p-4 border-b h-14">
       <div className="flex items-center justify-between">
-        <Link href="/" className="font-medium hover:text-blue-600">
+        <Link href="/" className="font-medium hover:text-blue-700">
           Aceitei
         </Link>
-        <span className="text-xs bg-gray-100 px-2 py-1 rounded">Free</span>
       </div>
     </div>
   );

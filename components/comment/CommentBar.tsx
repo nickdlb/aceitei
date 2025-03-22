@@ -270,18 +270,19 @@ const CommentBar = ({
 
   return (
     <div className="flex flex-col h-full bg-gray-100 border-r border-gray-300 relative">
-      <div className="flex-1 overflow-y-auto pb-16">
+      <div className="flex-1 overflow-y-auto pb-8 ">
         {/* Cabeçalho com contagem de comentários */}
-        <CommentHeader totalComments={pins.length} />
+        <CommentHeader/>
 
         {/* Filtros de status */}
         <CommentFilter
+          totalComments={pins.length}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
         />
 
         {/* Lista de comentários */}
-        <div className="p-4 bg-white">
+        <div className="p-4">
           <div className="space-y-4 thin-scrollbar">
             {pins.sort((a, b) => a.num - b.num).map((pin) => (
               <CommentListItem

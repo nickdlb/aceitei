@@ -56,7 +56,6 @@ const RegisterPage = () => {
               <Link href="/" className="font-medium hover:text-blue-600">
                 Aceitei
               </Link>
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">Free</span>
             </div>
           </div>
         </div>

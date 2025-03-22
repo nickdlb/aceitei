@@ -5,8 +5,7 @@ import ImageSidebarProps from '@/types/ImageSidebarProps';
 const ImageSidebar = ({ pages, currentPage, onPageChange }: ImageSidebarProps) => {
     return (
         <div className="w-36 bg-white border-l border-gray-200 flex flex-col">
-            {/* Cabeçalho */}
-            <div className="p-3 border-b border-gray-200">
+            <div className="p-4 h-14 items-center border-b border-gray-200">
                 <h2 className="text-sm font-semibold text-gray-700">
                     Páginas ({pages.length})
                 </h2>
