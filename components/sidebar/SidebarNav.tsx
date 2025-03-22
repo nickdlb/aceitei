@@ -51,8 +51,8 @@ const SidebarNav = () => {
   return (
     <nav className="p-4 flex flex-col h-full relative">
       <ul className="space-y-2">
-        <SidebarMenuItem href="/" icon={<HomeIcon className="w-5 h-5" />} label="Dashboard" badge={null} />
-        <SidebarMenuItem href="/account" icon={<UserCircleIcon className="w-5 h-5" />} label="Minha Conta" badge={null} />
+        <SidebarMenuItem href="/" icon={<HomeIcon className="w-5 h-5" />} label="Dashboard" />
+        <SidebarMenuItem href="/account" icon={<UserCircleIcon className="w-5 h-5" />} label="Minha Conta" />
         <li>
           <button onClick={() => handleSupabaseSignOut()} className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-red-100">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-red-500">
