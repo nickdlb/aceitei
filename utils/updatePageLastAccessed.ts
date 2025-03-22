@@ -1,6 +1,4 @@
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import { checkPermissionsEditPin } from '@/utils/checkPermissionsEditPin';
-import PinProps from '@/types/PinProps';
 
 /**
  * Updates the last_accessed_at timestamp for a page if the user is the owner
@@ -15,22 +13,19 @@ export const updatePageLastAccessed = async (pageId: string, session: any): Prom
     }
 
     try {
-        // First, check if the user is the page owner
-        const pinDummy: PinProps = {
-            id: 'dummy-pin-id',
-            x: 0,
-            y: 0,
-            num: 0,
-            comment: '',
-            created_at: new Date().toISOString(),
-            status: 'ativo',
-            user_id: session.user.id,
-            page_id: pageId
-        };
-        const { isDocumentOwner } = await checkPermissionsEditPin(pinDummy, session);
+        // Directly check if the user is the page owner
+        const { data: pageData, error: pageError } = await createSupabaseClient
+            .from('pages')
+            .select('user_id')
+            .eq('id', pageId)
+            .single();
 
-        // If not the page owner, return false
-        if (!isDocumentOwner) {
+        if (pageError) {
+            console.error('Error fetching page data:', pageError);
+            return false;
+        }
+
+        if (pageData?.user_id !== session.user.id) {
             return false;
         }
 
