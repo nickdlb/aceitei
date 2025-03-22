@@ -1,6 +1,6 @@
 import { supabase } from '@/utils/supabaseClient';
 
-export const handleAuth = async (
+export const anonymousAuth = async (
     name: string,
     email: string,
     pageId: string,

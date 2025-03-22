@@ -11,7 +11,7 @@ import { supabase } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/imageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { CommentStatusChangeUtil, CommentChangeUtil, CommentSaveUtil, CommentDeleteUtil } from '@/utils/commentUtils';
-import { handleAuth } from '@/utils/handleAuth';
+import { anonymousAuth } from '@/utils/anonymousAuth';
 import { updatePageLastAccessed } from '@/utils/updatePageLastAccessed';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
@@ -213,7 +213,7 @@ export default function Page() {
     };
 
     const handleAuthSubmitAnonForm = async (name: string, email: string) => {
-        await handleAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
+        await anonymousAuth(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
     };
 
     return (

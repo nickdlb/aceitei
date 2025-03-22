@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient';
 /**
  * Handles submitting a reply to a comment
  */
-export const handleReply = async (
+export const replyUtil = async (
     pinId: string,
     replyText: string,
     session: Session | null,
@@ -37,10 +37,10 @@ export const handleReply = async (
         }
 
         setReplyText('');
-        
+
         // Load all comments
         await loadComments();
-        
+
         // The open state of replies is now managed by the ref in CommentBar
 
     } catch (error: any) {
@@ -52,7 +52,7 @@ export const handleReply = async (
 /**
  * Toggles the visibility of replies for a specific pin
  */
-export const toggleReplies = (
+export const replyToggle = (
     pinId: string,
     setShowReplies: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>
 ) => {
@@ -65,7 +65,7 @@ export const toggleReplies = (
 /**
  * Handles keyboard events for reply input
  */
-export const handleReplyKeyPress = (
+export const replyKeyPress = (
     event: React.KeyboardEvent<HTMLTextAreaElement>,
     pinId: string,
     handleReplyCallback: (pinId: string) => Promise<void>

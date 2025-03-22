@@ -5,7 +5,7 @@ import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { CommentSaveUtil as CommentSaveUtil } from '@/utils/commentUtils';
 import { CommentDeleteUtil, CommentStatusChangeUtil, CommentChangeUtil } from '@/utils/commentUtils';
-import { handleReply } from '@/utils/handleReplyFunctions';
+import { replyUtil } from '@/utils/replyUtils';
 import { checkPermissions as checkPermissionsUtil } from '@/utils/checkPermissions';
 import CommentFilter from './CommentFilter';
 import CommentHeader from './CommentHeader';
@@ -228,7 +228,7 @@ const CommentBar = ({
       [pinId]: true
     };
 
-    await handleReply(
+    await replyUtil(
       pinId,
       replyText,
       session,

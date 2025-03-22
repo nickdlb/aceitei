@@ -6,7 +6,7 @@ import { supabase } from './supabaseClient';
  * @param imageUrl URL da imagem associada ao documento (para exclusão do storage)
  * @returns Um objeto com status de sucesso e mensagem
  */
-export const deleteCard = async (documentId: string, imageUrl?: string) => {
+export const CardDelete = async (documentId: string, imageUrl?: string) => {
     try {
         // 1. Primeiro, buscar todas as páginas associadas ao documento
         const { data: pages, error: pagesError } = await supabase
@@ -37,7 +37,7 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
 
                 if (reactionsError) throw reactionsError;
             }
-            
+
             // 4. Excluir todos os comentários associados às páginas
             const { error: commentsError } = await supabase
                 .from('comments')
@@ -45,7 +45,7 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
                 .in('page_id', pageIds);
 
             if (commentsError) throw commentsError;
-            
+
             // 5. Excluir todas as páginas associadas ao documento
             const { error: deletePageError } = await supabase
                 .from('pages')

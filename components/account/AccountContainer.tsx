@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabaseClient';
-import { isAnonymous } from '@/utils/handleAnonymousCheck';
+import { isAnonymous } from '@/utils/isAnonymousCheck';
 import ProfilePhoto from './ProfilePhoto';
 import UserInfo from './UserInfo';
 import { useAuth } from '@/components/AuthProvider';

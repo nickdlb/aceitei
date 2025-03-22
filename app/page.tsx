@@ -9,13 +9,13 @@ import RightSidebar from '@/components/sidebar/RightSidebar';
 import { useAuth } from '@/components/AuthProvider';
 import { useImages } from '@/hooks/useImages';
 import { useRouter } from 'next/navigation';
-import { deleteCard } from '@/utils/deleteCard';
+import { CardDelete } from '@/utils/cardDelete';
 
 const App = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleCardDeleteWrapper = async (id: string, imageUrl?: string) => {
-        await deleteCard(id, imageUrl);
+        await CardDelete(id, imageUrl);
     };
     const [sortOrder, setSortOrder] = useState('date');
     const [searchTerm, setSearchTerm] = useState('');
