@@ -1,10 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import ImagePin from './ImagePin';
 import { ImageAreaProps } from '@/types/CommentsProps';
-import { ArrowDownTrayIcon, PencilIcon, Squares2X2Icon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import ImageAreaHeader from './ImageAreaHeader';
 
-const ImageArea: React.FC<ImageAreaProps> = ({
+interface Props extends ImageAreaProps {
+  onTitleUpdate: (newTitle: string) => Promise<void | undefined>;
+  onTogglePages: () => void;
+}
+
+const ImageArea: React.FC<Props> = ({
   exibirImagem,
   imageTitle,
   imageId,
@@ -18,7 +22,7 @@ const ImageArea: React.FC<ImageAreaProps> = ({
   imageRef,
   onTitleUpdate,
   onTogglePages,
-  isPagesOpen
+  isPagesOpen,
 }) => {
   const [zoomLevel, setZoomLevel] = useState('100');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -26,37 +30,34 @@ const ImageArea: React.FC<ImageAreaProps> = ({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState(imageTitle);
 
-  const handleZoomChange = (value: string) => {
+  const handleZoomChange = useCallback((value: string) => {
     setZoomLevel(value);
     if (scrollContainerRef.current) {
       const scale = parseInt(value) / 100;
       scrollContainerRef.current.style.transform = `scale(${scale})`;
       scrollContainerRef.current.style.transformOrigin = 'top center';
     }
-  };
+  }, []);
 
-  const handleTitleEdit = async () => {
+  const handleTitleEdit = useCallback(async () => {
     if (isEditingTitle && newTitle.trim()) {
       try {
-        // Chamar diretamente a função onTitleUpdate que foi passada como prop
         await onTitleUpdate(newTitle);
       } catch (error: any) {
-        // Melhorar o tratamento de erro para exibir mais detalhes
         console.error('Erro ao atualizar título:', error?.message || JSON.stringify(error) || 'Erro desconhecido');
-        // Reverter para o título original em caso de erro
         setNewTitle(imageTitle);
       }
     }
     setIsEditingTitle(!isEditingTitle);
-  };
+  }, [isEditingTitle, newTitle, imageTitle, onTitleUpdate]);
 
-  const getFileFormat = (url: string | undefined) => {
+  const getFileFormat = useCallback((url: string | undefined) => {
     if (!url) return '';
     const extension = url.split('.').pop()?.toLowerCase() || '';
     return extension === 'jpg' ? 'JPEG' : extension.toUpperCase();
-  };
+  }, []);
 
-  const handleDownload = async () => {
+  const handleDownload = useCallback(async () => {
     try {
       const response = await fetch(exibirImagem);
       const blob = await response.blob();
@@ -71,67 +72,25 @@ const ImageArea: React.FC<ImageAreaProps> = ({
     } catch (error) {
       console.error('Erro ao baixar imagem:', error);
     }
-  };
+  }, [exibirImagem, imageTitle, getFileFormat]);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-100">
       {/* Barra de informações e controles */}
-      <div className="h-14 bg-white border-b flex items-center justify-between px-4 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            {isEditingTitle ? (
-              <input
-                type="text"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                className="border rounded px-2 py-1 text-sm"
-                autoFocus
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleTitleEdit();
-                  }
-                }}
-              />
-            ) : (
-              <h2 className="text-sm font-medium text-gray-900">{imageTitle}</h2>
-            )}
-            <button
-              onClick={handleTitleEdit}
-              className="p-1 rounded hover:bg-gray-100"
-              title={isEditingTitle ? "Salvar título" : "Editar título"}
-            >
-              <PencilIcon className="w-4 h-4 text-gray-600" />
-            </button>
-          </div>
-          <p className="text-xs text-gray-500">Formato: {getFileFormat(exibirImagem)}</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <select
-            value={zoomLevel}
-            onChange={(e) => handleZoomChange(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="100">100%</option>
-            <option value="150">150%</option>
-            <option value="200">200%</option>
-          </select>
-          <button
-            onClick={handleDownload}
-            className="p-1.5 rounded hover:bg-gray-100 text-gray-700"
-            title="Baixar imagem"
-          >
-            <ArrowDownTrayIcon className="w-5 h-5" />
-          </button>
-          <button
-            onClick={onTogglePages}
-            className={`p-2 hover:bg-gray-100 rounded-full transition-colors ${isPagesOpen ? 'bg-gray-100' : ''
-              }`}
-            title={isPagesOpen ? "Ocultar páginas" : "Mostrar páginas"}
-          >
-            <DocumentDuplicateIcon className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
-      </div>
+      <ImageAreaHeader
+        imageTitle={imageTitle}
+        exibirImagem={exibirImagem}
+        isEditingTitle={isEditingTitle}
+        newTitle={newTitle}
+        zoomLevel={zoomLevel}
+        isPagesOpen={isPagesOpen || false}
+        handleTitleEdit={handleTitleEdit}
+        getFileFormat={getFileFormat}
+        handleDownload={handleDownload}
+        handleZoomChange={handleZoomChange}
+        onTogglePages={onTogglePages || (() => {})}
+        setNewTitle={setNewTitle}
+      />
 
       {/* Container com scroll */}
       <div
