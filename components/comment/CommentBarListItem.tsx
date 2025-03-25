@@ -62,19 +62,22 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
   return (
     <Card key={pin.id} className="pl-3 pr-3 pt-2 pb-2 bg-white shadow gap-1" id={`comment-list-item-${pin.id}`}>
-      <div id={`comment-header-${pin.id}`} className="flex justify-between items-center">
-        <div className="flex items-center gap-1">
-          <span className="font-semibold text-xs">{pin.num}</span>
+      <div id={`comment-header-${pin.id}`} className="flex justify-between items-center align-middle">
+        <div className="flex items-center gap-2">
+          <span className="flex font-semibold text-xs">{pin.num}</span>
           <Badge
             variant={pin.status === 'ativo' ? "secondary" : "default"}
+            className={pin.status === 'ativo' ? "bg-yellow-500 text-white" : "bg-green-500 text-white"}
           >
             {pin.status === 'ativo' ? 'Ativo' : 'Resolvido'}
           </Badge>
         </div>
-        <div className="flex items-center gap-2">
+        <div className='flex align-middle'>
           {userNames[pin.user_id] && (
-            <span className="text-xs font-medium text-gray-700">{userNames[pin.user_id]}</span>
+          <span className="text-xs font-medium text-gray-700">{userNames[pin.user_id]}</span>
           )}
+        </div>
+        <div className="flex items-center ml-0.5">
           <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>          
           {permissions[pin.id] && (
             <Button
