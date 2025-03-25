@@ -61,21 +61,21 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   };
 
   return (
-    <Card key={pin.id} className="p-4 bg-white shadow" id={`comment-list-item-${pin.id}`}>
-      <div id={`comment-header-${pin.id}`} className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-black">{pin.num}</span>
+    <Card key={pin.id} className="pl-3 pr-3 pt-2 pb-2 bg-white shadow gap-1" id={`comment-list-item-${pin.id}`}>
+      <div id={`comment-header-${pin.id}`} className="flex justify-between items-center">
+        <div className="flex items-center gap-1">
+          <span className="font-semibold text-xs">{pin.num}</span>
           <Badge
             variant={pin.status === 'ativo' ? "secondary" : "default"}
           >
             {pin.status === 'ativo' ? 'Ativo' : 'Resolvido'}
           </Badge>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>
+        <div className="flex items-center gap-2">
           {userNames[pin.user_id] && (
             <span className="text-xs font-medium text-gray-700">{userNames[pin.user_id]}</span>
           )}
+          <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>          
           {permissions[pin.id] && (
             <Button
               variant="ghost"
@@ -95,7 +95,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
             value={localComments[pin.id] || ''}
             onChange={(e) => CommentChange(pin.id, e.target.value)}
             onKeyDown={(e) => handleKeyPress(e, pin.id)}
-            className="w-full p-2 border rounded mb-2 min-h-[60px] resize-none text-sm"
+            className="w-full pl-2 pt-2 border rounded resize-none text-sm"
             placeholder="Comentário..."
             autoFocus
           />
@@ -113,52 +113,52 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               {pin.comment || localComments[pin.id] || ''}
             </p>
           </div>
-          <div className="flex gap-2 items-center">
-            {permissions[pin.id] && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setEditingPinId(pin.id)}
-                className="hover:text-orange-500"
-              >
-                <Pencil className="w-4 h-4" />
-              </Button>
-            )}
-            {permissions[pin.id] && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => CommentStatusChange(pin.id)}
-                className=""
-              >
-                {pin.status === 'ativo' ? (
-                  <Check className="w-4 h-4 hover:text-green-500" />
-                ) : (
-                  <Cog className="w-4 h-4 hover:text-green-500" />
-                )}
-              </Button>
-            )}
-          </div>
         </div>
       )}
-
-      <div className="mt-2 flex items-center gap-2" id={`comment-replies-toggle-${pin.id}`}>
-        <Button
-          variant="link"
-          onClick={() => toggleReplies(pin.id)}
-          className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
-        >
-          <MessageCircle className="w-4 h-4" />
-          {showReplies[pin.id]
-            ? 'Ocultar respostas'
-            : pin.reactions && pin.reactions.length > 0
-              ? `Ver respostas (${pin.reactions.length})`
-              : 'Responder'}
-        </Button>
-      </div>
-
+      <div className='flex items-center justify-between'>
+        <div className="flex items-center" id={`comment-replies-toggle-${pin.id}`}>
+          <Button
+            variant="link"
+            onClick={() => toggleReplies(pin.id)}
+            className="!pl-0 text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+          >
+            <MessageCircle className="w-4 h-4" />
+            {showReplies[pin.id]
+              ? 'Ocultar respostas'
+              : pin.reactions && pin.reactions.length > 0
+                ? `Ver respostas (${pin.reactions.length})`
+                : 'Responder'}
+          </Button>
+        </div>
+        <div className="flex items-center">
+              {permissions[pin.id] && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setEditingPinId(pin.id)}
+                  className="hover:text-orange-500"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              )}
+              {permissions[pin.id] && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => CommentStatusChange(pin.id)}
+                  className="hover:text-green-500"
+                >
+                  {pin.status === 'ativo' ? (
+                    <Check className="w-4 h-4 hover:text-green-500" />
+                  ) : (
+                    <Cog className="w-4 h-4 hover:text-green-500" />
+                  )}
+                </Button>
+              )}
+        </div>
+      </div>      
       {showReplies[pin.id] && (
-        <div className="mt-3" id={`comment-replies-${pin.id}`}>
+        <div className="" id={`comment-replies-${pin.id}`}>
           {pin.reactions && pin.reactions.length > 0 && (
             <div className="pl-4 border-l-2 border-gray-200 mb-3">
               {pin.reactions.map((reaction) => (
@@ -188,7 +188,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               }
             }}
             placeholder="Digite sua resposta..."
-            className="border rounded p-2 w-full"
+            className="text-sm border rounded p-2 w-full exp resize-none"
           />
           <Button
             onClick={() => handleReplyLocal(pin.id)}
