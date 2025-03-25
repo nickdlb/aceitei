@@ -1,13 +1,45 @@
 'use client';
 import ProfilePhotoProps from '@/types/ProfilePhotoProps';
 
-import React, { useState } from 'react';
-import { UserCircleIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, userId }) => {
   const [newPhoto, setNewPhoto] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        if (userId) {
+          const { data, error } = await createSupabaseClient
+            .from('users')
+            .select('nome')
+            .eq('user_id', userId)
+            .single();
+
+          if (error) {
+            console.error('Error fetching user name:', error);
+            return;
+          }
+          if(data) {
+            setUserName(data.nome || '');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+        if(photoURL) {
+            fetchUserName();
+        }
+
+  }, [photoURL, userId]);
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -82,18 +114,23 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
   return (
     <div className="flex items-center mb-4">
       {photoURL ? (
-        <img
-          src={photoURL}
-          alt="Foto do Usuário"
-          className="w-20 h-20 rounded-full mr-4"
-        />
+        <Avatar className="w-20 h-20 mr-4">
+          <AvatarImage src={photoURL} alt="Foto do Usuário" />
+          <AvatarFallback>
+            {(userName?.charAt(0) || 'U').toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
       ) : (
-        <UserCircleIcon className="w-20 h-20 text-gray-400 mr-4" />
+        <Avatar className="w-20 h-20 mr-4">
+          <AvatarFallback>U</AvatarFallback>
+        </Avatar>
       )}
       <div>
-        <label htmlFor="photoUpload" className="cursor-pointer text-blue-500 hover:text-blue-700">
+        <Button asChild variant="outline">
+        <label htmlFor="photoUpload" className="cursor-pointer">
           Alterar Foto
         </label>
+        </Button>
         <input
           type="file"
           id="photoUpload"
@@ -103,12 +140,13 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
         />
         {uploading && <p>Uploading...</p>}
         {photoURL && (
-          <button
+          <Button
             onClick={handleRemovePhoto}
-            className="text-red-500 hover:text-red-700 block mt-2"
+            variant="outline"
+            className="block mt-2 text-red-500 hover:text-red-700"
           >
             Remover Foto
-          </button>
+          </Button>
         )}
       </div>
     </div>

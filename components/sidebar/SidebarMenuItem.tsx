@@ -3,27 +3,46 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 interface SidebarMenuItemProps {
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
-  href: string;
+  href?: string;
   badge?: string;
+  onClick?: () => void;
 }
 
-const SidebarMenuItem = ({ icon, label, href, badge }: SidebarMenuItemProps) => {
+const SidebarMenuItem = ({ icon: Icon, label, href, badge, onClick }: SidebarMenuItemProps) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = href ? pathname === href : false;
+
+    const handleClick = () => {
+        if (onClick) {
+            onClick();
+        }
+    }
 
   return (
-    <li className={`flex items-center gap-3 p-2 rounded cursor-pointer ${isActive ? 'bg-blue-100' : 'hover:bg-blue-100'}`}>
-      <Link href={href} className="flex items-center gap-3 w-full">
-        {icon}
-        <span>{label}</span>
-        {badge && (
-          <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">
-            {badge}
-          </span>
-        )}
-      </Link>
+    <li className={`flex items-center gap-3 p-2 rounded cursor-pointer ${isActive ? 'bg-blue-100' : 'hover:bg-blue-100'}`}  onClick={handleClick}>
+      {href ? (
+        <Link href={href} className="flex items-center gap-3 w-full">
+          <Icon className="w-5 h-5" />
+          <span>{label}</span>
+          {badge && (
+            <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">
+              {badge}
+            </span>
+          )}
+        </Link>
+      ) : (
+        <>
+          <Icon className="w-5 h-5" />
+          <span>{label}</span>
+          {badge && (
+            <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">
+              {badge}
+            </span>
+          )}
+        </>
+      )}
     </li>
   );
 };

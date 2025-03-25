@@ -11,10 +11,15 @@ const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isL
   }, [images]);
 
   const handleLocalCardDelete = async (id: string) => {
-    const imageToDelete = localImages.find(image => image.id === id);
+    const imageToDelete = localImages.find((image) => image.id === id);
     if (imageToDelete) {
-      await handleCardDelete(id, imageToDelete.image_url);
-      setLocalImages((prevImages) => prevImages.filter((image) => image.id !== id));
+      try {
+        await handleCardDelete(id, imageToDelete.image_url);
+      } finally {
+        setLocalImages((prevImages) =>
+          prevImages.filter((image) => image.id !== id)
+        );
+      }
     }
   };
 

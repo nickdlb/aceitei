@@ -1,6 +1,9 @@
-import { PencilIcon, CheckIcon, CogIcon, XMarkIcon, ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 import { formatDate } from '@/utils/formatDate';
 import CommentListItemProps from '@/types/CommentListItemProps';
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Pencil, Check, Cog, X, MessageCircle } from "lucide-react";
 
 const CommentListItem: React.FC<CommentListItemProps> = ({
   pin,
@@ -58,108 +61,108 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   };
 
   return (
-    <div key={pin.id} className="bg-white rounded-lg p-4 shadow">
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-black">{pin.num}</span>
-          <span
-            className={`text-xs px-2 py-1 rounded ${pin.status === 'ativo'
-              ? 'bg-yellow-100 text-yellow-800'
-              : 'bg-green-100 text-green-800'
-              }`}
+    <Card key={pin.id} className="pl-3 pr-3 pt-2 pb-2 bg-white shadow gap-1" id={`comment-list-item-${pin.id}`}>
+      <div id={`comment-header-${pin.id}`} className="flex justify-between items-center">
+        <div className="flex items-center gap-1">
+          <span className="font-semibold text-xs">{pin.num}</span>
+          <Badge
+            variant={pin.status === 'ativo' ? "secondary" : "default"}
           >
             {pin.status === 'ativo' ? 'Ativo' : 'Resolvido'}
-          </span>
+          </Badge>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>
+        <div className="flex items-center gap-2">
           {userNames[pin.user_id] && (
             <span className="text-xs font-medium text-gray-700">{userNames[pin.user_id]}</span>
           )}
+          <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>          
           {permissions[pin.id] && (
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => CommentDelete(pin.id)}
-              className="text-gray-400 hover:text-gray-600"
+              className="hover:text-red-500"
             >
-              <XMarkIcon className="w-4 h-4" />
-            </button>
+              <X className="w-4 h-4" />
+            </Button>
           )}
         </div>
       </div>
 
       {editingPinId === pin.id ? (
-        <div>
+        <div id={`comment-edit-${pin.id}`}>
           <textarea
             value={localComments[pin.id] || ''}
             onChange={(e) => CommentChange(pin.id, e.target.value)}
             onKeyDown={(e) => handleKeyPress(e, pin.id)}
-            className="w-full p-2 border rounded mb-2 min-h-[60px] resize-none text-sm"
+            className="w-full pl-2 pt-2 border rounded resize-none text-sm"
             placeholder="Comentário..."
             autoFocus
           />
-          <button
+          <Button
             onClick={() => CommentSave(pin.id)}
             disabled={!localComments[pin.id]?.trim()}
-            className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
           >
             Confirmar
-          </button>
+          </Button>
         </div>
       ) : (
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start" id={`comment-content-${pin.id}`}>
           <div className="flex flex-col">
             <p className="text-sm text-gray-700">
               {pin.comment || localComments[pin.id] || ''}
             </p>
           </div>
-          <div className="flex gap-2">
-            {permissions[pin.id] && (
-              <button
-                onClick={() => setEditingPinId(pin.id)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <PencilIcon className="w-4 h-4" />
-              </button>
-            )}
-            {permissions[pin.id] && (
-              <button
-                onClick={() => CommentStatusChange(pin.id)}
-                className={`${pin.status === 'ativo'
-                  ? 'text-yellow-500 hover:text-yellow-600'
-                  : 'text-green-500 hover:text-green-600'
-                  }`}
-              >
-                {pin.status === 'ativo' ? (
-                  <CheckIcon className="w-4 h-4" />
-                ) : (
-                  <CogIcon className="w-4 h-4" />
-                )}
-              </button>
-            )}
-          </div>
         </div>
       )}
-
-      <div className="mt-2 flex items-center gap-2">
-        <button
-          onClick={() => toggleReplies(pin.id)}
-          className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
-        >
-          <ChatBubbleOvalLeftIcon className="w-4 h-4" />
-          {showReplies[pin.id]
-            ? 'Ocultar respostas'
-            : pin.reactions && pin.reactions.length > 0
-              ? `Ver respostas (${pin.reactions.length})`
-              : 'Responder'}
-        </button>
-      </div>
-
+      <div className='flex items-center justify-between'>
+        <div className="flex items-center" id={`comment-replies-toggle-${pin.id}`}>
+          <Button
+            variant="link"
+            onClick={() => toggleReplies(pin.id)}
+            className="!pl-0 text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+          >
+            <MessageCircle className="w-4 h-4" />
+            {showReplies[pin.id]
+              ? 'Ocultar respostas'
+              : pin.reactions && pin.reactions.length > 0
+                ? `Ver respostas (${pin.reactions.length})`
+                : 'Responder'}
+          </Button>
+        </div>
+        <div className="flex items-center">
+              {permissions[pin.id] && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setEditingPinId(pin.id)}
+                  className="hover:text-orange-500"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              )}
+              {permissions[pin.id] && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => CommentStatusChange(pin.id)}
+                  className="hover:text-green-500"
+                >
+                  {pin.status === 'ativo' ? (
+                    <Check className="w-4 h-4 hover:text-green-500" />
+                  ) : (
+                    <Cog className="w-4 h-4 hover:text-green-500" />
+                  )}
+                </Button>
+              )}
+        </div>
+      </div>      
       {showReplies[pin.id] && (
-        <div className="mt-3">
+        <div className="" id={`comment-replies-${pin.id}`}>
           {pin.reactions && pin.reactions.length > 0 && (
             <div className="pl-4 border-l-2 border-gray-200 mb-3">
               {pin.reactions.map((reaction) => (
-                <div key={reaction.id} className="mt-2 text-sm">
+                <div key={reaction.id} className="mt-2 text-sm" id={`comment-reply-${reaction.id}`}>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs font-medium text-gray-700">
                       {userNames[reaction.user_id] || 'Usuário'}
@@ -185,17 +188,17 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               }
             }}
             placeholder="Digite sua resposta..."
-            className="border rounded p-2 w-full"
+            className="text-sm border rounded p-2 w-full exp resize-none"
           />
-          <button
+          <Button
             onClick={() => handleReplyLocal(pin.id)}
-            className="mt-2 bg-blue-500 text-white rounded px-4 py-2"
+            className="mt-2"
           >
             Enviar
-          </button>
+          </Button>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 

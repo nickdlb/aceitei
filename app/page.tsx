@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
-import Header from '@/components/dashboard/Header';
+import Header from '@/components/dashboard/DashboardHeader';
 import ImageGallery from '@/components/dashboard/CardGallery';
 import RightSidebarButton from '@/components/sidebar/RightSidebarButton';
 import RightSidebar from '@/components/sidebar/RightSidebar';
@@ -10,6 +10,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { useImages } from '@/hooks/useImages';
 import { useRouter } from 'next/navigation';
 import { deleteCard } from '@/utils/deleteCard';
+import { Button } from '@/components/ui/button';
 
 const App = () => {
     const [isLoading, setIsLoading] = useState(false);
