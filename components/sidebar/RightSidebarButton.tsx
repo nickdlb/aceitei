@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { PlusIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { Button } from "@/components/ui/button"
+import { Plus, ChevronRight } from "lucide-react"
 
 interface RightSidebarButtonProps {
     isRightSidebarOpen: boolean;
@@ -21,25 +22,27 @@ const RightSidebarButton: React.FC<RightSidebarButtonProps> = ({
     };
 
     return (
-        <button
+        <Button
             onClick={toggleRightSidebar}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className={`absolute top-1/2 -translate-y-1/2 z-10 bg-gray-200 hover:bg-blue-500 p-3 rounded-l-full transition-all duration-300`}
+            variant="secondary"
+            className={`absolute top-1/2 -translate-y-1/2 z-10 rounded-l-full transition-all duration-300 bg-gray-200 hover:bg-blue-500 hover:text-white`}
             style={{
                 right: isRightSidebarOpen ? '0' : '0',
                 transform: isRightSidebarOpen ? 'translateY(-50%)' : 'translate(-1px, -50%)',
+                padding: '0.75rem',
             }}
         >
-            <div className="flex items-center hover:text-white">
+            <div className="flex items-center">
                 {isRightSidebarOpen ? (
-                    <ChevronRightIcon className="h-6 w-6 mr-2" />
+                    <ChevronRight className="h-6 w-6 mr-2" />
                 ) : (
-                    <PlusIcon className="h-6 w-6 mr-2" />
+                    <Plus className="h-6 w-6 mr-2" />
                 )}
                 {isRightSidebarOpen ? null : isButtonHovered && <span className="text-sm">Adicionar</span>}
             </div>
-        </button>
+        </Button>
     );
 };
 
