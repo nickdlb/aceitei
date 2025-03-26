@@ -7,6 +7,9 @@
 body {
   background: white !important;
   color: black !important;
+.bg-popover {
+  background-color: white !important;
+}
 }
 
 /* Sidebar Styling */
