@@ -17,7 +17,7 @@ interface ProcessedDocument {
     user_id: string;
 }
 
-export const useImages = () => {
+export const useImages = (sortOrder: string) => {
     const [images, setImages] = useState<ProcessedDocument[]>([]);
     const [loading, setLoading] = useState(true);
     const { session } = useAuth();
@@ -76,13 +76,25 @@ export const useImages = () => {
                 };
             }).filter((doc): doc is ProcessedDocument => doc !== null);
 
-            setImages(processedDocuments || []);
+            let sortedDocuments = [...processedDocuments];
+
+            switch (sortOrder) {
+                case 'title':
+                    sortedDocuments.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'date':
+                default:
+                    sortedDocuments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                    break;
+            }
+
+            setImages(sortedDocuments || []);
         } catch (error) {
             console.error('Error processing images:', error);
         } finally {
             setLoading(false);
         }
-    }, [session?.user?.id]);
+    }, [session?.user?.id, sortOrder]);
 
     useEffect(() => {
         refreshImages();

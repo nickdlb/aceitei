@@ -10,7 +10,6 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { useImages } from '@/hooks/useImages';
 import { useRouter } from 'next/navigation';
 import { deleteCard } from '@/utils/deleteCard';
-import { Button } from '@/components/ui/button';
 
 const App = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +24,7 @@ const App = () => {
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
     const { session, loading } = useAuth();
-    const { images, refreshImages } = useImages();
+    const { images, loading: imagesLoading, refreshImages } = useImages(sortOrder);
     const router = useRouter();
 
     useEffect(() => {
