@@ -79,16 +79,20 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         </div>
         <div className="flex items-center ml-0.5">
           <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>          
-          {permissions[pin.id] && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => CommentDelete(pin.id)}
-              className="hover:text-red-500"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          )}
+{(() => {
+            const hasPermission = permissions[pin.id];
+            console.log(`permissions[${pin.id}]:`, hasPermission);
+            return hasPermission && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => CommentDelete(pin.id)}
+                className="hover:text-red-500"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            );
+          })()}
         </div>
       </div>
 
@@ -148,7 +152,10 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => CommentStatusChange(pin.id)}
+onClick={() => {
+                    console.log(`CommentStatusChange(${pin.id}) clicked`);
+                    CommentStatusChange(pin.id);
+                  }}
                   className="hover:text-green-500"
                 >
                   {pin.status === 'ativo' ? (
