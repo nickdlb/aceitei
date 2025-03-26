@@ -14,7 +14,7 @@ const CommentFilter: React.FC<CommentFilterProps> = ({ statusFilter, setStatusFi
 
         <button
           onClick={() => setStatusFilter('ativo')}
-          className={`px-3 py-1 rounded text-sm ${statusFilter === 'ativo'
+className={`px-3 py-1 rounded-md text-sm ${statusFilter === 'ativo'
             ? 'bg-yellow-500 text-white'
             : 'bg-gray-100 text-gray-600'
             }`}
@@ -23,7 +23,7 @@ const CommentFilter: React.FC<CommentFilterProps> = ({ statusFilter, setStatusFi
         </button>
         <button
           onClick={() => setStatusFilter('resolvido')}
-          className={`px-3 py-1 rounded text-sm ${statusFilter === 'resolvido'
+className={`px-3 py-1 rounded-md text-sm ${statusFilter === 'resolvido'
             ? 'bg-green-500 text-white'
             : 'bg-gray-100 text-gray-600'
             }`}
