@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 import HeaderProps from '@/types/HeaderProps';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,8 +39,8 @@ const Header: React.FC<HeaderProps> = ({
           />
         )}
       </div>
-      <div className='flex items-center'>
-        <span className="text-sm text-gray-600">Ordenar por:</span>
+      <div className='flex items-center relative'>
+        <span className="text-sm text-gray-600 pr-4">Ordenar por:</span>
         <Select onValueChange={handleSort} value={sortOrder}>
           <SelectTrigger className="px-2 !h-7 text-sm ml-2">
             <SelectValue placeholder="Ordenar" />
@@ -50,6 +50,10 @@ const Header: React.FC<HeaderProps> = ({
             <SelectItem value="title">Título</SelectItem>
           </SelectContent>
         </Select>
+        <div className="ml-3 relative w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full">
+          <Bell className="w-4 h-4 text-gray-700" />
+          <div className="absolute top-0 right-0 w-4 h-4 bg-blue-500 rounded-full text-white text-xs flex items-center justify-center">1</div>
+        </div>
       </div>
     </div>
   );

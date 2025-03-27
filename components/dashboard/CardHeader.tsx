@@ -38,6 +38,9 @@ export const CardHeader = ({
         className="relative aspect-video cursor-pointer group"
         onClick={handleClick}
       >
+      <div className="absolute top-2 right-2 flex items-center justify-center">
+        <div className="z-50 w-7 h-7 rounded-full text-white text-xs flex items-center justify-center bg-blue-700">1</div>
+      </div>
       <Image
         src={imageUrl}
         alt={imageTitle || 'Imagem'}
