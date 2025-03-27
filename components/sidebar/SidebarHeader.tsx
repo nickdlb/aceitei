@@ -4,7 +4,7 @@ import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const SidebarLogo = () => {
+const SidebarHeader = () => {
   const { session } = useAuth();
   const [userName, setUserName] = useState('');
   const [userPhoto, setUserPhoto] = useState('');
@@ -33,9 +33,9 @@ const SidebarLogo = () => {
   }, [session]);
 
   return (
-    <div className="p-4 border-b h-14">
+    <div className="p-4 border-b h-12">
       <div className="flex items-center justify-between">
-        <Link href="/" className="font-medium hover:text-blue-700">
+        <Link href="/" className="font-semibold text-gray-700 hover:text-blue-700">
           Aceitei
         </Link>
       </div>
@@ -43,4 +43,4 @@ const SidebarLogo = () => {
   );
 };
 
-export default SidebarLogo;
+export default SidebarHeader;

@@ -21,7 +21,7 @@ const SidebarMenuItem = ({ icon: Icon, label, href, badge, onClick }: SidebarMen
     }
 
   return (
-    <li className={`flex items-center gap-3 p-2 rounded cursor-pointer ${isActive ? 'bg-blue-100' : 'hover:bg-blue-100'}`}  onClick={handleClick}>
+    <li className={` text-sm text-gray-700 flex items-center gap-3 p-2 rounded cursor-pointer hover:text-white hover:bg-blue-700 ${isActive ? 'bg-blue-200' : 'hover:bg-blue-700'}`}  onClick={handleClick}>
       {href ? (
         <Link href={href} className="flex items-center gap-3 w-full">
           <Icon className="w-5 h-5" />

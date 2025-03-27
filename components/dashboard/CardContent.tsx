@@ -17,8 +17,8 @@ export const CardContent = ({
 }: CardContentProps) => {
   return (
     <div className="p-4">
-      <div className="flex flex-col">
-        <div className="flex items-center gap-2">
+      <div className="!p-0 flex flex-col">
+        <div className="h-8 flex items-center">
           {isEditing ? (
             <Input
               type="text"
@@ -40,7 +40,7 @@ export const CardContent = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsEditing(true);
-                }}
+                }}  
                 variant="ghost"
                 size="icon"
                 className="p-1 rounded-full"
