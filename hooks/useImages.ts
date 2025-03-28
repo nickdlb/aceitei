@@ -15,12 +15,54 @@ interface ProcessedDocument {
     resolved_comments: number;
     title: string;
     user_id: string;
+    notifications: number;
 }
 
 export const useImages = (sortOrder: string) => {
     const [images, setImages] = useState<ProcessedDocument[]>([]);
     const [loading, setLoading] = useState(true);
     const { session } = useAuth();
+
+    const getNewCommentCount = useCallback(async (documentId: string) => {
+        try {
+            const { data: documentData, error: documentError } = await createSupabaseClient
+                .from('documents')
+                .select('last_acessed_at')
+                .eq('id', documentId)
+                .single();
+
+            if (documentError) {
+                console.error('Error fetching document:', documentError);
+                return 0;
+            }
+
+            if (!documentData) {
+                console.warn('Document not found with id:', documentId);
+                return 0;
+            }
+
+            const lastAccessedAt = documentData.last_acessed_at || '1970-01-01T00:00:00Z';
+
+            const { data: commentsData, error: commentsError } = await createSupabaseClient
+                .from('comments')
+                .select('*', { count: 'exact' })
+                .eq('document_id', documentId)
+                .gt('created_at', lastAccessedAt);
+
+            if (commentsError) {
+                console.error('Error fetching comments:', commentsError);
+                return 0;
+            }
+
+            const newCommentCount = commentsData ? commentsData.length : 0;
+            console.log(`New comments for document ${documentId}: ${newCommentCount}`);
+            return newCommentCount;
+
+        } catch (error) {
+            console.error('Error getting new comment count:', error);
+            return 0;
+        }
+    }, []);
 
     const refreshImages = useCallback(async () => {
         if (!session?.user?.id) return;
@@ -54,13 +96,14 @@ export const useImages = (sortOrder: string) => {
                 return;
             }
 
-            const processedDocuments = documents?.map(doc => {
+            const documentsWithNewComments = await Promise.all(documents?.map(async doc => {
                 const firstPage = doc.pages[0];
                 if (!firstPage) return null;
 
                 const comments = firstPage.comments || [];
                 const activeCount = comments.filter(comment => comment.status === 'ativo').length;
                 const resolvedCount = comments.filter(comment => comment.status === 'resolvido').length;
+                const newCommentCount = await getNewCommentCount(doc.id);
 
                 return {
                     id: doc.id,
@@ -72,9 +115,12 @@ export const useImages = (sortOrder: string) => {
                     active_comments: activeCount,
                     resolved_comments: resolvedCount,
                     title: doc.title,
-                    user_id: doc.user_id
+                    user_id: doc.user_id,
+                    notifications: newCommentCount
                 };
-            }).filter((doc): doc is ProcessedDocument => doc !== null);
+            }));
+
+            const processedDocuments = documentsWithNewComments?.filter((doc): doc is ProcessedDocument => doc !== null) ?? [];
 
             let sortedDocuments = [...processedDocuments];
 
@@ -94,7 +140,7 @@ export const useImages = (sortOrder: string) => {
         } finally {
             setLoading(false);
         }
-    }, [session?.user?.id, sortOrder]);
+    }, [session?.user?.id, sortOrder, getNewCommentCount]);
 
     useEffect(() => {
         refreshImages();

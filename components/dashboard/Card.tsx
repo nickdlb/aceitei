@@ -58,6 +58,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
                 handleDelete={handleDelete}
                 isDeleting={isDeleting}
                 imageId={image.id}
+                notifications={image.notifications}
             />
 
             <CardContent
@@ -69,6 +70,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
                 setTitle={setTitle}
                 handleTitleEdit={handleTitleEdit}
                 setIsEditing={setIsEditing}
+                notifications={image.notifications}
             />
 
             {showShareLink && (

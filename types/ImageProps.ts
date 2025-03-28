@@ -16,4 +16,5 @@ export default interface ImageProps {
         created_at: string;
         user_id: string;
     };
+    notifications: number;
 }
