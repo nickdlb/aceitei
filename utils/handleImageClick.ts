@@ -43,6 +43,20 @@ export const handleImageClick = async (
     const editingPin = pins.find(pin => pin.id === editingPinId);
     const emptyCommentPin = editingPin && (!editingPin.comment || editingPin.comment.trim() === '');
 
+    const getDocumentId = async (pageId: string) => {
+        const { data, error } = await createSupabaseClient
+            .from('pages')
+            .select('document_id')
+            .eq('id', pageId)
+
+        if (error) {
+            console.error("Error fetching document id:", error);
+            return null;
+        }
+
+        return data ? data[0]?.document_id : null;
+    };
+
     if (emptyCommentPin) {
         // If there's a pin being edited with no comment, move it instead of creating a new one
         await updatePinPosition(editingPin.id, xPercent, yPercent, pageId, pins, setPins);
@@ -50,18 +64,24 @@ export const handleImageClick = async (
         setEditingPinId(editingPin.id);
     } else {
         // Create a new pin
-        await createComment(
-            xPercent,
-            yPercent,
-            pageId,
-            pins,
-            setPins,
-            setComments,
-            setEditingPinId,
-            statusFilter,
-            setStatusFilter,
-            session
-        );
+        const documentId = await getDocumentId(pageId);
+        if (documentId) {
+            await createComment(
+                xPercent,
+                yPercent,
+                pageId,
+                documentId,
+                pins,
+                setPins,
+                setComments,
+                setEditingPinId,
+                statusFilter,
+                setStatusFilter,
+                session
+            );
+        } else {
+            console.error("Could not retrieve document ID for page:", pageId);
+        }
     }
 };
 
