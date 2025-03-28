@@ -10,7 +10,6 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { useImages } from '@/hooks/useImages';
 import { useRouter } from 'next/navigation';
 import { deleteCard } from '@/utils/deleteCard';
-import { Button } from '@/components/ui/button';
 
 const App = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +24,7 @@ const App = () => {
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
     const { session, loading } = useAuth();
-    const { images, refreshImages } = useImages();
+    const { images, loading: imagesLoading, refreshImages, totalNotifications } = useImages(sortOrder);
     const router = useRouter();
 
     useEffect(() => {
@@ -110,6 +109,7 @@ const App = () => {
                     setSearchTerm={setSearchTerm}
                     sortOrder={sortOrder}
                     handleSort={handleSort}
+                    totalNotifications={totalNotifications}
                 />
                 <main className="p-6 flex-1 overflow-y-auto h-[calc(100vh - 65px)] pb-30">
                     <ImageGallery

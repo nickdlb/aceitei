@@ -2,7 +2,9 @@ import PinProps from '@/types/PinProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 
 export const CommentCheckPermissions = async (pin: PinProps, session: any) => {
+    console.log('Checking permissions for pin:', pin, 'session:', session);
     if (!session?.user?.id) {
+        console.log('No user ID in session, returning default permissions');
         return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
     }
 
@@ -19,6 +21,7 @@ export const CommentCheckPermissions = async (pin: PinProps, session: any) => {
         }
 
         const isDocumentOwner = pageData?.user_id === session.user.id;
+        console.log('isDocumentOwner:', isDocumentOwner, 'pageData:', pageData, 'session.user.id:', session.user.id);
 
         if (!pin || !pin.id) {
             return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
@@ -39,7 +42,9 @@ export const CommentCheckPermissions = async (pin: PinProps, session: any) => {
         }
 
         const isCommentOwner = commentData?.user_id === session.user.id;
+        console.log('isCommentOwner:', isCommentOwner, 'commentData:', commentData, 'session.user.id:', session.user.id);
         const hasPermission = isDocumentOwner || isCommentOwner;
+        console.log('hasPermission:', hasPermission, 'isDocumentOwner:', isDocumentOwner, 'isCommentOwner:', isCommentOwner);
 
         return { isDocumentOwner, isCommentOwner, hasPermission };
     } catch (error) {

@@ -11,6 +11,7 @@ interface CardHeaderProps {
   handleDelete: (imageId: string) => void;
   isDeleting: boolean;
   imageId: string;
+  notifications: number;
 }
 
 export const CardHeader = ({
@@ -21,6 +22,7 @@ export const CardHeader = ({
   handleDelete,
   isDeleting,
   imageId,
+  notifications
 }: CardHeaderProps) => {
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -38,9 +40,12 @@ export const CardHeader = ({
         className="relative aspect-video cursor-pointer group"
         onClick={handleClick}
       >
+      <div className="absolute top-2 right-2 flex items-center justify-center">
+        <div className="z-50 w-7 h-7 rounded-full text-white text-xs flex items-center justify-center bg-blue-700">{notifications}</div>
+      </div>
       <Image
         src={imageUrl}
-        alt={imageTitle || 'Imagem'}
+        alt={imageTitle || "Imagem"}
         fill
         className="object-cover"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

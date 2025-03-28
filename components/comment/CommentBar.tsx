@@ -6,9 +6,9 @@ import { useState, useEffect, useRef } from 'react';
 import { saveComment as saveComment } from '@/utils/commentUtils';
 import { deleteComment, changeCommentStatus, editComment, checkEditCommentPermissions } from '@/utils/commentUtils';
 import { createReply } from '@/utils/replyUtils';
-import CommentFilter from './CommentFilter';
-import CommentHeader from './CommentHeader';
-import CommentListItem from './CommentListItem';
+import CommentFilter from './CommentBarFilter';
+import CommentHeader from './CommentBarHeader';
+import CommentListItem from './CommentBarListItem';
 
 const CommentBar = ({
   pins,

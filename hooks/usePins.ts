@@ -8,12 +8,6 @@ import { loadComments } from './usePins/loadComments';
 import { updatePinPosition } from './usePins/updatePinPosition';
 import { loadRepliesForPin } from './usePins/loadRepliesForPin';
 
-interface PageWithDocument {
-    documents: {
-        user_id: string;
-    };
-}
-
 export const usePins = (pageId: string, session: any) => {
     const [pins, setPins] = useState<PinProps[]>([]);
     const [editingPinId, setEditingPinId] = useState<string | null>(null);

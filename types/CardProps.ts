@@ -9,6 +9,7 @@ interface ImageCardProps {
         title: string;
         active_comments: number;
         resolved_comments: number;
+        notifications: number;
     };
     onDelete: (id: string) => void;
 }

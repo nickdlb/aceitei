@@ -49,7 +49,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-80">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-80 relative">
             <CardHeader
                 imageUrl={imageUrl}
                 imageTitle={image.imageTitle}
@@ -58,6 +58,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
                 handleDelete={handleDelete}
                 isDeleting={isDeleting}
                 imageId={image.id}
+                notifications={image.notifications}
             />
 
             <CardContent
@@ -69,6 +70,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
                 setTitle={setTitle}
                 handleTitleEdit={handleTitleEdit}
                 setIsEditing={setIsEditing}
+                notifications={image.notifications}
             />
 
             {showShareLink && (

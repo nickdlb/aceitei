@@ -7,4 +7,5 @@ export default interface CardContentProps {
     setTitle: (title: string) => void;
     handleTitleEdit: () => void;
     setIsEditing: (isEditing: boolean) => void;
+    notifications: number;
 }

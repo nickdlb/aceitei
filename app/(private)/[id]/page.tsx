@@ -29,14 +29,40 @@ export default function Page() {
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
-        const updateLastAccessed = async () => {
-            if (pageData && session) {
-                await updatePageLastAccessed(pageId, session);
+        const updateDocumentLastAccessed = async () => {
+            try {
+                const { data: page, error: pageError } = await createSupabaseClient
+                    .from('pages')
+                    .select('document_id')
+                    .eq('id', pageId)
+                    .single();
+
+                if (pageError) {
+                    console.error('Error fetching page data:', pageError);
+                    return;
+                }
+
+                if (!page) {
+                    console.error('Page not found');
+                    return;
+                }
+
+                const documentId = page.document_id;
+                const { error: documentError } = await createSupabaseClient
+                    .from('documents')
+                    .update({ last_acessed_at: new Date().toISOString() })
+                    .eq('id', documentId);
+
+                if (documentError) {
+                    console.error('Error updating document last_accessed_at:', documentError);
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
             }
         };
 
-        updateLastAccessed();
-    }, [pageId, pageData, session]);
+        updateDocumentLastAccessed();
+    }, [pageId]);
 
     const {
         pins,

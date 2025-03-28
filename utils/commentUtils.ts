@@ -5,6 +5,7 @@ export const createComment = async (
     xPercent: number,
     yPercent: number,
     pageId: string,
+    documentId: string,
     pins: PinProps[],
     setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void,
@@ -48,6 +49,7 @@ export const createComment = async (
             .insert([
                 {
                     page_id: pageId,
+                    document_id: documentId,
                     pos_x: xPercent,
                     pos_y: yPercent,
                     pin_number: pin_Number,

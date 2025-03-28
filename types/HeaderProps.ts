@@ -5,4 +5,5 @@ export default interface HeaderProps {
     setSearchTerm: (term: string) => void;
     sortOrder: string;
     handleSort: (sortBy: string) => void;
+    totalNotifications: number;
 }

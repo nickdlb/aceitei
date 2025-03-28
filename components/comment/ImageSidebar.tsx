@@ -30,7 +30,7 @@ const ImageSidebar = ({ pages, currentPage, onPageChange }: ImageSidebarProps) =
                                     src={imageUrl}
                                     alt={`Página ${page.page_number}`}
                                     fill
-                                    className="object-cover rounded shadow-sm"
+                                    className="object-cover rounded-md shadow-sm"
                                     sizes="120px"
                                     unoptimized
                                 />

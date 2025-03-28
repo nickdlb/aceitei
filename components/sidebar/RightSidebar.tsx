@@ -1,5 +1,7 @@
 import { UploadZone } from '../dashboard/upload/UploadZone';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { Plus } from "lucide-react"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 interface RightSidebarProps {
     onUploadComplete: (data: any) => void;
@@ -14,14 +16,14 @@ const RightSidebar = ({ onUploadComplete }: RightSidebarProps) => {
     };
 
     return (
-        <div className="w-full h-full flex flex-col bg-white">
-            <div className="h-14 p-4 border-b flex items-center justify-between">
-                <h2 className="font-medium">Fazer Upload</h2>
-                <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                    <PlusIcon className="w-6 h-6 text-gray-600" />
-                </button>
-            </div>
-            <div className="flex-1 p-4 overflow-y-auto">
+        <Card className="pt-0 pb-0 w-full h-full flex flex-col rounded-none border-none">
+            <CardHeader className=" justify-between pl-4 flex items-center h-12 border-b">
+                <CardTitle className="text-base font-semibold text-gray-700">Fazer Upload</CardTitle>
+                <Button variant="ghost" className="p-2 rounded-full transition-colors flex items-center">
+                    <Plus className="size-5 text-gray-700" />
+                </Button>
+            </CardHeader>
+            <CardContent className="flex-1 p-4 overflow-y-auto">
                 <div className="mb-4">
                     <h3 className="text-sm font-medium text-gray-700 mb-2">
                         Adicionar Imagens
@@ -34,9 +36,9 @@ const RightSidebar = ({ onUploadComplete }: RightSidebarProps) => {
                     </h3>
                     {/* Lista de uploads recentes aqui */}
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 };
 
-export default RightSidebar; 
+export default RightSidebar;
