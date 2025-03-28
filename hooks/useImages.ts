@@ -21,6 +21,7 @@ interface ProcessedDocument {
 export const useImages = (sortOrder: string) => {
     const [images, setImages] = useState<ProcessedDocument[]>([]);
     const [loading, setLoading] = useState(true);
+    const [totalNotifications, setTotalNotifications] = useState(0);
     const { session } = useAuth();
 
     const getNewCommentCount = useCallback(async (documentId: string) => {
@@ -122,6 +123,9 @@ export const useImages = (sortOrder: string) => {
 
             const processedDocuments = documentsWithNewComments?.filter((doc): doc is ProcessedDocument => doc !== null) ?? [];
 
+            const total = processedDocuments.reduce((sum, doc) => sum + doc.notifications, 0);
+            setTotalNotifications(total);
+
             let sortedDocuments = [...processedDocuments];
 
             switch (sortOrder) {
@@ -146,5 +150,5 @@ export const useImages = (sortOrder: string) => {
         refreshImages();
     }, [refreshImages]);
 
-    return { images, loading, refreshImages };
+    return { images, loading, refreshImages, totalNotifications };
 };

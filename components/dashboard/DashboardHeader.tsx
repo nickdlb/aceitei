@@ -17,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({
   setSearchTerm,
   sortOrder,
   handleSort,
+  totalNotifications
 }) => {
   return (
     <div className="bg-white px-4 py-2 w-full flex items-center justify-between border-b border-[#E5E7EB] h-12">
@@ -52,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({
         </Select>
         <div className="ml-3 relative w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full">
           <Bell className="w-4 h-4 text-gray-700" />
-          <div className="absolute top-0 right-0 w-4 h-4 bg-blue-500 rounded-full text-white text-xs flex items-center justify-center">1</div>
+          <div className="absolute top-0 right-0 w-4 h-4 bg-blue-500 rounded-full text-white text-xs flex items-center justify-center">{totalNotifications}</div>
         </div>
       </div>
     </div>
