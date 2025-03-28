@@ -102,15 +102,15 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
             value={localComments[pin.id] || ''}
             onChange={(e) => CommentChange(pin.id, e.target.value)}
             onKeyDown={(e) => handleKeyPress(e, pin.id)}
-            className="w-full pl-2 pt-2 border rounded resize-none text-sm"
+            className="w-full pl-2 pt-2 mb-1 border rounded resize-none text-sm"
             placeholder="Comentário..."
             autoFocus
           />
-          <Button
+          <Button className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white'
             onClick={() => CommentSave(pin.id)}
             disabled={!localComments[pin.id]?.trim()}
           >
-            Confirmar
+            Enviar
           </Button>
         </div>
       ) : (
