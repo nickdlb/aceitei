@@ -119,8 +119,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               autoFocus
               maxLength={300} // Limit comment length
             />
-            {/* Absolutely positioned Character Counter */}
-            <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+            <div className="absolute right-2 bottom-3 text-xs text-gray-500">
               {(localComments[pin.id] || '').length}/300
             </div>
           </div>
