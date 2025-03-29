@@ -73,9 +73,18 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           </Badge>
         </div>
         <div className='flex align-middle'>
-          {userNames[pin.user_id] && (
-          <span className="text-xs font-medium text-gray-700 ">{userNames[pin.user_id]}</span>
-          )}
+          {userNames[pin.user_id] && (() => {
+            const fullName = userNames[pin.user_id];
+            const displayName = fullName.length > 15 ? fullName.substring(0, 13) + '...' : fullName;
+            return (
+              <span
+                className="text-xs font-medium text-gray-700"
+                title={fullName} // Tooltip with full name
+              >
+                {displayName} {/* Display truncated name */}
+              </span>
+            );
+          })()}
         </div>
         <div className="flex items-center ml-0.5 min-w-20">
           <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>          
