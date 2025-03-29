@@ -109,13 +109,11 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
       {editingPinId === pin.id ? (
         <div id={`comment-edit-${pin.id}`}>
-          {/* Wrapper for positioning */}
           <div className="relative w-full">
             <textarea
               value={localComments[pin.id] || ''}
               onChange={(e) => CommentChange(pin.id, e.target.value)}
               onKeyDown={(e) => handleKeyPress(e, pin.id)}
-              // Added pb-6 for padding below text, removed mb-1
               className="w-full pl-2 pt-2 pb-6 border rounded resize-none text-sm"
               placeholder="Comentário..."
               autoFocus
@@ -134,7 +132,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           </Button>
         </div>
       ) : (
-        <div className="flex justify-between items-start" id={`comment-content-${pin.id}`}>
+        <div className="flex justify-between items-start pt-2" id={`comment-content-${pin.id}`}>
           <div className="flex flex-col">
             <p className="text-sm text-gray-700 max-w-full break-all">
               {pin.comment || localComments[pin.id] || ''}
