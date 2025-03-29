@@ -119,7 +119,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
       ) : (
         <div className="flex justify-between items-start" id={`comment-content-${pin.id}`}>
           <div className="flex flex-col">
-            <p className="text-sm text-gray-700 max-w-full">
+            <p className="text-sm text-gray-700 max-w-full break-all">
               {pin.comment || localComments[pin.id] || ''}
             </p>
           </div>
