@@ -100,16 +100,24 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
       {editingPinId === pin.id ? (
         <div id={`comment-edit-${pin.id}`}>
-          <textarea
-            value={localComments[pin.id] || ''}
-            onChange={(e) => CommentChange(pin.id, e.target.value)}
-            onKeyDown={(e) => handleKeyPress(e, pin.id)}
-            className="w-full pl-2 pt-2 mb-1 border rounded resize-none text-sm"
-            placeholder="Comentário..."
-            autoFocus
-            maxLength={300} // Limit comment length
-          />
-          <Button className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white'
+          {/* Wrapper for positioning */}
+          <div className="relative w-full">
+            <textarea
+              value={localComments[pin.id] || ''}
+              onChange={(e) => CommentChange(pin.id, e.target.value)}
+              onKeyDown={(e) => handleKeyPress(e, pin.id)}
+              // Added pb-6 for padding below text, removed mb-1
+              className="w-full pl-2 pt-2 pb-6 border rounded resize-none text-sm"
+              placeholder="Comentário..."
+              autoFocus
+              maxLength={300} // Limit comment length
+            />
+            {/* Absolutely positioned Character Counter */}
+            <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+              {(localComments[pin.id] || '').length}/300
+            </div>
+          </div>
+          <Button className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-2' // Kept margin-top
             onClick={() => CommentSave(pin.id)}
             disabled={!localComments[pin.id]?.trim()}
           >
