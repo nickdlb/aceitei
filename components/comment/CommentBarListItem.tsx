@@ -61,8 +61,8 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   };
 
   return (
-    <Card key={pin.id} className="pl-3 pr-3 pt-2 pb-2 bg-white shadow gap-1" id={`comment-list-item-${pin.id}`}>
-      <div id={`comment-header-${pin.id}`} className="flex justify-between items-center align-middle">
+    <Card key={pin.id} className="pl-4 pr-4 pt-4 pb-3 bg-white shadow gap-1" id={`comment-list-item-${pin.id}`}>
+      <div id={`comment-header-${pin.id}`} className="flex gap-4 items-center align-middle pr-2">
         <div className="flex items-center gap-2">
           <span className="flex font-semibold text-xs">{pin.num}</span>
           <Badge
@@ -74,25 +74,27 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         </div>
         <div className='flex align-middle'>
           {userNames[pin.user_id] && (
-          <span className="text-xs font-medium text-gray-700">{userNames[pin.user_id]}</span>
+          <span className="text-xs font-medium text-gray-700 ">{userNames[pin.user_id]}</span>
           )}
         </div>
-        <div className="flex items-center ml-0.5">
+        <div className="flex items-center ml-0.5 min-w-20">
           <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>          
-{(() => {
-            const hasPermission = permissions[pin.id];
-            console.log(`permissions[${pin.id}]:`, hasPermission);
-            return hasPermission && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => CommentDelete(pin.id)}
-                className="hover:text-red-500"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            );
-          })()}
+        </div>
+        <div id="novadiv" className='!min-w-4 flex justify-between items-center align-middle ml-auto'>
+          {(() => {
+              const hasPermission = permissions[pin.id];
+              // console.log(`permissions[${pin.id}]:`, hasPermission); // Removed console.log for cleaner code
+              return hasPermission && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => CommentDelete(pin.id)}
+                  className="!h-4 !w-4 hover:text-red-500"
+                >
+                  <X className="" />
+                </Button>
+              );
+            })()}
         </div>
       </div>
 
@@ -105,6 +107,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
             className="w-full pl-2 pt-2 mb-1 border rounded resize-none text-sm"
             placeholder="Comentário..."
             autoFocus
+            maxLength={300} // Limit comment length
           />
           <Button className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white'
             onClick={() => CommentSave(pin.id)}
@@ -116,7 +119,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
       ) : (
         <div className="flex justify-between items-start" id={`comment-content-${pin.id}`}>
           <div className="flex flex-col">
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 max-w-full">
               {pin.comment || localComments[pin.id] || ''}
             </p>
           </div>

@@ -4,7 +4,7 @@ import { CommentSidebarProps } from '@/types/CommentsProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { saveComment as saveComment } from '@/utils/commentUtils';
-import { deleteComment, changeCommentStatus, editComment, checkEditCommentPermissions } from '@/utils/commentUtils';
+import { deleteComment, changeCommentStatus, editComment, checkCommentPermissions } from '@/utils/commentUtils';
 import { createReply } from '@/utils/replyUtils';
 import CommentFilter from './CommentBarFilter';
 import CommentHeader from './CommentBarHeader';
@@ -26,7 +26,7 @@ const CommentBar = ({
   const [refreshKey, setRefreshKey] = useState(0);
   const [localComments, setLocalComments] = useState<{ [key: string]: string }>(comments || {});
   const [permissions, setPermissions] = useState<{ [key: string]: boolean }>({});
-  const [isPageOwner, setIsPageOwner] = useState(false);
+  // Removed isPageOwner state as it's no longer derived or used here
   const [replyText, setReplyText] = useState('');
   const [showReplies, setShowReplies] = useState<{ [key: string]: boolean }>({});
   const openRepliesRef = useRef<{ [key: string]: boolean }>({});
@@ -53,29 +53,27 @@ const CommentBar = ({
 
   useEffect(() => {
     const loadPermissions = async () => {
-      let isPageOwner = false;
       const perms: { [key: string]: boolean } = {};
 
-      if (pins.length > 0) {
-        // Obter o primeiro pin para verificar a propriedade do documento
-        const firstPin = pins[0];
-        const { isDocumentOwner } = await checkEditCommentPermissions(firstPin, session);
-        isPageOwner = isDocumentOwner;
-      }
-
-      setIsPageOwner(isPageOwner);
-
-      // Verificar permissões para cada pin
+      // Check permissions for each pin
       for (const pin of pins) {
-        const { hasPermission } = await checkEditCommentPermissions(pin, session);
-        perms[pin.id] = hasPermission;
+        // Call the simplified function which returns the boolean directly
+        const commentPermission = await checkCommentPermissions(pin, session);
+        // Assign the boolean result to the permissions map
+        perms[pin.id] = commentPermission;
       }
-
+      // Update the permissions state
       setPermissions(perms);
     };
 
-    loadPermissions();
-  }, [pins, session]);
+    // Only run if there are pins and a session
+    if (pins && pins.length > 0 && session) {
+        loadPermissions();
+    } else {
+        // Clear permissions if there are no pins or session
+        setPermissions({});
+    }
+  }, [pins, session]); // Dependencies remain the same
 
   useEffect(() => {
     // Verificar se há pins sem comentários visíveis

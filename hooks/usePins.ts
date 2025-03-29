@@ -3,7 +3,6 @@ import PinProps from '@/types/PinProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
-import { loadPins } from './usePins/loadPins';
 import { loadComments } from './usePins/loadComments';
 import { updatePinPosition } from './usePins/updatePinPosition';
 import { loadRepliesForComments } from './usePins/loadRepliesForComments';
@@ -27,14 +26,7 @@ export const usePins = (pageId: string, session: any) => {
         let isMounted = true;
 
         const fetchData = async () => {
-            const data = await loadPins(pageId);
-            if (data && isMounted) {
-                setPins(data);
-                setError(null); // Clear any previous errors
-            } else if (isMounted) {
-                setError(new Error("Failed to load pins"));
-                setPins([]);
-            }
+            await loadComments(pageId, setPins, setComments);
         };
 
         fetchData();
@@ -74,22 +66,6 @@ export const usePins = (pageId: string, session: any) => {
         };
     }, [pins]);
 
-    useEffect(() => {
-        let isMounted = true;
-
-        if (pageId) {
-            const loadInitialComments = async () => {
-                if (isMounted) {
-                    await loadComments(pageId, setPins, setComments);
-                }
-            };
-            loadInitialComments();
-        }
-
-        return () => {
-            isMounted = false;
-        };
-    }, [pageId]);
 
     return {
         pins,
