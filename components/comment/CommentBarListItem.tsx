@@ -114,20 +114,20 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               value={localComments[pin.id] || ''}
               onChange={(e) => CommentChange(pin.id, e.target.value)}
               onKeyDown={(e) => handleKeyPress(e, pin.id)}
-              className="w-full pl-2 pt-2 pb-6 border rounded resize-none text-sm"
+              className="w-full pt-2 pr-12 border-l-0 border-t-0 border-r-0 border-b-2 !outline-none  rounded resize-none text-sm"
               placeholder="Comentário..."
               autoFocus
               maxLength={300} // Limit comment length
             />
-            <div className="absolute right-2 bottom-3 text-xs text-gray-500">
+            <div className="absolute right-4 bottom-2 text-xs text-gray-500">
               {(localComments[pin.id] || '').length}/300
             </div>
           </div>
-          <Button className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-2' // Kept margin-top
+          <Button className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-1' 
             onClick={() => CommentSave(pin.id)}
             disabled={!localComments[pin.id]?.trim()}
           >
-            Enviar
+            Salvar
           </Button>
         </div>
       ) : (
@@ -219,9 +219,9 @@ onClick={() => {
           />
           <Button
             onClick={() => handleReplyLocal(pin.id)}
-            className="mt-2"
+            className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-1'
           >
-            Enviar
+            Salvar
           </Button>
         </div>
       )}
