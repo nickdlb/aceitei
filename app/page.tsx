@@ -28,6 +28,13 @@ const App = () => {
     const router = useRouter();
 
     useEffect(() => {
+        // Redirect to login if not authenticated after loading is complete
+        if (!loading && !session) {
+            router.push('/login');
+        }
+    }, [session, loading, router]);
+
+    useEffect(() => {
         const sidebarState = localStorage.getItem('isRightSidebarOpen');
         const shouldBeOpen = sidebarState === 'true';
         setIsRightSidebarOpen(shouldBeOpen);
@@ -93,9 +100,12 @@ const App = () => {
         return <div className="flex h-screen items-center justify-center">Loading...</div>;
     }
 
-    if (!session) {
-        router.push('/login');
-        return null;
+    // If still loading or session exists, render the main content
+    // The useEffect above handles the redirect if loading is done and there's no session.
+    if (loading || !session) {
+        // Render null or a loading indicator while redirecting or if session is still loading
+        // This prevents rendering the main UI before the redirect logic in useEffect runs
+        return null; 
     }
 
     return (
