@@ -117,12 +117,12 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               value={localComments[pin.id] || ''}
               onChange={(e) => CommentChange(pin.id, e.target.value)}
               onKeyDown={(e) => handleKeyPress(e, pin.id)}
-              className="w-full pr-9 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent" // No border/padding, matches view
+              className="w-full pr-12 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent border-b-2" // No border/padding, matches view
               placeholder="Comentário..."
               autoFocus
               maxLength={300}
             />
-            <div className="absolute right-0 bottom-1 text-xs text-gray-500">
+            <div className="absolute right-4 bottom-2 text-xs text-gray-500">
               {(localComments[pin.id] || '').length}/300
             </div>
           </div>
@@ -137,7 +137,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         // Main Comment View Area
         <div className="flex justify-between items-start pt-2" id={`comment-content-${pin.id}`}>
           <div className="flex flex-col">
-            <p className="text-sm text-gray-700 max-w-full break-all">
+            <p className="text-sm text-gray-700 max-w-full break-all pr-10">
               {pin.comment || localComments[pin.id] || ''}
             </p>
           </div>
@@ -200,7 +200,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                       {formatDateTime(reaction.created_at)}
                     </span>
                   </div>
-                  <div className="text-gray-700">{reaction.reaction_type}</div>
+                  <div className="text-gray-700 break-all pr-12">{reaction.reaction_type}</div>
                 </div>
               ))}
             </div>
@@ -219,11 +219,11 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                 }
               }}
               placeholder="Digite sua resposta..."
-              className="w-full resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent" // No border/padding
-              maxLength={maxReplyLength} // Limit reply length
+              className="w-full pr-12 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent" 
+              maxLength={maxReplyLength}
             />
             {/* Character Counter for Reply */}
-            <div className="absolute right-0 bottom-1 text-xs text-gray-500">
+            <div className="absolute right-4 bottom-2 text-xs text-gray-500">
               {replyText.length}/{maxReplyLength}
             </div>
           </div>
