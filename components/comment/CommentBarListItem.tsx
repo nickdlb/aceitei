@@ -117,7 +117,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               value={localComments[pin.id] || ''}
               onChange={(e) => CommentChange(pin.id, e.target.value)}
               onKeyDown={(e) => handleKeyPress(e, pin.id)}
-              className="w-full pr-12 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent border-b-2" // No border/padding, matches view
+              className="w-full pr-12 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:border-b-2 focus:border-gray-200 focus:ring-0 focus:border-transparent border-b-2" 
               placeholder="Comentário..."
               autoFocus
               maxLength={300}
