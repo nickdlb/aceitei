@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react'; // Keep existing imports
 import { useAuth } from '@/components/auth/AuthProvider';
 import { usePins } from '@/hooks/usePins';
 import { usePageData } from '@/hooks/usePageData';
@@ -27,6 +27,15 @@ export default function Page() {
     const router = useRouter();
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
+    // Add state for the current title
+    const [currentTitle, setCurrentTitle] = useState<string>('');
+
+    // Initialize currentTitle when pageData loads
+    useEffect(() => {
+        if (pageData?.imageTitle) {
+            setCurrentTitle(pageData.imageTitle);
+        }
+    }, [pageData]);
 
     useEffect(() => {
         const updateDocumentLastAccessed = async () => {
@@ -165,11 +174,11 @@ export default function Page() {
 
                 if (error) {
                     console.error('Erro ao atualizar o título:', error);
+                    // Optionally: Add user feedback about the error
                     return;
                 }
-                if (pageData) {
-                    pageData.imageTitle = newTitle;
-                }
+                // Update the local state to trigger re-render
+                setCurrentTitle(newTitle);
 
             } catch (error) {
                 console.error('Erro na atualização do título:', error);
@@ -215,7 +224,7 @@ export default function Page() {
 
     const imageAreaProps = {
         exibirImagem: imageUrl,
-        imageTitle: pageData.imageTitle || 'Sem título',
+        imageTitle: currentTitle || 'Sem título', // Use currentTitle state
         imageId: pageId,
         pins: filteredPins,
         handleImageClick: handleImageClickPin,

@@ -40,16 +40,31 @@ const ImageArea: React.FC<Props> = ({
   }, []);
 
   const handleTitleEdit = useCallback(async () => {
-    if (isEditingTitle && newTitle.trim()) {
-      try {
-        await onTitleUpdate(newTitle);
-      } catch (error: any) {
-        console.error('Erro ao atualizar título:', error?.message || JSON.stringify(error) || 'Erro desconhecido');
-        setNewTitle(imageTitle);
+    if (isEditingTitle) {
+      // Save the title if it's being edited and is not empty
+      if (newTitle.trim()) {
+        try {
+          await onTitleUpdate(newTitle);
+          // Keep editing mode active after successful save? Or toggle off?
+          // For now, let's toggle off after save.
+          setIsEditingTitle(false);
+        } catch (error: any) {
+          console.error('Erro ao atualizar título:', error?.message || JSON.stringify(error) || 'Erro desconhecido');
+          // Don't toggle editing state on error, allow user to retry or cancel
+          // Optionally reset newTitle to imageTitle here if desired on error
+          // setNewTitle(imageTitle);
+        }
+      } else {
+         // If title is empty, just exit edit mode without saving
+         setIsEditingTitle(false);
+         setNewTitle(imageTitle); // Reset to original title if save is cancelled/empty
       }
+    } else {
+      // Entering edit mode: Set newTitle to the current imageTitle
+      setNewTitle(imageTitle);
+      setIsEditingTitle(true);
     }
-    setIsEditingTitle(!isEditingTitle);
-  }, [isEditingTitle, newTitle, imageTitle, onTitleUpdate]);
+  }, [isEditingTitle, newTitle, imageTitle, onTitleUpdate, setNewTitle, setIsEditingTitle]);
 
   const getFileFormat = useCallback((url: string | undefined) => {
     if (!url) return '';
