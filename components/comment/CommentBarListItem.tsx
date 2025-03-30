@@ -60,6 +60,9 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
     }
   };
 
+  // Define max length for replies
+  const maxReplyLength = 300;
+
   return (
     <Card key={pin.id} className="pl-4 pr-4 pt-4 pb-3 bg-white shadow gap-1" id={`comment-list-item-${pin.id}`}>
       <div id={`comment-header-${pin.id}`} className="flex gap-4 items-center align-middle pr-2">
@@ -87,12 +90,11 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           })()}
         </div>
         <div className="flex items-center ml-0.5 min-w-20">
-          <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>          
+          <span className="text-xs text-gray-500">{formatDateTime(pin.created_at)}</span>
         </div>
         <div id="novadiv" className='!min-w-4 flex justify-between items-center align-middle ml-auto'>
           {(() => {
               const hasPermission = permissions[pin.id];
-              // console.log(`permissions[${pin.id}]:`, hasPermission); // Removed console.log for cleaner code
               return hasPermission && (
                 <Button
                   variant="ghost"
@@ -108,29 +110,31 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
       </div>
 
       {editingPinId === pin.id ? (
-        <div id={`comment-edit-${pin.id}`}>
+        // Main Comment Edit Area
+        <div id={`comment-edit-${pin.id}`} className="pt-2">
           <div className="relative w-full">
             <textarea
               value={localComments[pin.id] || ''}
               onChange={(e) => CommentChange(pin.id, e.target.value)}
               onKeyDown={(e) => handleKeyPress(e, pin.id)}
-              className="w-full pt-2 pr-12 border-l-0 border-t-0 border-r-0 border-b-2 !outline-none  rounded resize-none text-sm"
+              className="w-full pr-9 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent" // No border/padding, matches view
               placeholder="Comentário..."
               autoFocus
-              maxLength={300} // Limit comment length
+              maxLength={300}
             />
-            <div className="absolute right-4 bottom-2 text-xs text-gray-500">
+            <div className="absolute right-0 bottom-1 text-xs text-gray-500">
               {(localComments[pin.id] || '').length}/300
             </div>
           </div>
-          <Button className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-1' 
+          <Button className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-2' // Consistent button style
             onClick={() => CommentSave(pin.id)}
             disabled={!localComments[pin.id]?.trim()}
           >
-            Salvar
+            Enviar
           </Button>
         </div>
       ) : (
+        // Main Comment View Area
         <div className="flex justify-between items-start pt-2" id={`comment-content-${pin.id}`}>
           <div className="flex flex-col">
             <p className="text-sm text-gray-700 max-w-full break-all">
@@ -155,7 +159,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           </Button>
         </div>
         <div className="flex items-center">
-              {permissions[pin.id] && (
+              {permissions[pin.id] && !editingPinId && ( // Only show edit button if not already editing
                 <Button
                   variant="ghost"
                   size="icon"
@@ -169,10 +173,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                 <Button
                   variant="ghost"
                   size="icon"
-onClick={() => {
-                    console.log(`CommentStatusChange(${pin.id}) clicked`);
-                    CommentStatusChange(pin.id);
-                  }}
+                  onClick={() => CommentStatusChange(pin.id)}
                   className="hover:text-green-500"
                 >
                   {pin.status === 'ativo' ? (
@@ -183,14 +184,15 @@ onClick={() => {
                 </Button>
               )}
         </div>
-      </div>      
+      </div>
       {showReplies[pin.id] && (
-        <div className="" id={`comment-replies-${pin.id}`}>
+        // Replies Section
+        <div className="mt-[-4px]" id={`comment-replies-${pin.id}`}>
           {pin.reactions && pin.reactions.length > 0 && (
-            <div className="pl-4 border-l-2 border-gray-200 mb-3">
+            <div className=" border-gray-200 mb-3">
               {pin.reactions.map((reaction) => (
                 <div key={reaction.id} className="mt-2 text-sm" id={`comment-reply-${reaction.id}`}>
-                  <div className="flex justify-between items-center mb-1">
+                  <div className="flex gap-4 items-center mb-1">
                     <span className="text-xs font-medium text-gray-700">
                       {userNames[reaction.user_id] || 'Usuário'}
                     </span>
@@ -203,25 +205,34 @@ onClick={() => {
               ))}
             </div>
           )}
-          <textarea
-            value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') {
-                e.preventDefault();
-                toggleReplies(pin.id); // Close replies section when ESC is pressed
-              } else {
-                handleReplyKeyPressLocal(e, pin.id);
-              }
-            }}
-            placeholder="Digite sua resposta..."
-            className="text-sm border rounded p-2 w-full exp resize-none"
-          />
+          {/* Reply Input Area */}
+          <div className="relative w-full">
+            <textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  e.preventDefault();
+                  toggleReplies(pin.id); // Close replies section when ESC is pressed
+                } else {
+                  handleReplyKeyPressLocal(e, pin.id);
+                }
+              }}
+              placeholder="Digite sua resposta..."
+              className="w-full resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent" // No border/padding
+              maxLength={maxReplyLength} // Limit reply length
+            />
+            {/* Character Counter for Reply */}
+            <div className="absolute right-0 bottom-1 text-xs text-gray-500">
+              {replyText.length}/{maxReplyLength}
+            </div>
+          </div>
           <Button
             onClick={() => handleReplyLocal(pin.id)}
-            className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-1'
+            className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-2' // Consistent button style
+            disabled={!replyText?.trim()} // Disable if reply text is empty
           >
-            Salvar
+            Enviar
           </Button>
         </div>
       )}
