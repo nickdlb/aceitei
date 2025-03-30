@@ -17,4 +17,5 @@ export default interface CommentListItemProps {
   setReplyText: (text: string) => void;
   toggleReplies: (pinId: string) => void;
   handleReplyKeyPressLocal: (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => void;
+  currentUserId: string | null | undefined; // Add currentUserId prop
 }

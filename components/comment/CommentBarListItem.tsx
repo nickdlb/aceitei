@@ -1,5 +1,6 @@
 import { formatDate } from '@/utils/formatDate';
 import CommentListItemProps from '@/types/CommentListItemProps';
+import { useState } from 'react'; // Import useState
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -21,8 +22,15 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   handleReplyLocal,
   setReplyText,
   toggleReplies,
-  handleReplyKeyPressLocal
+  handleReplyKeyPressLocal,
+  currentUserId // Add currentUserId prop
 }) => {
+  // State for editing reply ID
+  const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
+  // State for edited reply text
+  const [editedReplyText, setEditedReplyText] = useState<string>('');
+
+
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     const formattedDate = formatDate(dateString);
@@ -62,6 +70,41 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
   // Define max length for replies
   const maxReplyLength = 300;
+
+  // Placeholder functions for reply actions (replace with actual logic later)
+  const handleEditReply = (replyId: string, currentText: string) => {
+    setEditingReplyId(replyId);
+    setEditedReplyText(currentText);
+    // Add logic to focus the edit textarea if needed
+  };
+
+  const handleSaveReply = async (replyId: string) => {
+    console.log("Saving reply:", replyId, editedReplyText);
+    // Add actual save logic here (e.g., call API/Supabase function)
+    setEditingReplyId(null);
+    setEditedReplyText('');
+  };
+
+  const handleDeleteReply = async (replyId: string) => {
+    console.log("Deleting reply:", replyId);
+    // Add actual delete logic here (e.g., call API/Supabase function)
+  };
+
+  const handleCancelEditReply = () => {
+    setEditingReplyId(null);
+    setEditedReplyText('');
+  };
+
+  const handleReplyEditKeyPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, replyId: string) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      await handleSaveReply(replyId);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      handleCancelEditReply();
+    }
+  };
+
 
   return (
     <Card key={pin.id} className="pl-4 pr-4 pt-4 pb-3 bg-white shadow gap-1" id={`comment-list-item-${pin.id}`}>
@@ -189,55 +232,116 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         // Replies Section
         <div className="mt-[-4px]" id={`comment-replies-${pin.id}`}>
           {pin.reactions && pin.reactions.length > 0 && (
-            <div className=" border-gray-200 mb-3">
-              {pin.reactions.map((reaction) => (
-                <div key={reaction.id} className="mt-2 text-sm" id={`comment-reply-${reaction.id}`}>
-                  <div className="flex gap-4 items-center mb-1">
-                    <span className="text-xs font-medium text-gray-700">
-                      {userNames[reaction.user_id] || 'Usuário'}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {formatDateTime(reaction.created_at)}
-                    </span>
-                  </div>
-                  <div className="text-gray-700 break-all pr-12">{reaction.reaction_type}</div>
-                </div>
-              ))}
-            </div>
-          )}
-          {/* Reply Input Area */}
-          <div className="relative w-full">
-            <textarea
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  e.preventDefault();
-                  toggleReplies(pin.id); // Close replies section when ESC is pressed
-                } else {
-                  handleReplyKeyPressLocal(e, pin.id);
-                }
-              }}
-              placeholder="Digite sua resposta..."
-              className="w-full pr-12 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent" 
-              maxLength={maxReplyLength}
-            />
-            {/* Character Counter for Reply */}
-            <div className="absolute right-4 bottom-2 text-xs text-gray-500">
-              {replyText.length}/{maxReplyLength}
-            </div>
-          </div>
-          <Button
-            onClick={() => handleReplyLocal(pin.id)}
-            className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-2' // Consistent button style
-            disabled={!replyText?.trim()} // Disable if reply text is empty
-          >
-            Enviar
-          </Button>
-        </div>
-      )}
-    </Card>
-  );
-};
+             <div className="border-gray-200 mb-3">
+               {pin.reactions.map((reaction) => {
+                 const hasReplyPermission = currentUserId === reaction.user_id;
+                 const isEditingThisReply = editingReplyId === reaction.id;
 
-export default CommentListItem;
+                 return (
+                   <div key={reaction.id} className="mt-2 text-sm" id={`comment-reply-${reaction.id}`}>
+                     <div className="flex gap-4 items-center mb-1">
+                       <span className="text-xs font-medium text-gray-700">
+                         {userNames[reaction.user_id] || 'Usuário'}
+                       </span>
+                       <span className="text-xs text-gray-400">
+                         {formatDateTime(reaction.created_at)}
+                       </span>
+                     </div>
+                     {isEditingThisReply ? (
+                       // Reply Edit Area
+                       <div id={`reply-edit-${reaction.id}`} className="pt-1">
+                         <div className="relative w-full">
+                           <textarea
+                             value={editedReplyText}
+                             onChange={(e) => setEditedReplyText(e.target.value)}
+                             onKeyDown={(e) => handleReplyEditKeyPress(e, reaction.id)}
+                             className="w-full pr-12 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:border-b-2 focus:border-gray-200 focus:ring-0 focus:border-transparent border-b-2"
+                             placeholder="Editar resposta..."
+                             autoFocus
+                             maxLength={maxReplyLength} // Use the same max length
+                           />
+                           <div className="absolute right-4 bottom-2 text-xs text-gray-500">
+                             {editedReplyText.length}/{maxReplyLength}
+                           </div>
+                         </div>
+                         <div className="flex gap-2 mt-1">
+                            <Button className='!text-xs h-7 px-3 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white'
+                              onClick={() => handleSaveReply(reaction.id)}
+                              disabled={!editedReplyText?.trim()}
+                            >
+                              Salvar
+                            </Button>
+                            <Button variant="ghost" className='!text-xs h-7 px-3' onClick={handleCancelEditReply}>
+                              Cancelar
+                            </Button>
+                         </div>
+                       </div>
+                     ) : (
+                       // Reply View Area
+                       <div className="flex justify-between items-start" id={`reply-content-${reaction.id}`}>
+                         <div className="text-gray-700 break-all pr-2">{reaction.reaction_type}</div>
+                         {/* Reply Action Buttons */}
+                         {hasReplyPermission && (
+                           <div className="flex items-center ml-auto pl-2">
+                             <Button
+                               variant="ghost"
+                               size="icon"
+                               onClick={() => handleEditReply(reaction.id, reaction.reaction_type)}
+                               className="!h-4 !w-4 hover:text-orange-500"
+                             >
+                               <Pencil className="w-3 h-3" />
+                             </Button>
+                             <Button
+                               variant="ghost"
+                               size="icon"
+                               onClick={() => handleDeleteReply(reaction.id)} // Placeholder
+                               className="!h-4 !w-4 hover:text-red-500"
+                             >
+                               <X className="w-3 h-3" />
+                             </Button>
+                           </div>
+                         )}
+                       </div>
+                     )}
+                   </div>
+                 );
+               })}
+             </div>
+           )} {/* End of mapping reactions */}
+
+           {/* Reply Input Area - Moved outside and below the reactions map */}
+           <div className="relative w-full mt-2"> {/* Added margin-top */}
+             <textarea
+               value={replyText}
+               onChange={(e) => setReplyText(e.target.value)}
+               onKeyDown={(e) => {
+                 if (e.key === 'Escape') {
+                   e.preventDefault();
+                   toggleReplies(pin.id); // Close replies section when ESC is pressed
+                 } else {
+                   handleReplyKeyPressLocal(e, pin.id);
+                 }
+               }}
+               placeholder="Digite sua resposta..."
+               className="w-full pr-12 resize-none text-sm text-gray-700 break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent"
+               maxLength={maxReplyLength}
+             />
+             {/* Character Counter for Reply */}
+             <div className="absolute right-4 bottom-2 text-xs text-gray-500">
+               {replyText.length}/{maxReplyLength}
+             </div>
+           </div>
+           <Button
+             onClick={() => handleReplyLocal(pin.id)}
+             className='!text-xs h-8 px-4 bg-blue-700 opacity-100 disabled:bg-blue-500 text-white mt-2' // Consistent button style
+             disabled={!replyText?.trim()} // Disable if reply text is empty
+           >
+             Enviar
+           </Button>
+         </div> // Closing tag for the Replies Section div
+       )}
+     </Card>
+   );
+ };
+
+ export default CommentListItem;
