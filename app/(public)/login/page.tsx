@@ -20,8 +20,9 @@ const LoginPage = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <LoginWelcome />
-      <div className='w-1/2 bg-gray-400 p-40 flex justify-center items-center'>
+      <div className='w-1/2 bg-cover  bg-[url(/noite-estrelada-comentada.jpg)]'>
+      </div>
+      <div className='w-1/2 bg-gray-900 p-40 flex justify-center items-center'>
         <div className="bg-white p-10 w-[500px] h-min rounded-xl flex flex-col">
           <LoginHeader />
           <div className="">
