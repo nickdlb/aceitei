@@ -3,7 +3,6 @@
 import React from 'react';
 import LoginForm from '@/components/auth/LoginForm';
 import LoginHeader from '@/components/auth/LoginHeader';
-import LoginWelcome from '@/components/auth/LoginWelcome';
 import useAuthLogin from '@/hooks/useAuthLogin';
 
 const LoginPage = () => {
@@ -22,8 +21,8 @@ const LoginPage = () => {
     <div className="flex h-screen bg-gray-100">
       <div className='w-1/2 bg-cover  bg-[url(/noite-estrelada-comentada.jpg)]'>
       </div>
-      <div className='w-1/2 bg-gray-900 p-40 flex justify-center items-center'>
-        <div className="bg-white p-10 w-[500px] h-min rounded-xl flex flex-col">
+      <div className='w-1/2 bg-[#2f2f2f] p-40 flex justify-center items-center'>
+        <div className="bg-[#FDF9F9] p-10 w-[500px] h-min rounded-xl flex flex-col">
           <LoginHeader />
           <div className="">
             <LoginForm
