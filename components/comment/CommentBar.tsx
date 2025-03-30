@@ -286,6 +286,7 @@ const CommentBar = ({
               <CommentListItem
                 key={pin.id}
                 pin={pin}
+                currentUserId={session?.user?.id || ''} // Add currentUserId from session
                 localComments={localComments}
                 editingPinId={editingPinId}
                 permissions={permissions}
