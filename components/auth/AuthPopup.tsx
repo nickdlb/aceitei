@@ -54,6 +54,7 @@ const AuthPopup = ({ isOpen, onClose, onSubmit }: AuthPopupProps) => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
+                            maxLength={30} // Limit name length
                         />
                     </div>
                     <div className="grid gap-2">

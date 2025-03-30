@@ -3,10 +3,9 @@ import PinProps from '@/types/PinProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
-import { loadPins } from './usePins/loadPins';
 import { loadComments } from './usePins/loadComments';
 import { updatePinPosition } from './usePins/updatePinPosition';
-import { loadRepliesForPin } from './usePins/loadRepliesForPin';
+import { loadRepliesForComments } from './usePins/loadRepliesForComments';
 
 export const usePins = (pageId: string, session: any) => {
     const [pins, setPins] = useState<PinProps[]>([]);
@@ -21,15 +20,13 @@ export const usePins = (pageId: string, session: any) => {
     const [showAuthPopup, setShowAuthPopup] = useState(false);
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [loadAttempts, setLoadAttempts] = useState(0);
+    const [error, setError] = useState<unknown | null>(null);
 
     useEffect(() => {
         let isMounted = true;
 
         const fetchData = async () => {
-            const data = await loadPins(pageId);
-            if (data && isMounted) {
-                setPins(data);
-            }
+            await loadComments(pageId, setPins, setComments);
         };
 
         fetchData();
@@ -69,22 +66,6 @@ export const usePins = (pageId: string, session: any) => {
         };
     }, [pins]);
 
-    useEffect(() => {
-        let isMounted = true;
-
-        if (pageId) {
-            const loadInitialComments = async () => {
-                if (isMounted) {
-                    await loadComments(pageId, setPins, setComments);
-                }
-            };
-            loadInitialComments();
-        }
-
-        return () => {
-            isMounted = false;
-        };
-    }, [pageId]);
 
     return {
         pins,
@@ -101,7 +82,7 @@ export const usePins = (pageId: string, session: any) => {
         setDraggingPin,
         setIsDragging,
         updatePinPosition: (pinId: string, xPercent: number, yPercent: number) => updatePinPosition(pinId, xPercent, yPercent, pins, setPins, () => loadComments(pageId, setPins, setComments)),
-        loadRepliesForPin: (pinId: string) => loadRepliesForPin(pinId, setPins),
+        loadRepliesForPin: (pinId: string) => loadRepliesForComments(pinId, setPins),
         setShowAuthPopup,
         handleAuth: (name: string, email: string) => authAnonymousComment(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil, editingPinId),
         loadComments: () => loadComments(pageId, setPins, setComments),

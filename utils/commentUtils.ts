@@ -103,9 +103,10 @@ export const editComment = (
     setComments(prev => ({ ...prev, [pinId]: value }));
 };
 
-export const checkEditCommentPermissions = async (pin: PinProps, session: any) => {
+export const checkCommentPermissions = async (pin: PinProps, session: any): Promise<boolean> => { // Explicitly type the return as boolean
+    // If no user is logged in, they have no permissions
     if (!session?.user?.id) {
-        return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
+        return false;
     }
 
     try {
@@ -115,38 +116,46 @@ export const checkEditCommentPermissions = async (pin: PinProps, session: any) =
             .eq('id', pin.page_id)
             .single();
 
+        // If there's an error fetching the page, assume no permissions
         if (pageError) {
             console.error('Error fetching page:', pageError);
-            return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
+            return false;
         }
 
+        // Determine if the current user owns the document (page)
         const isDocumentOwner = pageData?.user_id === session.user.id;
 
+        // If the pin has no ID (e.g., it's being created but not saved yet),
+        // permission is granted only if the user owns the document.
         if (!pin || !pin.id) {
-            return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+            return isDocumentOwner;
         }
 
+        // Fetch the owner of the specific comment (pin)
         const { data: commentData, error: commentError } = await createSupabaseClient
             .from('comments')
             .select('user_id')
             .eq('id', pin.id)
             .single();
 
+        // Handle errors fetching the comment
         if (commentError) {
-            if (commentError.code === 'PGRST116') {
-                return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+            // If comment not found (PGRST116) or other error, permission relies solely on document ownership
+            if (commentError.code !== 'PGRST116') { // Log only if it's not the expected "not found" error
+                 console.error('Error fetching comment:', commentError);
             }
-            console.error('Error fetching comment:', commentError);
-            return { isDocumentOwner, isCommentOwner: false, hasPermission: isDocumentOwner };
+            return isDocumentOwner;
         }
 
+        // Determine if the current user owns the comment itself
         const isCommentOwner = commentData?.user_id === session.user.id;
-        const hasPermission = isDocumentOwner || isCommentOwner;
+        // Calculate final permission: User has permission if they own the document OR the comment
+        const commentPermission = isDocumentOwner || isCommentOwner;
 
-        return { isDocumentOwner, isCommentOwner, hasPermission };
+        return commentPermission; // Return only the final boolean permission
     } catch (error) {
         console.error('Unexpected error checking permissions:', error);
-        return { isDocumentOwner: false, isCommentOwner: false, hasPermission: false };
+        return false; // Return false in case of any error
     }
 };
 
@@ -170,7 +179,7 @@ export const changeCommentStatus = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        await checkEditCommentPermissions(pin, session);
+        await checkCommentPermissions(pin, session);
 
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
 
@@ -218,8 +227,9 @@ export const saveComment = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        const { hasPermission } = await checkEditCommentPermissions(pin, session);
-        if (!hasPermission) {
+        // Call the simplified function which now returns a boolean directly
+        const commentPermission = await checkCommentPermissions(pin, session);
+        if (!commentPermission) { // Check the boolean result
             alert('Você não tem permissão para editar este comentário.');
             return;
         }

@@ -53,7 +53,7 @@ const SidebarNav = () => {
         <SidebarMenuItem
           onClick={handleSupabaseSignOut}
           icon={LogOut}
-          label="Logout"
+          label="Sair"
         />
       </ul>
       <div className="absolute bottom-0 left-0 right-0">

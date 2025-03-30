@@ -19,24 +19,27 @@ const LoginPage = () => {
   } = useAuthLogin();
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="w-96 bg-gray-100 border-r border-gray-300 flex flex-col h-full">
-        <LoginHeader />
-        <div className="flex-1 p-6 bg-white">
-          <h1 className="text-2xl font-bold mb-4">Login</h1>
-          <LoginForm
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            loading={loading}
-            error={error}
-            handleLogin={handleLogin}
-            handleGoogleLogin={handleGoogleLogin}
-          />
-        </div>
+    <div className="flex h-screen bg-gray-100">
+      <div className='w-1/2 bg-cover  bg-[url(/noite-estrelada-comentada.jpg)]'>
       </div>
-      <LoginWelcome />
+      <div className='w-1/2 bg-gray-900 p-40 flex justify-center items-center'>
+        <div className="bg-white p-10 w-[500px] h-min rounded-xl flex flex-col">
+          <LoginHeader />
+          <div className="">
+            <LoginForm
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              loading={loading}
+              error={error}
+              handleLogin={handleLogin}
+              handleGoogleLogin={handleGoogleLogin}
+            />
+          </div>
+        </div>        
+      </div>
+
     </div>
   );
 };

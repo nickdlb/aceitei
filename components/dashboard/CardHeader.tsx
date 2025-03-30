@@ -41,7 +41,7 @@ export const CardHeader = ({
         onClick={handleClick}
       >
       <div className="absolute top-2 right-2 flex items-center justify-center">
-        <div className="z-50 w-7 h-7 rounded-full text-white text-xs flex items-center justify-center bg-blue-700">{notifications}</div>
+        <div className="z-50 w-8 h-8 rounded-full text-white text-xs flex items-center justify-center bg-blue-700">{notifications}</div>
       </div>
       <Image
         src={imageUrl}
@@ -51,7 +51,7 @@ export const CardHeader = ({
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         unoptimized
       />
-      <div className="absolute inset-y-0 right-0 flex flex-col items-center justify-center mr-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div className="absolute inset-y-0 right-0 flex pt-7 flex-col items-center justify-center mr-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <Button
           onClick={handleClick}
           variant="ghost"

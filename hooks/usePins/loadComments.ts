@@ -1,5 +1,6 @@
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import PinProps from '@/types/PinProps';
+import { loadCommentsReactions } from './loadCommentsReactions';
 
 export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) => void, setComments: (comments: { [key: string]: string }) => void): Promise<void> => {
     if (!pageId) return;
@@ -20,23 +21,7 @@ export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) =
 
         const commentIds = commentsData.map(comment => comment.id);
 
-        const { data: reactionsData, error: reactionsError } = await createSupabaseClient
-            .from('comment_reactions')
-            .select('*')
-            .in('comment_id', commentIds);
-
-        if (reactionsError) throw reactionsError;
-
-        const commentReactionsMap = new Map();
-
-        if (reactionsData) {
-            reactionsData.forEach(reaction => {
-                if (!commentReactionsMap.has(reaction.comment_id)) {
-                    commentReactionsMap.set(reaction.comment_id, []);
-                }
-                commentReactionsMap.get(reaction.comment_id).push(reaction);
-            });
-        }
+        const commentReactionsMap = await loadCommentsReactions(commentIds);
 
         const pinsData = commentsData.map(comment => {
             const reactions = commentReactionsMap.get(comment.id) || [];
