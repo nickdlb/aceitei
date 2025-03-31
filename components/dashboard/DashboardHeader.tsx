@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({
           <SelectTrigger className="px-2 !h-7 text-sm ml-2">
             <SelectValue placeholder="Ordenar" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className='bg-acbgbranco'>
             <SelectItem value="date">Data</SelectItem>
             <SelectItem value="title">Título</SelectItem>
           </SelectContent>

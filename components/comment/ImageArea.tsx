@@ -114,7 +114,6 @@ const ImageArea: React.FC<Props> = ({
           height: 'calc(100vh - 3.5rem)'
         }}
       >
-        {/* Container da imagem com zoom */}
         <div
           ref={scrollContainerRef}
           className="relative transition-transform duration-300 ease-in-out pt-4"

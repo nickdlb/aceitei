@@ -52,7 +52,7 @@ const SidebarFooter = () => {
             {userName}
           </span>
         </div>
-        <Toggle controlsDarkMode={true}> Teste </Toggle>
+        <Toggle /> {/* Removed controlsDarkMode prop and inner text */}
       </div>
     </div>
   );

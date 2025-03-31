@@ -169,7 +169,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               {(localComments[pin.id] || '').length}/300
             </div>
           </div>
-          <Button className='!text-xs h-8 px-4 bg-acazul opacity-100 disabled:bg-acazul text-acbranco mt-2' // Consistent button style
+          <Button className='!text-xs h-8 px-4 bg-acazul opacity-100 disabled:bg-acazul text-acbrancohover mt-2'
             onClick={() => CommentSave(pin.id)}
             disabled={!localComments[pin.id]?.trim()}
           >
@@ -333,12 +333,12 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           </div>
           <Button
             onClick={() => handleReplyLocal(pin.id)}
-            className='!text-xs h-8 px-4 bg-acazul opacity-100 disabled:bg-acazul text-acbranco mt-2' // Consistent button style
-            disabled={!replyText?.trim()} // Disable if reply text is empty
+            className='!text-xs h-8 px-4 bg-acazul opacity-100 disabled:bg-acazul text-acbrancohover mt-2'
+            disabled={!replyText?.trim()}
           >
             Enviar
           </Button>
-        </div> // Closing tag for the Replies Section div
+        </div>
       )}
     </Card>
   );

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react';
+import { ImagesProvider } from '@/contexts/ImagesContext'; // Import ImagesProvider
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/dashboard/DashboardHeader';
 import ImageGallery from '@/components/dashboard/CardGallery';
@@ -11,7 +12,8 @@ import { useImages } from '@/hooks/useImages';
 import { useRouter } from 'next/navigation';
 import { deleteCard } from '@/utils/deleteCard';
 
-const App = () => {
+// Rename the original component to AppContent
+const AppContent = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleCardDeleteWrapper = async (id: string, imageUrl?: string) => {
@@ -139,6 +141,15 @@ const App = () => {
                 />
             </div>
         </div>
+    );
+};
+
+// Create a new App component that wraps AppContent with ImagesProvider
+const App = () => {
+    return (
+        <ImagesProvider>
+            <AppContent />
+        </ImagesProvider>
     );
 };
 

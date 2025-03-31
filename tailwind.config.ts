@@ -19,6 +19,7 @@ export default {
         acbgbranco: 'var(--acbgbranco)',
         actextocinza: 'var(--actextocinza)',
         acpreto: 'var(--acpreto)',
+        acpretohover: 'var(--acpretohover)',
         acazul: 'var(--acazul)',
         accinza: 'var(--accinza)',
         acbranco: 'var(--acbranco)',

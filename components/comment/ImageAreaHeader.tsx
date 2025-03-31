@@ -94,7 +94,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
         <select
           value={zoomLevel}
           onChange={(e) => handleZoomChangeLocal(e.target.value)}
-          className="rounded px-2 py-1 text-sm"
+          className="rounded px-2 py-1 text-sm text-acpretohover"
         >
           <option value="100">100%</option>
           <option value="150">150%</option>
@@ -112,7 +112,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
           variant="ghost"
           size="icon"
           onClick={onTogglePages}
-          className="text-acpreto hover:text-actextocinza"
+          className="text-acpreto hover:text-aclaranja"
         >
           <LayoutList className="w-5 h-5" />
         </Button>
