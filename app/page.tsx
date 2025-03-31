@@ -133,7 +133,7 @@ const AppContent = () => {
                 </main>
             </div>
             <Dialog> 
-                <DialogTrigger className="absolute flex px-3 py-2 right-4 bottom-4 bg-acazul rounded-xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
+                <DialogTrigger className="absolute flex px-3 py-2 right-8 bottom-4 bg-acazul rounded-2xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
                     <Plus></Plus> Adicionar Card 
                 </DialogTrigger>
                 <DialogContent className='!bg-acbgpreto border-none'>

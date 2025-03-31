@@ -49,7 +49,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
     }
 
     return (
-        <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-80 relative">
+        <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
             <CardHeader
                 imageUrl={imageUrl}
                 imageTitle={image.imageTitle}

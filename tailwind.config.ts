@@ -29,7 +29,6 @@ export default {
         acverde: 'var(--acverde)',
         aclaranja: 'var(--aclaranja)',
         acroxo: 'var(--acroxo)',
-
       },
     },
   },

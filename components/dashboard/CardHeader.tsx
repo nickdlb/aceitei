@@ -36,15 +36,7 @@ export const CardHeader = ({
   };
 
   return (
-    <div
-      className="relative aspect-video cursor-pointer group"
-      onClick={handleClick}
-    >
-      {notifications > 0 && (
-        <div className="absolute top-2 right-2 flex items-center justify-center">
-          <div className="z-50 size-8 rounded-full text-acbrancohover text-xs flex items-center justify-center bg-acazul">{notifications}</div>
-        </div>
-      )}
+    <div className="relative aspect-video cursor-pointer group" onClick={handleClick}>
       <Image
         src={imageUrl}
         alt={imageTitle || "Imagem"}
@@ -53,12 +45,17 @@ export const CardHeader = ({
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         unoptimized
       />
-      <div className="absolute inset-y-0 right-0 flex pt-7 flex-col items-center justify-center mr-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div className="absolute inset-y-0 right-0 flex flex-col items-center justify-center mr-2 space-y-2 transition-opacity duration-300">
+        {notifications > 0 && (
+          <div className="!opacity-100 flex items-center justify-center">
+            <div className="z-50 size-8 rounded-full text-acbrancohover text-xs flex items-center justify-center bg-acazul">{notifications}</div>
+          </div>
+        )}
         <Button
           onClick={handleClick}
           variant="ghost"
           size="icon"
-          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center"
+          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100"
         >
           <Eye className="size-4" />
         </Button>
@@ -69,7 +66,7 @@ export const CardHeader = ({
           }}
           variant="ghost"
           size="icon"
-          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center"
+          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100"
         >
           <Share2 className="size-4" />
         </Button>
@@ -81,7 +78,7 @@ export const CardHeader = ({
           variant="ghost"
           size="icon"
           disabled={isDeleting}
-          className={`p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''
+          className={`p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''
             }`}
         >
           <Trash2 className="size-4" />

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { UserCircleIcon } from '@heroicons/react/24/outline';
+import { Toggle } from '@/components/ui/toggleDarkmode';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -47,9 +47,9 @@ const RegisterPage = () => {
 
   return (
     <div className="flex h-screen bg-acbg">
-      <div className="w-96 bg-acbg border-r border-gray-300 flex flex-col h-full">
+      <div className="w-96 bg-acbg flex flex-col h-full">
         {/* Header */}
-        <div className="p-4 border-b bg-acbgbranco border-b-gray-300">
+        <div className="p-4 bg-acbgbranco">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-acazul rounded"></div>
             <div className="flex items-center justify-between flex-1">
@@ -74,7 +74,7 @@ const RegisterPage = () => {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:border-acazul"
+                className="w-full px-3 py-2 rounded focus:outline-none text-acpretohover"
                 required
               />
             </div>
@@ -87,14 +87,14 @@ const RegisterPage = () => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:border-acazul"
+                className="w-full px-3 py-2 rounded focus:outline-none text-acpretohover"
                 required
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="bg-acazul hover:bg-acazul text-acbranco font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mb-4"
+              className="bg-acazul hover:bg-acazul text-acbrancohover font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mb-4"
             >
               {loading ? 'Criando conta...' : 'Criar Conta'}
             </button>
@@ -108,13 +108,15 @@ const RegisterPage = () => {
       </div>
       <div className="flex-1 flex items-center justify-center">
         <div className="bg-acbgbranco p-16 rounded-lg shadow-lg">
-          <UserCircleIcon className="w-48 h-48 text-actextocinza mb-8" />
           <h1 className="text-4xl font-bold mb-4">Bem-vindo ao Aceitei</h1>
           <p className="text-actextocinza text-lg">
             Gerencie seus projetos e feedbacks com facilidade.
           </p>
         </div>
       </div>
+      <div className='absolute right-4 bottom-4 hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'> 
+        <Toggle /> 
+      </div>       
     </div>
   );
 };

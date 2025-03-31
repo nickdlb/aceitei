@@ -16,7 +16,7 @@ export const CardContent = ({
   setIsEditing,
 }: CardContentProps) => {
   return (
-    <div className="pt-2 pl-4 pr-4 pb-4">
+    <div className="pb-4 pt-2 px-4">
       <div className="!p-0 flex flex-col">
         <div className="h-8 flex items-center">
           {isEditing ? (
@@ -50,10 +50,7 @@ export const CardContent = ({
             </>
           )}
         </div>
-        <p className="text-xs text-actextocinza">
-          {format(new Date(created_at), "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
-        </p>
-        <div className="flex items-center space-x-2 mt-2">
+        <div className="flex items-center space-x-2">
           <div className="flex items-center">
             <MessageSquare className="w-4 h-4 text-actextocinza" />
             <span className="text-xs text-actextocinza ml-1">
@@ -66,6 +63,9 @@ export const CardContent = ({
               {resolved_comments || 0}
             </span>
           </div>
+          <p className="text-xs text-actextocinza">
+            {format(new Date(created_at), "d'/'MM'/'yyyy", { locale: ptBR })}
+          </p>
         </div>
       </div>
     </div>

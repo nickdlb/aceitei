@@ -32,7 +32,7 @@ const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isL
   }
 
   return (
-    <div className="flex  flex-wrap gap-4">
+    <div className="grid grid-cols-5 gap-4">
       {localImages.map((image) => (
         <Card key={image.id} image={image} onDelete={handleLocalCardDelete} />
       ))}

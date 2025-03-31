@@ -37,7 +37,7 @@ const LoginPage = () => {
               handleGoogleLogin={handleGoogleLogin}
             />
           </div>
-          <div className='absolute right-4 bottom-4 hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded rounded-full'> <Toggle /> </div> 
+          <div className='absolute right-4 bottom-4 hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'> <Toggle /> </div> 
         </div>
       </div>
 
