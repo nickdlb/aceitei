@@ -17,7 +17,7 @@ export const CardContent = ({
 }: CardContentProps) => {
   return (
     <div className="pb-4 pt-2 px-4">
-      <div className="!p-0 flex flex-col">
+      <div className="!p-0 flex gap-1 flex-col">
         <div className="h-8 flex items-center">
           {isEditing ? (
             <Input

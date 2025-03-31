@@ -143,7 +143,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
           <Button
             onClick={handleRemovePhoto}
             variant="outline"
-            className="block mt-2 text-red-500 hover:text-red-700"
+            className="block mt-2 bg-transparent hover:text-acvermelho"
           >
             Remover Foto
           </Button>
