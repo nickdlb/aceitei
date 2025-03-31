@@ -256,32 +256,25 @@ const CommentBar = ({
   const handleReplyKeyPressLocal = (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      // Marcar este pin como aberto em nossa referência
       openRepliesRef.current = {
         ...openRepliesRef.current,
         [pinId]: true
       };
       handleReplyLocal(pinId);
     }
-    // Note: The ESC key handling for replies is now in CommentListItem component
   };
 
   return (
     <div className="flex flex-col h-full bg-acbg relative">
       <div className="flex-1 overflow-y-auto pb-8 ">
-        {/* Cabeçalho com contagem de comentários */}
         <CommentHeader totalComments={pins.length} />
-
-        {/* Filtros de status */}
         <CommentFilter
           totalComments={pins.length}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
         />
-
-        {/* Lista de comentários */}
-        <div className="p-4">
-          <div className="space-y-4 thin-scrollbar">
+        <div className="p-2">
+          <div className="space-y-2 thin-scrollbar">
             {pins.sort((a, b) => a.num - b.num).map((pin) => (
               <CommentListItem
                 key={pin.id}

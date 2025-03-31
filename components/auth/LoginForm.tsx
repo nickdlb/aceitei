@@ -32,7 +32,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full text-acpreto text-sm px-2 py-2 border rounded focus:outline-none focus:border-acazul"
+            className="w-full text-acpretohover text-sm px-2 py-2 border rounded focus:outline-none focus:border-acazul"
             required
           />
         </div>
@@ -46,7 +46,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="text-acpreto w-full px-2 py-3 pr-10 text-sm border rounded focus:outline-none focus:border-acazul" 
+              className="text-acpretohover w-full px-2 py-3 pr-10 text-sm border rounded focus:outline-none focus:border-acazul" 
               required
             />
             <button
@@ -62,7 +62,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         <button
           type="submit"
           disabled={loading}
-          className="bg-aclaranja hover:bg-acroxo text-acbranco font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full mb-4"
+          className="bg-aclaranja hover:bg-acroxo text-acbrancohover font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full mb-4"
         >
           {loading ? 'Entrando...' : 'Entrar'}
         </button>

@@ -41,7 +41,7 @@ export const CardHeader = ({
       onClick={handleClick}
     >
       <div className="absolute top-2 right-2 flex items-center justify-center">
-        <div className="z-50 w-8 h-8 rounded-full text-acbrancohover text-xs flex items-center justify-center bg-acazul">{notifications}</div>
+        <div className="z-50 size-8 rounded-full text-acbrancohover text-xs flex items-center justify-center bg-acazul">{notifications}</div>
       </div>
       <Image
         src={imageUrl}
@@ -56,9 +56,9 @@ export const CardHeader = ({
           onClick={handleClick}
           variant="ghost"
           size="icon"
-          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acbg w-8 h-8 flex items-center justify-center"
+          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center"
         >
-          <Eye className="w-4 h-4 text-actextocinza" />
+          <Eye className="size-4" />
         </Button>
         <Button
           onClick={(e) => {
@@ -67,9 +67,9 @@ export const CardHeader = ({
           }}
           variant="ghost"
           size="icon"
-          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acbg w-8 h-8 flex items-center justify-center"
+          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center"
         >
-          <Share2 className="w-4 h-4 text-actextocinza" />
+          <Share2 className="size-4" />
         </Button>
         <Button
           onClick={(e) => {
@@ -79,10 +79,10 @@ export const CardHeader = ({
           variant="ghost"
           size="icon"
           disabled={isDeleting}
-          className={`p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acbg w-8 h-8 flex items-center justify-center ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''
+          className={`p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''
             }`}
         >
-          <Trash2 className="w-4 h-4 text-actextocinza" />
+          <Trash2 className="size-4" />
         </Button>
       </div>
     </div>

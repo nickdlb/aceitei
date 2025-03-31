@@ -75,7 +75,6 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   const handleEditReply = (replyId: string, currentText: string) => {
     setEditingReplyId(replyId);
     setEditedReplyText(currentText);
-    // Add logic to focus the edit textarea if needed
   };
 
   const handleSaveReply = async (replyId: string) => {
@@ -155,17 +154,17 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
       {editingPinId === pin.id ? (
         // Main Comment Edit Area
         <div id={`comment-edit-${pin.id}`} className="pt-2">
-          <div className="relative w-full">
+          <div className="relative w-full pr-3">
             <textarea
               value={localComments[pin.id] || ''}
               onChange={(e) => CommentChange(pin.id, e.target.value)}
               onKeyDown={(e) => handleKeyPress(e, pin.id)}
-              className="w-full pr-12 resize-none text-sm text-actextocinza break-all bg-transparent focus:outline-none focus:border-b-2 focus:border-gray-200 focus:ring-0 focus:border-transparent border-b-2"
+              className="w-full h-16 pr-14 resize-none text-sm text-actextocinza break-all bg-transparent border-b-2 focus:outline-none focus:border-b-2 focus:border-accinza focus:ring-0 "
               placeholder="Comentário..."
               autoFocus
               maxLength={300}
             />
-            <div className="absolute right-4 bottom-2 text-xs text-actextocinza">
+            <div className="absolute right-6 bottom-2 text-xs text-actextocinza">
               {(localComments[pin.id] || '').length}/300
             </div>
           </div>
@@ -202,7 +201,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           </Button>
         </div>
         <div className="flex items-center">
-          {permissions[pin.id] && !editingPinId && ( // Only show edit button if not already editing
+          {permissions[pin.id] && !editingPinId && (
             <Button
               variant="ghost"
               size="icon"
@@ -280,9 +279,8 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                       // Reply View Area
                       <div className="flex justify-between items-start" id={`reply-content-${reaction.id}`}>
                         <div className="text-actextocinza break-all pr-2">{reaction.reaction_type}</div>
-                        {/* Reply Action Buttons */}
                         {hasReplyPermission && (
-                          <div className="flex items-center ml-auto pl-2">
+                          <div className="flex items-center space-x-4 pr-3">
                             <Button
                               variant="ghost"
                               size="icon"
@@ -307,10 +305,9 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                 );
               })}
             </div>
-          )} {/* End of mapping reactions */}
+          )}
 
-          {/* Reply Input Area - Moved outside and below the reactions map */}
-          <div className="relative w-full mt-2"> {/* Added margin-top */}
+          <div className="relative w-full mt-2">
             <textarea
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}

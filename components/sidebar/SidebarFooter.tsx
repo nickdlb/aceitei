@@ -52,7 +52,7 @@ const SidebarFooter = () => {
             {userName}
           </span>
         </div>
-        <Toggle /> {/* Removed controlsDarkMode prop and inner text */}
+        <div className='hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded rounded-full'> <Toggle /> </div>
       </div>
     </div>
   );
