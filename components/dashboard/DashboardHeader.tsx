@@ -41,12 +41,12 @@ const Header: React.FC<HeaderProps> = ({
         )}
       </div>
       <div className='flex items-center relative'>
-        <span className="text-sm text-actextocinza pr-4">Ordenar por:</span>
+        <span className="text-sm text-actextocinza">Ordenar por:</span>
         <Select onValueChange={handleSort} value={sortOrder}>
           <SelectTrigger className="px-2 !h-7 text-sm ml-2">
             <SelectValue placeholder="Ordenar" />
           </SelectTrigger>
-          <SelectContent className='bg-acbgbranco'>
+          <SelectContent className='bg-acbgbranco border-none'>
             <SelectItem value="date">Data</SelectItem>
             <SelectItem value="title">Título</SelectItem>
           </SelectContent>

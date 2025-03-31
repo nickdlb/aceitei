@@ -28,7 +28,7 @@ const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isL
   }
 
   if (!localImages || localImages.length === 0) {
-    return <p>No images found.</p>;
+    return <p>Crie o seu primeiro card!</p>;
   }
 
   return (

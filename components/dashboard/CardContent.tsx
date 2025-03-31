@@ -24,7 +24,7 @@ export const CardContent = ({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="text-sm text-acpreto font-medium p-1  flex-1"
+              className="text-sm text-acpreto font-medium !leading-8 !p-0 !border-none !ring-0 flex-1"
               autoFocus
               onBlur={handleTitleEdit}
               onKeyPress={(e) => {
