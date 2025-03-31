@@ -30,6 +30,11 @@ const AppContent = () => {
     const { images, loading: imagesLoading, refreshImages, totalNotifications } = useImages(sortOrder);
     const router = useRouter();
 
+    // Filter images based on searchTerm
+    const filteredImages = images.filter(image =>
+        image.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     useEffect(() => {
         // Redirect to login if not authenticated after loading is complete
         if (!loading && !session) {
@@ -127,7 +132,7 @@ const AppContent = () => {
                 <main className="p-6 flex-1 overflow-y-auto h-[calc(100vh - 65px)] pb-30">
                     <ImageGallery
                         isLoading={isLoading}
-                        images={images}
+                        images={filteredImages} // Use filtered images
                         handleCardDelete={handleCardDeleteWrapper}
                     />
                 </main>
