@@ -105,11 +105,11 @@ const App = () => {
     if (loading || !session) {
         // Render null or a loading indicator while redirecting or if session is still loading
         // This prevents rendering the main UI before the redirect logic in useEffect runs
-        return null; 
+        return null;
     }
 
     return (
-        <div className="flex h-screen bg-gray-50 overflow-hidden">
+        <div className="flex h-screen bg-acbg overflow-hidden">
             <Sidebar />
             <div className="flex-1 flex flex-col">
                 <Header
@@ -129,7 +129,7 @@ const App = () => {
                     />
                 </main>
             </div>
-            <div className={`transition-all duration-300 relative ${isRightSidebarOpen ? 'w-[356px]' : 'w-12'} bg-white border-l flex flex-col items-center justify-center ${!initialWidthSet ? 'transition-none w-12' : ''}`}>
+            <div className={`transition-all duration-300 relative ${isRightSidebarOpen ? 'w-[356px]' : 'w-12'} bg-acbgbranco flex flex-col items-center justify-center ${!initialWidthSet ? 'transition-none w-12' : ''}`}>
                 {isRightSidebarOpen && (
                     <RightSidebar onUploadComplete={handleUploadComplete} />
                 )}

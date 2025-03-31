@@ -18,12 +18,9 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 }) => {
   return (
     <div className="w-full h-screen flex">
-      {/* Sidebar de Comentários */}
-      <div className="w-96 flex-shrink-0 bg-gray-100 border-r border-gray-300">
+      <div className="w-96 flex-shrink-0 !border-0">
         <CommentBar {...commentBarProps} />
       </div>
-
-      {/* Conteúdo Principal */}
       <div className="flex-1 flex">
         <ImageArea {...imageAreaProps} />
         {pages.length > 1 && isPagesOpen && (

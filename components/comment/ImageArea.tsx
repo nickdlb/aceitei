@@ -55,9 +55,9 @@ const ImageArea: React.FC<Props> = ({
           // setNewTitle(imageTitle);
         }
       } else {
-         // If title is empty, just exit edit mode without saving
-         setIsEditingTitle(false);
-         setNewTitle(imageTitle); // Reset to original title if save is cancelled/empty
+        // If title is empty, just exit edit mode without saving
+        setIsEditingTitle(false);
+        setNewTitle(imageTitle); // Reset to original title if save is cancelled/empty
       }
     } else {
       // Entering edit mode: Set newTitle to the current imageTitle
@@ -90,8 +90,7 @@ const ImageArea: React.FC<Props> = ({
   }, [exibirImagem, imageTitle, getFileFormat]);
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-100">
-      {/* Barra de informações e controles */}
+    <div className="flex-1 flex-col">
       <ImageAreaHeader
         imageTitle={imageTitle}
         exibirImagem={exibirImagem}
@@ -103,7 +102,7 @@ const ImageArea: React.FC<Props> = ({
         getFileFormat={getFileFormat}
         handleDownload={handleDownload}
         handleZoomChange={handleZoomChange}
-        onTogglePages={onTogglePages || (() => {})}
+        onTogglePages={onTogglePages || (() => { })}
         setNewTitle={setNewTitle}
       />
 

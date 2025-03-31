@@ -18,11 +18,11 @@ const LoginPage = () => {
   } = useAuthLogin();
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-acbg">
       <div className='w-1/2 bg-cover  bg-[url(/noite-estrelada-comentada.jpg)]'>
       </div>
       <div className='w-1/2 bg-[#2f2f2f] p-40 flex justify-center items-center'>
-        <div className="bg-[#FDF9F9] p-10 w-[500px] h-min rounded-xl flex flex-col">
+        <div className="bg-acbgbranco p-10 w-[500px] h-min rounded-xl flex flex-col">
           <LoginHeader />
           <div className="">
             <LoginForm
@@ -36,7 +36,7 @@ const LoginPage = () => {
               handleGoogleLogin={handleGoogleLogin}
             />
           </div>
-        </div>        
+        </div>
       </div>
 
     </div>

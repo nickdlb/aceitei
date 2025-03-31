@@ -60,7 +60,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   };
 
   return (
-    <div className="h-14 bg-white border-b flex items-center justify-between px-4 shadow-sm">
+    <div className="h-14 bg-acbgbranco flex items-center justify-between px-4 shadow-sm">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           {isEditingTitle ? (
@@ -77,24 +77,24 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
               }}
             />
           ) : (
-            <h2 className="text-sm font-medium text-gray-900">{imageTitle}</h2>
+            <h2 className="text-sm font-medium text-actextocinza">{imageTitle}</h2>
           )}
           <Button
             variant="ghost"
             size="icon"
             onClick={handleTitleEdit}
-            className="hover:text-orange-500"
+            className="text-acpreto hover:text-aclaranja"
           >
             <Pencil className="w-4 h-4" />
           </Button>
         </div>
-        <p className="text-xs text-gray-500">Formato: {getFileFormatLocal(exibirImagem)}</p>
+        <p className="text-xs text-actextocinza">Formato: {getFileFormatLocal(exibirImagem)}</p>
       </div>
       <div className="flex items-center gap-4">
         <select
           value={zoomLevel}
           onChange={(e) => handleZoomChangeLocal(e.target.value)}
-          className="border rounded px-2 py-1 text-sm"
+          className="rounded px-2 py-1 text-sm"
         >
           <option value="100">100%</option>
           <option value="150">150%</option>
@@ -104,7 +104,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
           variant="ghost"
           size="icon"
           onClick={handleDownloadLocal}
-          className="hover:text-blue-500"
+          className="text-acpreto hover:text-acazul"
         >
           <Download className="w-5 h-5" />
         </Button>
@@ -112,7 +112,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
           variant="ghost"
           size="icon"
           onClick={onTogglePages}
-          className="hover:text-gray-500"
+          className="text-acpreto hover:text-actextocinza"
         >
           <LayoutList className="w-5 h-5" />
         </Button>

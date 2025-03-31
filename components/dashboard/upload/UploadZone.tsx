@@ -117,11 +117,10 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
                     flex flex-col items-center justify-center
                     min-h-[200px] w-full
                     border-2 border-dashed rounded-lg
-                    ${
-                      isDragActive
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-blue-300 hover:border-blue-500'
-                    }
+                    ${isDragActive
+            ? 'border-acazul bg-acazul'
+            : 'border-acazul hover:border-acazul'
+          }
                     transition-all duration-200 ease-in-out
                     cursor-pointer
                     overflow-hidden
@@ -132,16 +131,16 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           className={`
                     absolute inset-0
                     flex flex-col items-center justify-center
-                    bg-white bg-opacity-90
+                    bg-acbgbranco bg-opacity-90
                     transition-opacity duration-200
                     ${isDragActive ? 'opacity-0' : 'group-hover:opacity-0'}
                 `}
         >
-          <UploadCloud className="w-10 h-10 text-blue-500 mb-3" />
-          <p className="text-sm font-medium text-blue-700">
+          <UploadCloud className="w-10 h-10 text-acazul mb-3" />
+          <p className="text-sm font-medium text-acazul">
             Clique para fazer upload
           </p>
-          <p className="text-xs text-blue-600 mt-1">
+          <p className="text-xs text-acazul mt-1">
             ou arraste e solte aqui
           </p>
         </div>
@@ -149,17 +148,16 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           className={`
                     absolute inset-0
                     flex flex-col items-center justify-center
-                    bg-blue-50
+                    bg-acazul
                     transition-opacity duration-200
-                    ${
-                      isDragActive
-                        ? 'opacity-100'
-                        : 'opacity-0 group-hover:opacity-100'
-                    }
+                    ${isDragActive
+              ? 'opacity-100'
+              : 'opacity-0 group-hover:opacity-100'
+            }
                 `}
         >
-          <UploadCloud className="w-10 h-10 text-blue-600 mb-3" />
-          <p className="text-sm font-medium text-blue-700">
+          <UploadCloud className="w-10 h-10 text-acazul mb-3" />
+          <p className="text-sm font-medium text-acazul">
             Solte para fazer upload
           </p>
         </div>

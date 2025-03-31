@@ -68,10 +68,10 @@ const CommentBar = ({
 
     // Only run if there are pins and a session
     if (pins && pins.length > 0 && session) {
-        loadPermissions();
+      loadPermissions();
     } else {
-        // Clear permissions if there are no pins or session
-        setPermissions({});
+      // Clear permissions if there are no pins or session
+      setPermissions({});
     }
   }, [pins, session]); // Dependencies remain the same
 
@@ -267,7 +267,7 @@ const CommentBar = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-100 border-r border-gray-300 relative">
+    <div className="flex flex-col h-full bg-acbg relative">
       <div className="flex-1 overflow-y-auto pb-8 ">
         {/* Cabeçalho com contagem de comentários */}
         <CommentHeader totalComments={pins.length} />

@@ -12,7 +12,6 @@ import { getImageUrl } from '@/utils/getImageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/utils/commentUtils';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
-import { updatePageLastAccessed } from '@/utils/updatePageLastAccessed';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
 import PageLayout from '@/components/layouts/PageLayout';

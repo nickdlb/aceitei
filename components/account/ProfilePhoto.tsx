@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, userId }) => {
   const [newPhoto, setNewPhoto] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-    const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState('');
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchUserName = async () => {
       try {
         if (userId) {
@@ -26,7 +26,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
             console.error('Error fetching user name:', error);
             return;
           }
-          if(data) {
+          if (data) {
             setUserName(data.nome || '');
           }
         }
@@ -35,9 +35,9 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
       }
     };
 
-        if(photoURL) {
-            fetchUserName();
-        }
+    if (photoURL) {
+      fetchUserName();
+    }
 
   }, [photoURL, userId]);
 
@@ -126,10 +126,10 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
         </Avatar>
       )}
       <div>
-        <Button asChild variant="outline">
-        <label htmlFor="photoUpload" className="cursor-pointer">
-          Alterar Foto
-        </label>
+        <Button className='bg-acbgbranco' asChild variant="outline">
+          <label htmlFor="photoUpload" className="cursor-pointer text-acpreto">
+            Alterar Foto
+          </label>
         </Button>
         <input
           type="file"

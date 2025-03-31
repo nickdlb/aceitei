@@ -83,7 +83,7 @@ const ImagePin: React.FC<ExtendedImagePinProps> = ({
         zIndex: localIsDragging ? 30 : 20
       }}
     >
-      <div className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-xs font-bold">
+      <div className="flex items-center justify-center w-6 h-6 bg-acazul text-acbranco rounded-full text-xs font-bold">
         {pin.num}
       </div>
     </div>
