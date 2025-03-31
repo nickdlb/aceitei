@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({
   totalNotifications
 }) => {
   return (
-    <div className="bg-acbgbranco px-4 py-2 w-full flex items-center justify-between h-12">
+    <div className="bg-acbgbranco px-4 py-2 w-full flex items-center gap-4 h-12">
       <div className="flex items-center">
         <Button
           onClick={() => setShowSearchForm(!showSearchForm)}
@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({
             placeholder="Pesquisar..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64 ml-2"
+            className="w-64 ml-2 !ring-0 border-none leading-8"
           />
         )}
       </div>

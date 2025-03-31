@@ -5,12 +5,13 @@ import { ImagesProvider } from '@/contexts/ImagesContext'; // Import ImagesProvi
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/dashboard/DashboardHeader';
 import ImageGallery from '@/components/dashboard/CardGallery';
-import RightSidebarButton from '@/components/sidebar/RightSidebarButton';
 import RightSidebar from '@/components/sidebar/RightSidebar';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useImages } from '@/hooks/useImages';
 import { useRouter } from 'next/navigation';
 import { deleteCard } from '@/utils/deleteCard';
+import { Plus } from 'lucide-react';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
 
 // Rename the original component to AppContent
 const AppContent = () => {
@@ -131,15 +132,15 @@ const AppContent = () => {
                     />
                 </main>
             </div>
-            <div className={`transition-all duration-300 relative ${isRightSidebarOpen ? 'w-[356px]' : 'w-12'} bg-acbgbranco flex flex-col items-center justify-center ${!initialWidthSet ? 'transition-none w-12' : ''}`}>
-                {isRightSidebarOpen && (
+            <Dialog> 
+                <DialogTrigger className="absolute flex px-3 py-2 right-4 bottom-4 bg-acazul rounded-xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
+                    <Plus></Plus> Adicionar Card 
+                </DialogTrigger>
+                <DialogContent className='!bg-acbgpreto border-none'>
+                    <DialogTitle className='sr-only'> Popup Upload Card</DialogTitle>
                     <RightSidebar onUploadComplete={handleUploadComplete} />
-                )}
-                <RightSidebarButton
-                    isRightSidebarOpen={isRightSidebarOpen}
-                    toggleRightSidebar={toggleRightSidebar}
-                />
-            </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

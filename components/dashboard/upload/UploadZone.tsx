@@ -101,7 +101,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
     <>
       <div
         {...getRootProps()}
-        className={`relative group flex flex-col items-center justify-center min-h-[200px] w-full border-2 border-dashed rounded-lg ${isDragActive ? 'border-acazul bg-acazul' : 'border-acazul hover:border-acazul'} transition-all duration-200 ease-in-out cursor-pointer overflow-hidden`}
+        className={`relative group flex flex-col items-center justify-cenwter min-h-[200px] w-full border-2 border-dashed rounded-lg ${isDragActive ? 'border-acazul bg-acazul' : 'border-acazul hover:border-acazul'} transition-all duration-200 ease-in-out cursor-pointer overflow-hidden`}
       >
         <input {...getInputProps()} />
         <div
@@ -116,6 +116,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
         >
           <UploadCloud className="w-10 h-10 text-acazul mb-3 text-acbrancohover" />
           <p className="text-sm font-medium text-acbrancohover">Solte para fazer upload</p>
+          <p className="text-xs text-acbranco mt-1">ou arraste e solte aqui</p>
         </div>
       </div>
 

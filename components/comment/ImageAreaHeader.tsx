@@ -68,7 +68,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
               type="text"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="text-sm"
+              className="text-sm border-none !ring-0 pl-0 font-medium !leading-8"
               autoFocus
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
