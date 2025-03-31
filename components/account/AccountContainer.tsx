@@ -67,9 +67,8 @@ const AccountContainer = () => {
       </div>
     );
   }
-
   return (
-    <Card className="flex-1">
+    <Card className="flex-1 border-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-acpreto text-2xl font-bold">Minha Conta</CardTitle>
       </CardHeader>

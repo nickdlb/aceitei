@@ -106,7 +106,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
         <input {...getInputProps()} />
         <div
           className={`absolute inset-0 flex flex-col items-center justify-center bg-acbgbranco bg-opacity-90 transition-opacity duration-200 ${isDragActive ? 'opacity-0' : 'group-hover:opacity-0'}`}
-        >
+        > 
           <UploadCloud className="w-10 h-10 text-acazul mb-3" />
           <p className="text-sm font-medium text-acazul">Clique para fazer upload</p>
           <p className="text-xs text-acazul mt-1">ou arraste e solte aqui</p>
