@@ -57,7 +57,7 @@ const SidebarNav = () => {
         />
       </ul>
       <div className="absolute bottom-0 left-0 right-0">
-        <SidebarFooter />
+        <SidebarFooter/>
       </div>
     </nav>
   );

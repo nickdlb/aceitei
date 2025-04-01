@@ -14,15 +14,7 @@ const useAuthLogin = () => {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  useEffect(() => {
-    const checkAuth = async (): Promise<void> => {
-      const { data, error } = await supabase.auth.getSession();
-      if (data.session) {
-        router.push('/');
-      }
-    };
-    checkAuth();
-  }, [router]);
+  // Removed the useEffect that checked session on mount and caused the redirect loop
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

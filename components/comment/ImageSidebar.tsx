@@ -4,27 +4,23 @@ import ImageSidebarProps from '@/types/ImageSidebarProps';
 
 const ImageSidebar = ({ pages, currentPage, onPageChange }: ImageSidebarProps) => {
     return (
-        <div className="w-36 bg-white border-l border-gray-200 flex flex-col">
-            <div className="p-4 h-14 items-center border-b border-gray-200">
-                <h2 className="text-sm font-semibold text-gray-700">
+        <div className="w-36 bg-acbgbranco flex flex-col">
+            <div className="p-4 h-14 items-center">
+                <h2 className="text-sm font-semibold text-actextocinza">
                     Páginas ({pages.length})
                 </h2>
             </div>
-
-            {/* Lista de miniaturas */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="pt-2 pr-2 pl-2 flex-1 overflow-y-auto space-y-2">
                 {pages.map((page) => {
                     const imageUrl = getImageUrl(page.image_url);
                     const isActive = page.id === currentPage;
-
                     return (
                         <div
                             key={page.id}
-                            className={`relative p-1.5 cursor-pointer hover:bg-gray-50 transition-colors ${isActive ? 'bg-blue-50' : ''
+                            className={`relative rounded cursor-pointer hover:bg-acbg transition-colors ${isActive ? 'bg-actextocinza' : ''
                                 }`}
                             onClick={() => onPageChange(page.id)}
                         >
-                            {/* Container para miniatura e número */}
                             <div className="relative aspect-[4/3] w-full">
                                 <Image
                                     src={imageUrl}
@@ -34,8 +30,7 @@ const ImageSidebar = ({ pages, currentPage, onPageChange }: ImageSidebarProps) =
                                     sizes="120px"
                                     unoptimized
                                 />
-                                {/* Número da página */}
-                                <div className="absolute top-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1.5 py-0.5 rounded-sm">
+                                <div className="absolute top-1 right-1 bg-acpreto bg-opacity-50 text-acbranco text-xs px-1.5 py-0.5 rounded-sm">
                                     {page.page_number}
                                 </div>
                             </div>

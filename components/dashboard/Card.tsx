@@ -42,14 +42,14 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
 
     if (!imageUrl || imageError) {
         return (
-            <div className="bg-gray-100 rounded-lg p-4 text-center">
-                <p className="text-gray-500">Imagem não disponível</p>
+            <div className="bg-acbg rounded-lg p-4 text-center">
+                <p className="text-actextocinza">Imagem não disponível</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-80 relative">
+        <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
             <CardHeader
                 imageUrl={imageUrl}
                 imageTitle={image.imageTitle}
@@ -74,7 +74,7 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
             />
 
             {showShareLink && (
-                <div className="absolute bottom-0 left-0 right-0 bg-white p-2 text-xs text-center">
+                <div className="absolute bottom-0 left-0 right-0 bg-acbgbranco p-2 text-xs text-center">
                     Link copiado!
                 </div>
             )}

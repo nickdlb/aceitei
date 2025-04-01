@@ -6,26 +6,26 @@ interface CommentFilterProps {
 
 const CommentFilter: React.FC<CommentFilterProps> = ({ statusFilter, setStatusFilter, totalComments }) => {
   return (
-    <div className="p-4 bg-white">
+    <div className="pt-4 pl-4 pb-3">
       <div className="flex flex-wrap gap-2">
-        <span className=" font-semibold w-full text-sm ">
-            Total de Comentários: {totalComments}
+        <span className=" text-acpreto font-semibold w-full text-sm ">
+          Total de Comentários: {totalComments}
         </span>
 
         <button
           onClick={() => setStatusFilter('ativo')}
-className={`px-3 py-1 rounded-md text-sm ${statusFilter === 'ativo'
-            ? 'bg-yellow-500 text-white'
-            : 'bg-gray-100 text-gray-600'
+          className={`px-3 py-1 rounded-md text-sm ${statusFilter === 'ativo'
+            ? 'bg-yellow-500 text-acbrancohover'
+            : 'bg-acbg text-actextocinza'
             }`}
         >
           Ativos
         </button>
         <button
           onClick={() => setStatusFilter('resolvido')}
-className={`px-3 py-1 rounded-md text-sm ${statusFilter === 'resolvido'
-            ? 'bg-green-500 text-white'
-            : 'bg-gray-100 text-gray-600'
+          className={`px-3 py-1 rounded-md text-sm ${statusFilter === 'resolvido'
+            ? 'bg-green-500 text-acbrancohover'
+            : 'bg-acbg text-actextocinza'
             }`}
         >
           Resolvidos

@@ -17,25 +17,19 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
     try {
       if (combine) {
-        // Criar um único documento para todas as imagens
         const { data: document, error: documentError } = await createSupabaseClient
           .from('documents')
-          .insert({
-            title: 'Documento Combinado',
-            user_id: session.user.id,
-          })
+          .insert({ title: 'Documento Combinado', user_id: session.user.id })
           .select()
           .single();
 
         if (documentError) throw documentError;
 
-        // Upload de todas as imagens em sequência
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const fileExt = file.name.split('.').pop();
           const fileName = `${Math.random()}.${fileExt}`;
 
-          // Upload da imagem para o storage
           const { error: storageError } = await createSupabaseClient.storage
             .from('images')
             .upload(fileName, file);
@@ -45,7 +39,6 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
             continue;
           }
 
-          // Criar página vinculada ao documento
           const { error: pageError } = await createSupabaseClient
             .from('pages')
             .insert({
@@ -62,7 +55,6 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           }
         }
 
-        // Notificar sucesso apenas uma vez para o documento combinado
         const { data: firstPage } = await createSupabaseClient
           .from('pages')
           .select('*')
@@ -75,7 +67,6 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           onUploadSuccess(firstPage);
         }
       } else {
-        // Upload separado de cada imagem
         for (const file of files) {
           const data = await uploadImage(file, session.user.id, file.name);
           if (data) {
@@ -103,65 +94,29 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      'image/*': ['.png', '.jpg', '.jpeg'],
-    },
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg'] },
   });
 
   return (
     <>
       <div
         {...getRootProps()}
-        className={`
-                    relative group
-                    flex flex-col items-center justify-center
-                    min-h-[200px] w-full
-                    border-2 border-dashed rounded-lg
-                    ${
-                      isDragActive
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-blue-300 hover:border-blue-500'
-                    }
-                    transition-all duration-200 ease-in-out
-                    cursor-pointer
-                    overflow-hidden
-                `}
+        className={`relative group flex flex-col items-center justify-cenwter min-h-[200px] w-full border-2 border-dashed rounded-lg ${isDragActive ? 'border-acazul bg-acazul' : 'border-acazul hover:border-acazul'} transition-all duration-200 ease-in-out cursor-pointer overflow-hidden`}
       >
         <input {...getInputProps()} />
         <div
-          className={`
-                    absolute inset-0
-                    flex flex-col items-center justify-center
-                    bg-white bg-opacity-90
-                    transition-opacity duration-200
-                    ${isDragActive ? 'opacity-0' : 'group-hover:opacity-0'}
-                `}
-        >
-          <UploadCloud className="w-10 h-10 text-blue-500 mb-3" />
-          <p className="text-sm font-medium text-blue-700">
-            Clique para fazer upload
-          </p>
-          <p className="text-xs text-blue-600 mt-1">
-            ou arraste e solte aqui
-          </p>
+          className={`absolute inset-0 flex flex-col items-center justify-center bg-acbgbranco bg-opacity-90 transition-opacity duration-200 ${isDragActive ? 'opacity-0' : 'group-hover:opacity-0'}`}
+        > 
+          <UploadCloud className="w-10 h-10 text-acazul mb-3" />
+          <p className="text-sm font-medium text-acazul">Clique para fazer upload</p>
+          <p className="text-xs text-acazul mt-1">ou arraste e solte aqui</p>
         </div>
         <div
-          className={`
-                    absolute inset-0
-                    flex flex-col items-center justify-center
-                    bg-blue-50
-                    transition-opacity duration-200
-                    ${
-                      isDragActive
-                        ? 'opacity-100'
-                        : 'opacity-0 group-hover:opacity-100'
-                    }
-                `}
+          className={`absolute inset-0 flex flex-col items-center justify-center  bg-acazul transition-opacity duration-200 ${isDragActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
         >
-          <UploadCloud className="w-10 h-10 text-blue-600 mb-3" />
-          <p className="text-sm font-medium text-blue-700">
-            Solte para fazer upload
-          </p>
+          <UploadCloud className="w-10 h-10 mb-3 text-acbrancohover" />
+          <p className="text-sm font-medium text-acbrancohover">Solte para fazer upload</p>
+          <p className="text-xs text-acbranco mt-1">ou arraste e solte aqui</p>
         </div>
       </div>
 

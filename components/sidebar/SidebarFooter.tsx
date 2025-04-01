@@ -3,6 +3,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Toggle } from '@/components/ui/toggleDarkmode';
 
 const SidebarFooter = () => {
   const { session } = useAuth();
@@ -34,7 +35,7 @@ const SidebarFooter = () => {
   }, [session]);
 
   return (
-    <div className="p-4 border-t bg-white border-t-gray-300">
+    <div className="p-4 bg-acbgbranco">
       <div className="flex items-center gap-2">
         {userPhoto ? (
           <Avatar className="w-8 h-8">
@@ -47,9 +48,12 @@ const SidebarFooter = () => {
           </Avatar>
         )}
         <div className="flex items-center justify-between flex-1">
-          <span className="font-medium">
+          <span className="text-actextocinza font-medium">
             {userName}
           </span>
+        </div>
+        <div className='hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'> 
+          <Toggle /> 
         </div>
       </div>
     </div>

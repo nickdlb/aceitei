@@ -14,14 +14,14 @@ const SidebarMenuItem = ({ icon: Icon, label, href, badge, onClick }: SidebarMen
   const pathname = usePathname();
   const isActive = href ? pathname === href : false;
 
-    const handleClick = () => {
-        if (onClick) {
-            onClick();
-        }
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
     }
+  }
 
   return (
-    <li className={` text-sm text-gray-700 flex items-center gap-3 p-2 rounded cursor-pointer hover:text-white hover:bg-blue-700 ${isActive ? 'bg-blue-200' : 'hover:bg-blue-700'}`}  onClick={handleClick}>
+    <li className={` text-sm text-actextocinza flex items-center gap-3 p-2 rounded cursor-pointer hover:text-acbranco hover:bg-acazul ${isActive ? 'bg-acazul' : 'hover:bg-acazul'} ${isActive ? '!text-acbrancohover' : 'hover:text-acbrancohover'}`} onClick={handleClick}>
       {href ? (
         <Link href={href} className="flex items-center gap-3 w-full">
           <Icon className="w-5 h-5" />

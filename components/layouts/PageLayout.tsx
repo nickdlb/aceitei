@@ -16,16 +16,18 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   handleAuthSubmitAnonForm,
   handlePageChange,
 }) => {
+  const enhancedImageAreaProps = {
+    ...imageAreaProps,
+    pagesCount: pages.length, // Pass page count
+  };
+
   return (
     <div className="w-full h-screen flex">
-      {/* Sidebar de Comentários */}
-      <div className="w-96 flex-shrink-0 bg-gray-100 border-r border-gray-300">
+      <div className="w-96 flex-shrink-0 !border-0">
         <CommentBar {...commentBarProps} />
       </div>
-
-      {/* Conteúdo Principal */}
       <div className="flex-1 flex">
-        <ImageArea {...imageAreaProps} />
+        <ImageArea {...enhancedImageAreaProps} /> {/* Use enhanced props */}
         {pages.length > 1 && isPagesOpen && (
           <ImageSidebar
             pages={pages}

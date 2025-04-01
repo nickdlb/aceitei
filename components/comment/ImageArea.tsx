@@ -23,6 +23,7 @@ const ImageArea: React.FC<Props> = ({
   onTitleUpdate,
   onTogglePages,
   isPagesOpen,
+  pagesCount, // Receive pagesCount
 }) => {
   const [zoomLevel, setZoomLevel] = useState('100');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -55,9 +56,9 @@ const ImageArea: React.FC<Props> = ({
           // setNewTitle(imageTitle);
         }
       } else {
-         // If title is empty, just exit edit mode without saving
-         setIsEditingTitle(false);
-         setNewTitle(imageTitle); // Reset to original title if save is cancelled/empty
+        // If title is empty, just exit edit mode without saving
+        setIsEditingTitle(false);
+        setNewTitle(imageTitle); // Reset to original title if save is cancelled/empty
       }
     } else {
       // Entering edit mode: Set newTitle to the current imageTitle
@@ -90,8 +91,7 @@ const ImageArea: React.FC<Props> = ({
   }, [exibirImagem, imageTitle, getFileFormat]);
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-100">
-      {/* Barra de informações e controles */}
+    <div className="flex-1 flex-col">
       <ImageAreaHeader
         imageTitle={imageTitle}
         exibirImagem={exibirImagem}
@@ -103,19 +103,19 @@ const ImageArea: React.FC<Props> = ({
         getFileFormat={getFileFormat}
         handleDownload={handleDownload}
         handleZoomChange={handleZoomChange}
-        onTogglePages={onTogglePages || (() => {})}
+        onTogglePages={onTogglePages || (() => { })}
         setNewTitle={setNewTitle}
+        pagesCount={pagesCount} // Pass pagesCount down
       />
 
       {/* Container com scroll */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-auto relative flex items-start justify-center"
+        className="flex-1 overflow-auto relative flex items-start justify-center bg-acbg"
         style={{
           height: 'calc(100vh - 3.5rem)'
         }}
       >
-        {/* Container da imagem com zoom */}
         <div
           ref={scrollContainerRef}
           className="relative transition-transform duration-300 ease-in-out pt-4"

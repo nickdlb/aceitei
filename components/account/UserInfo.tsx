@@ -20,6 +20,13 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
     }
   }, [session]);
 
+  // Sync tempName with userData.nome when it changes and not editing
+  useEffect(() => {
+    if (!editingName) {
+      setTempName(userData.nome);
+    }
+  }, [userData.nome, editingName]);
+
   const handleEditName = () => {
     setEditingName(true);
     if (nameInputRef.current) {
@@ -54,11 +61,11 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
     setEditingName(false);
   };
 
-    const handleBlur = async () => {
-        if(editingName) {
-            await handleSaveName();
-        }
+  const handleBlur = async () => {
+    if (editingName) {
+      await handleSaveName();
     }
+  }
 
   const handleKeyPress = async (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
@@ -81,22 +88,22 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
             onBlur={handleBlur}
           />
         ) : (
-          <p>
+          <p className='text-acpreto'>
             <strong>Nome:</strong> {userData.nome}
           </p>
         )}
         {!editingName && (
-          <Button onClick={handleEditName} variant="outline" size="sm">
+          <Button className='text-acpreto bg-acbgbranco' onClick={handleEditName} variant="outline" size="sm">
             Editar
           </Button>
         )}
         {editingName && (
-          <Button onClick={handleCancelEdit} variant="ghost" size="sm">
+          <Button className='text-acpreto bg-acbgbranco' onClick={handleCancelEdit} variant="ghost" size="sm">
             Cancelar
           </Button>
         )}
       </div>
-      <p>
+      <p className='text-acpreto'>
         <strong>Email:</strong> {email}
       </p>
     </div>

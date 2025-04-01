@@ -28,11 +28,11 @@ const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isL
   }
 
   if (!localImages || localImages.length === 0) {
-    return <p>No images found.</p>;
+    return <p>Crie o seu primeiro card!</p>;
   }
 
   return (
-    <div className="flex  flex-wrap gap-4">
+    <div className="grid grid-cols-5 gap-4">
       {localImages.map((image) => (
         <Card key={image.id} image={image} onDelete={handleLocalCardDelete} />
       ))}

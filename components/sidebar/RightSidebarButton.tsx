@@ -27,7 +27,7 @@ const RightSidebarButton: React.FC<RightSidebarButtonProps> = ({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             variant="secondary"
-            className={`absolute top-1/2 -translate-y-1/2 z-10 rounded-l-full transition-all duration-300 bg-gray-200 hover:bg-blue-500 hover:text-white`}
+            className={`absolute top-1/2 -translate-y-1/2 z-10 rounded-l-full transition-all duration-300 bg-acbg hover:bg-acazul hover:textac-branco`}
             style={{
                 right: isRightSidebarOpen ? '0' : '0',
                 transform: isRightSidebarOpen ? 'translateY(-50%)' : 'translate(-1px, -50%)',

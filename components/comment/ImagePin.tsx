@@ -55,8 +55,14 @@ const ImagePin: React.FC<ExtendedImagePinProps> = ({
       const target = e.currentTarget.parentElement;
       if (target) {
         const rect = target.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        // Calculate coordinates as percentages
+        let x = ((e.clientX - rect.left) / rect.width) * 100;
+        let y = ((e.clientY - rect.top) / rect.height) * 100;
+
+        // Clamp coordinates to be within 0% and 100%
+        x = Math.max(0, Math.min(100, x));
+        y = Math.max(0, Math.min(100, y));
+
         updatePinPosition(pin.id, x, y);
       }
     }
@@ -83,7 +89,7 @@ const ImagePin: React.FC<ExtendedImagePinProps> = ({
         zIndex: localIsDragging ? 30 : 20
       }}
     >
-      <div className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-xs font-bold">
+      <div className="flex items-center justify-center w-6 h-6 bg-acazul text-acbrancohover rounded-full text-xs font-bold">
         {pin.num}
       </div>
     </div>
