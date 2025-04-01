@@ -39,19 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Verificar autenticação apenas em rotas protegidas
-  useEffect(() => {
-    const protectedRoutes = ['/minha-conta', '/dashboard'];
-    const isProtectedRoute = protectedRoutes.some(route => pathname?.startsWith(route));
-
-    const checkAuth = () => {
-      if (!loading && !session && isProtectedRoute) {
-        redirect('/login');
-      }
-    }
-    checkAuth();
-
-  }, [session, loading, pathname, router]);
+  // Removed the conflicting useEffect that handled redirects
 
   return (
     <AuthContext.Provider value={{ session, loading }}>

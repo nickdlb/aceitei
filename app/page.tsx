@@ -1,46 +1,38 @@
-'use client'
+'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { ImagesProvider } from '@/contexts/ImagesContext'; // Import ImagesProvider
+import { ImagesProvider } from '@/contexts/ImagesContext';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/dashboard/DashboardHeader';
 import ImageGallery from '@/components/dashboard/CardGallery';
 import RightSidebar from '@/components/sidebar/RightSidebar';
-import { useAuth } from '@/components/auth/AuthProvider';
 import { useImages } from '@/hooks/useImages';
-import { useRouter } from 'next/navigation';
 import { deleteCard } from '@/utils/deleteCard';
 import { Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
+import { useAuthChecker } from '@/utils/useAuthChecker';
+import { useRouter } from 'next/navigation'; // Ensure useRouter is imported
 
-// Rename the original component to AppContent
 const AppContent = () => {
+    // Use the updated hook
+    const { isLoading: authIsLoading, isAuthenticated, shouldRedirect } = useAuthChecker();
+    const router = useRouter(); // Initialize router
     const [isLoading, setIsLoading] = useState(false);
-
-    const handleCardDeleteWrapper = async (id: string, imageUrl?: string) => {
-        await deleteCard(id, imageUrl);
-    };
     const [sortOrder, setSortOrder] = useState('date');
     const [searchTerm, setSearchTerm] = useState('');
     const [showSearchForm, setShowSearchForm] = useState(false);
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
-    const { session, loading } = useAuth();
     const { images, loading: imagesLoading, refreshImages, totalNotifications } = useImages(sortOrder);
-    const router = useRouter();
 
-    // Filter images based on searchTerm
     const filteredImages = images.filter(image =>
         image.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    useEffect(() => {
-        // Redirect to login if not authenticated after loading is complete
-        if (!loading && !session) {
-            router.push('/login');
-        }
-    }, [session, loading, router]);
+    const handleCardDeleteWrapper = async (id: string, imageUrl?: string) => {
+        await deleteCard(id, imageUrl);
+    };
 
     useEffect(() => {
         const sidebarState = localStorage.getItem('isRightSidebarOpen');
@@ -55,7 +47,6 @@ const AppContent = () => {
 
     const handleUploadComplete = useCallback(async (data: any) => {
         try {
-            // Força um refresh do hook useImages
             if (refreshImages) {
                 refreshImages();
             }
@@ -64,11 +55,12 @@ const AppContent = () => {
         }
     }, [refreshImages]);
 
-    const toggleRightSidebar = () => {
+    const toggleRightSidebar = useCallback(() => {
         const newSidebarState = !isRightSidebarOpen;
         setIsRightSidebarOpen(newSidebarState);
         localStorage.setItem('isRightSidebarOpen', newSidebarState.toString());
-    };
+    }, [isRightSidebarOpen]);
+
 
     useEffect(() => {
         const handleDragOver = (event: DragEvent) => {
@@ -104,18 +96,29 @@ const AppContent = () => {
         };
     }, [isRightSidebarOpen, draggedOverSidebar, toggleRightSidebar]);
 
-    if (loading) {
+    // Perform redirect if the hook indicates it's needed
+    useEffect(() => {
+        console.log(`[app/page.tsx Effect] authIsLoading: ${authIsLoading}, shouldRedirect: ${shouldRedirect}`);
+        if (!authIsLoading && shouldRedirect) {
+            console.log('[app/page.tsx] Triggering replace redirect to /login');
+            router.replace('/login'); // Use replace instead of push
+        }
+        // Depend on shouldRedirect to trigger effect when redirect status changes
+    }, [authIsLoading, shouldRedirect, router]);
+
+    if (authIsLoading) {
+        console.log('[app/page.tsx] Rendering Loading state');
         return <div className="flex h-screen items-center justify-center">Loading...</div>;
     }
 
-    // If still loading or session exists, render the main content
-    // The useEffect above handles the redirect if loading is done and there's no session.
-    if (loading || !session) {
-        // Render null or a loading indicator while redirecting or if session is still loading
-        // This prevents rendering the main UI before the redirect logic in useEffect runs
-        return null;
+    // Render redirecting message if redirect is needed or not authenticated
+    if (shouldRedirect || !isAuthenticated) {
+        console.log(`[app/page.tsx] Rendering Redirecting state (shouldRedirect: ${shouldRedirect}, isAuthenticated: ${isAuthenticated})`);
+        return <div className="flex h-screen items-center justify-center">Redirecting...</div>; // Or null
     }
 
+    console.log('[app/page.tsx] Rendering main content');
+    // Render content only if authenticated and no redirect needed
     return (
         <div className="flex h-screen bg-acbg overflow-hidden">
             <Sidebar />
@@ -131,15 +134,15 @@ const AppContent = () => {
                 />
                 <main className="p-6 flex-1 overflow-y-auto h-[calc(100vh - 65px)] pb-30">
                     <ImageGallery
-                        isLoading={isLoading}
-                        images={filteredImages} // Use filtered images
+                        isLoading={isLoading || imagesLoading}
+                        images={filteredImages}
                         handleCardDelete={handleCardDeleteWrapper}
                     />
                 </main>
             </div>
-            <Dialog> 
+            <Dialog>
                 <DialogTrigger className="absolute flex px-3 py-2 right-8 bottom-4 bg-acazul rounded-2xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
-                    <Plus></Plus> Adicionar Card 
+                    <Plus></Plus> Adicionar Card
                 </DialogTrigger>
                 <DialogContent className='!bg-acbgpreto border-none'>
                     <DialogTitle className='sr-only'> Popup Upload Card</DialogTitle>
@@ -150,7 +153,6 @@ const AppContent = () => {
     );
 };
 
-// Create a new App component that wraps AppContent with ImagesProvider
 const App = () => {
     return (
         <ImagesProvider>

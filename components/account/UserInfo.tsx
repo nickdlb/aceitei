@@ -20,6 +20,13 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
     }
   }, [session]);
 
+  // Sync tempName with userData.nome when it changes and not editing
+  useEffect(() => {
+    if (!editingName) {
+      setTempName(userData.nome);
+    }
+  }, [userData.nome, editingName]);
+
   const handleEditName = () => {
     setEditingName(true);
     if (nameInputRef.current) {
