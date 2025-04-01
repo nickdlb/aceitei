@@ -50,7 +50,7 @@ export const CardContent = ({
             </>
           )}
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <div className="flex items-center">
             <MessageSquare className="w-4 h-4 text-actextocinza" />
             <span className="text-xs text-actextocinza ml-1">
