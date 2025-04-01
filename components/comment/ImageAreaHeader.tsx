@@ -16,6 +16,7 @@ interface ImageAreaHeaderProps {
   handleZoomChange: (value: string) => void;
   onTogglePages: () => void;
   setNewTitle: (value: string) => void;
+  pagesCount?: number; // Add pagesCount prop
 }
 
 const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
@@ -30,7 +31,8 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   handleDownload,
   handleZoomChange,
   onTogglePages,
-  setNewTitle
+  setNewTitle,
+  pagesCount // Destructure pagesCount
 }) => {
   const getFileFormatLocal = (url: string | undefined) => {
     if (!url) return '';
@@ -60,16 +62,16 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   };
 
   return (
-    <div className="h-14 bg-acbgbranco flex items-center justify-between px-4 border-b-2">
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          {isEditingTitle ? (
+    <div className="h-14 bg-acbgbranco flex items-center justify-between px-4">
+      <div className="flex items-center gap-2">
+      {isEditingTitle ? (
             <Input
               type="text"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="text-sm border-none !ring-0 pl-0 font-medium !leading-8"
+              className="text-sm border-none !ring-0 pl-0 font-medium !leading-8 min-w-full"
               autoFocus
+              maxLength={50}
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   handleTitleEdit();
@@ -83,12 +85,11 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
             variant="ghost"
             size="icon"
             onClick={handleTitleEdit}
-            className="text-acpreto hover:text-aclaranja"
+            className="text-acpreto min-w-fit hover:text-aclaranja"
           >
-            <Pencil className="w-4 h-4" />
+            <Pencil className="size-4" />
           </Button>
-        </div>
-        <p className="text-xs text-actextocinza">Formato: {getFileFormatLocal(exibirImagem)}</p>
+        <p className="min-w-fit text-xs text-actextocinza">Formato: {getFileFormatLocal(exibirImagem)}</p>
       </div>
       <div className="flex items-center gap-4">
         <select
@@ -108,14 +109,16 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
         >
           <Download className="w-5 h-5" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onTogglePages}
-          className="text-acpreto hover:text-aclaranja"
-        >
-          <LayoutList className="w-5 h-5" />
-        </Button>
+        {pagesCount && pagesCount > 1 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onTogglePages}
+            className="text-acpreto hover:text-aclaranja"
+          >
+            <LayoutList className="w-5 h-5" />
+          </Button>
+        )}
       </div>
     </div>
   );

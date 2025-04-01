@@ -265,7 +265,7 @@ const CommentBar = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-acbgbranco relative border-r-2">
+    <div className="flex flex-col h-full bg-acbgbranco relative">
       <div className="flex-1 overflow-y-auto">
         <CommentHeader totalComments={pins.length} />
         <CommentFilter

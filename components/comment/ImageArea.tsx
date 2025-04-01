@@ -23,6 +23,7 @@ const ImageArea: React.FC<Props> = ({
   onTitleUpdate,
   onTogglePages,
   isPagesOpen,
+  pagesCount, // Receive pagesCount
 }) => {
   const [zoomLevel, setZoomLevel] = useState('100');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -104,12 +105,13 @@ const ImageArea: React.FC<Props> = ({
         handleZoomChange={handleZoomChange}
         onTogglePages={onTogglePages || (() => { })}
         setNewTitle={setNewTitle}
+        pagesCount={pagesCount} // Pass pagesCount down
       />
 
       {/* Container com scroll */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-auto relative flex items-start justify-center"
+        className="flex-1 overflow-auto relative flex items-start justify-center bg-acbg"
         style={{
           height: 'calc(100vh - 3.5rem)'
         }}
