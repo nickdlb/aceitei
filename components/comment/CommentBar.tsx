@@ -265,7 +265,7 @@ const CommentBar = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-acbgbranco relative">
+    <div className="flex flex-col h-full bg-acbgbranco">
       <div className="flex-1 overflow-y-auto">
         <CommentHeader totalComments={pins.length} />
         <CommentFilter
@@ -300,9 +300,7 @@ const CommentBar = ({
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0">
-        <SidebarFooter />
-      </div>
+      <SidebarFooter />
     </div>
   );
 };
