@@ -24,7 +24,7 @@ const AppContent = () => {
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
-    const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false); // State for upload dialog
+    const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
     const { images, loading: imagesLoading, refreshImages, totalNotifications } = useImages(sortOrder);
 
     const filteredImages = images.filter(image =>
