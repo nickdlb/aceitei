@@ -122,7 +122,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
             const displayName = fullName.length > 15 ? fullName.substring(0, 13) + '...' : fullName;
             return (
               <span
-                className="text-xs font-medium text-actextocinza"
+                className="text-xs font-semibold text-actextocinza"
                 title={fullName}
               >
                 {displayName}
@@ -236,9 +236,9 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                 const isEditingThisReply = editingReplyId === reaction.id;
 
                 return (
-                  <div key={reaction.id} className="mt-2 text-sm" id={`comment-reply-${reaction.id}`}>
+                  <div key={reaction.id} className="mt-2 text-sm mb-3" id={`comment-reply-${reaction.id}`}>
                     <div className="flex gap-4 items-center mb-1">
-                      <span className="text-xs font-medium text-actextocinza">
+                      <span className="text-xs font-semibold text-actextocinza">
                         {userNames[reaction.user_id] || 'Usuário'}
                       </span>
                       <span className="text-xs text-actextocinza">
