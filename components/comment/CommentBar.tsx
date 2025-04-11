@@ -291,7 +291,7 @@ const CommentBar = ({
               <CommentListItem
                 key={pin.id}
                 pin={pin}
-                currentUserId={session?.user?.id || ''} // Add currentUserId from session
+                currentUserId={session?.user?.id || ''}
                 localComments={localComments}
                 editingPinId={editingPinId}
                 permissions={permissions}
@@ -307,7 +307,6 @@ const CommentBar = ({
                 setReplyText={setReplyText}
                 toggleReplies={toggleRepliesLocal}
                 handleReplyKeyPressLocal={handleReplyKeyPressLocal}
-                currentUserId={session?.user?.id}
                 session={session}
                 loadComments={loadComments}
               />
