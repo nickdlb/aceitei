@@ -5,7 +5,7 @@ import { ImagesProvider } from '@/contexts/ImagesContext';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/dashboard/DashboardHeader';
 import ImageGallery from '@/components/dashboard/CardGallery';
-import RightSidebar from '@/components/sidebar/RightSidebar';
+import RightSidebar from '@/components/sidebar/PopupUpload';
 import { useImages } from '@/hooks/useImages';
 import { deleteCard } from '@/utils/deleteCard';
 import { Plus } from 'lucide-react';
