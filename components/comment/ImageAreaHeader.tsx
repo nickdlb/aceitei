@@ -1,7 +1,7 @@
 import React from 'react';
 import { Download, Pencil, LayoutList } from 'lucide-react';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/common/ui/button"
+import { Input } from "@/components/common/ui/input"
 
 interface ImageAreaHeaderProps {
   imageTitle: string;

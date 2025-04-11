@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Sidebar from '@/components/sidebar/Sidebar';
+import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import AccountContainer from '@/components/account/AccountContainer';
 import { useAuthChecker } from '@/utils/useAuthChecker';
 import { useRouter } from 'next/navigation';

@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ImagesProvider } from '@/contexts/ImagesContext';
-import Sidebar from '@/components/sidebar/Sidebar';
+import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import Header from '@/components/dashboard/DashboardHeader';
 import ImageGallery from '@/components/dashboard/CardGallery';
 import { useImages } from '@/hooks/useImages';
 import { deleteCard } from '@/utils/deleteCard';
 import { useAuthChecker } from '@/utils/useAuthChecker';
 import { useRouter } from 'next/navigation';
-import BotaoPopupUpload from '@/components/sidebar/BotaoPopupUpload';
+import BotaoPopupUpload from '@/components/dashboard/sidebar/BotaoPopupUpload';
 
 const AppContent = () => {
 

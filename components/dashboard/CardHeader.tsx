@@ -1,7 +1,7 @@
 import { Eye, Share2, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/common/ui/button';
 
 interface CardHeaderProps {
   imageUrl: string;

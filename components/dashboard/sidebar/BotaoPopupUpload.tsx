@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from 'react';
 import { Plus } from 'lucide-react';
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
-import RightSidebar from '@/components/sidebar/PopupUpload';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/common/ui/dialog';
+import RightSidebar from '@/components/dashboard/sidebar/PopupUpload';
 
 interface BotaoPopupUploadProps {
     refreshImages?: () => Promise<void>;

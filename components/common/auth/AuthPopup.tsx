@@ -5,10 +5,10 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+} from "@/components/common/ui/dialog"
+import { Label } from "@/components/common/ui/label"
+import { Input } from "@/components/common/ui/input"
+import { Button } from "@/components/common/ui/button"
 import AuthPopupProps from '@/types/AuthPopupProps';
 
 const AuthPopup = ({ isOpen, onClose, onSubmit }: AuthPopupProps) => {

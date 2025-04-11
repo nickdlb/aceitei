@@ -1,9 +1,9 @@
 import React from 'react';
-import { useAuth } from '@/components/auth/AuthProvider';
+import { useAuth } from '@/components/common/auth/AuthProvider';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Toggle } from '@/components/ui/toggleDarkmode';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/ui/avatar';
+import { Toggle } from '@/components/common/ui/toggleDarkmode';
 
 const SidebarFooter = () => {
   const { session } = useAuth();
@@ -52,8 +52,8 @@ const SidebarFooter = () => {
             {userName}
           </span>
         </div>
-        <div className='hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'> 
-          <Toggle /> 
+        <div className='hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'>
+          <Toggle />
         </div>
       </div>
     </div>

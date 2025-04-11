@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import LoginForm from '@/components/auth/LoginForm';
-import LoginHeader from '@/components/auth/LoginHeader';
+import LoginForm from '@/components/common/auth/LoginForm';
+import LoginHeader from '@/components/common/auth/LoginHeader';
 import useAuthLogin from '@/hooks/useAuthLogin';
-import { Toggle } from '@/components/ui/toggleDarkmode';
+import { Toggle } from '@/components/common/ui/toggleDarkmode';
 
 const LoginPage = () => {
 

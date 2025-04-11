@@ -1,14 +1,14 @@
 import { Search, Bell } from 'lucide-react';
 import HeaderProps from '@/types/HeaderProps';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/common/ui/button';
+import { Input } from '@/components/common/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/common/ui/select';
 
 const Header: React.FC<HeaderProps> = ({
   showSearchForm,

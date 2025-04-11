@@ -1,5 +1,5 @@
 
-import SidebarFooter from '../sidebar/SidebarFooter';
+import SidebarFooter from '@/components/dashboard/sidebar/SidebarFooter';
 import { CommentSidebarProps } from '@/types/CommentsProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';

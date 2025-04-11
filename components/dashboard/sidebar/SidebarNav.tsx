@@ -1,9 +1,9 @@
 import React from 'react';
 import SidebarMenuItem from './SidebarMenuItem';
 import { Home, User, LogOut } from 'lucide-react';
-import { createSupabaseClient } from '../../utils/supabaseClient';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/components/auth/AuthProvider';
+import { useAuth } from '@/components/common/auth/AuthProvider';
 import { useState, useEffect } from 'react';
 import SidebarFooter from './SidebarFooter';
 

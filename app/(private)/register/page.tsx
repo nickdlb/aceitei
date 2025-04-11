@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { Toggle } from '@/components/ui/toggleDarkmode';
+import { Toggle } from '@/components/common/ui/toggleDarkmode';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -112,9 +112,9 @@ const RegisterPage = () => {
           </p>
         </div>
       </div>
-      <div className='absolute right-4 bottom-4 hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'> 
-        <Toggle /> 
-      </div>       
+      <div className='absolute right-4 bottom-4 hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'>
+        <Toggle />
+      </div>
     </div>
   );
 };

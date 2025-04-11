@@ -2,7 +2,7 @@ import React from 'react';
 import CommentBar from '@/components/comment/CommentBar';
 import ImageArea from '@/components/comment/ImageArea';
 import ImageSidebar from '@/components/comment/ImageSidebar';
-import AuthPopup from '@/components/auth/AuthPopup';
+import AuthPopup from '@/components/common/auth/AuthPopup';
 import PageLayoutProps from '@/types/PageLayoutProps';
 
 const PageLayout: React.FC<PageLayoutProps> = ({

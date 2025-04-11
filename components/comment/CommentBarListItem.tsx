@@ -1,9 +1,9 @@
 import { formatDate } from '@/utils/formatDate';
 import CommentListItemProps from '@/types/CommentListItemProps';
 import { useState } from 'react';
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/common/ui/button"
+import { Card } from "@/components/common/ui/card"
+import { Badge } from "@/components/common/ui/badge"
 import { Pencil, Check, Cog, X, MessageCircle } from "lucide-react";
 import { deleteReaction } from '@/utils/reactionUtils';
 

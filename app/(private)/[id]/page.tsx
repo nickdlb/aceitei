@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/components/auth/AuthProvider';
+import { useAuth } from '@/components/common/auth/AuthProvider';
 import { usePins } from '@/hooks/usePins';
 import { usePageData } from '@/hooks/usePageData';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
@@ -14,7 +14,7 @@ import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
-import PageLayout from '@/components/layouts/PageLayout';
+import PageLayout from '@/components/common/layouts/PageLayout';
 
 export default function Page() {
     const params = useParams();

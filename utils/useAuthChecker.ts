@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { useAuth } from '@/components/auth/AuthProvider';
+import { useAuth } from '@/components/common/auth/AuthProvider';
 
 export function useAuthChecker() {
   const { session, loading: authLoading } = useAuth();
@@ -15,7 +15,7 @@ export function useAuthChecker() {
     if (!authLoading) {
       const isUserFullyAuthenticated = !!(session && !session.user.is_anonymous);
       setIsAuthenticated(isUserFullyAuthenticated);
- 
+
       const needsRedirect = !isUserFullyAuthenticated && pathname !== '/login';
       setShouldRedirect(needsRedirect);
 

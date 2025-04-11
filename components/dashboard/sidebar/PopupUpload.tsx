@@ -1,5 +1,5 @@
-import { UploadZone } from '../dashboard/upload/UploadZone';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { UploadZone } from '@/components/dashboard/upload/UploadZone';
+import { Card, CardContent } from "@/components/common/ui/card"
 import SiteUpload from "@/components/dashboard/upload/SiteUpload"
 
 interface RightSidebarProps {
@@ -20,12 +20,12 @@ const RightSidebar = ({ onUploadComplete }: RightSidebarProps) => {
                 <div className="mb-4 space-y-2">
                     <div>
                         <p className="text-sm font-medium text-actextocinza mb-2">Adicionar Site</p>
-                        <SiteUpload/>
+                        <SiteUpload />
                     </div>
-                        <p className="text-sm font-medium text-actextocinza mb-2"> ou </p>
-                    <div>                    
+                    <p className="text-sm font-medium text-actextocinza mb-2"> ou </p>
+                    <div>
                         <p className="text-sm font-medium text-actextocinza mb-2">Adicionar Imagens</p>
-                    <UploadZone onUploadSuccess={handleUploadSuccess} />
+                        <UploadZone onUploadSuccess={handleUploadSuccess} />
                     </div>
                 </div>
             </CardContent>

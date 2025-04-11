@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/components/auth/AuthProvider';
+import { useAuth } from '@/components/common/auth/AuthProvider';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 
 interface ProcessedDocument {

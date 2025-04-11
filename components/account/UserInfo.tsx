@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import { useAuth } from '@/components/auth/AuthProvider';
+import { useAuth } from '@/components/common/auth/AuthProvider';
 import UserInfoProps from '@/types/UserInfoProps';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/common/ui/input';
+import { Button } from '@/components/common/ui/button';
 
 const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) => {
   const [editingName, setEditingName] = useState(false);
