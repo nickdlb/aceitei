@@ -26,7 +26,7 @@ export const usePins = (pageId: string, session: any) => {
         let isMounted = true;
 
         const fetchData = async () => {
-            await loadComments(pageId, setPins, setComments);
+            await loadComments(pageId, setPins, setComments, session);
         };
 
         fetchData();
@@ -34,7 +34,7 @@ export const usePins = (pageId: string, session: any) => {
         return () => {
             isMounted = false;
         };
-    }, [pageId, refreshKey, loadAttempts]);
+    }, [pageId, refreshKey, loadAttempts, session]);
 
     useEffect(() => {
         let isMounted = true;
@@ -81,10 +81,10 @@ export const usePins = (pageId: string, session: any) => {
         setEditingPinId,
         setDraggingPin,
         setIsDragging,
-        updatePinPosition: (pinId: string, xPercent: number, yPercent: number) => updatePinPosition(pinId, xPercent, yPercent, pins, setPins, () => loadComments(pageId, setPins, setComments)),
+        updatePinPosition: (pinId: string, xPercent: number, yPercent: number) => updatePinPosition(pinId, xPercent, yPercent, pins, setPins, () => loadComments(pageId, setPins, setComments, session)),
         loadRepliesForPin: (pinId: string) => loadRepliesForComments(pinId, setPins),
         setShowAuthPopup,
         handleAuth: (name: string, email: string) => authAnonymousComment(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil, editingPinId),
-        loadComments: () => loadComments(pageId, setPins, setComments),
+        loadComments: () => loadComments(pageId, setPins, setComments, session),
     };
 };

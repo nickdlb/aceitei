@@ -5,13 +5,13 @@ import { ImagesProvider } from '@/contexts/ImagesContext';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/dashboard/DashboardHeader';
 import ImageGallery from '@/components/dashboard/CardGallery';
-import RightSidebar from '@/components/sidebar/RightSidebar';
+import RightSidebar from '@/components/sidebar/PopupUpload';
 import { useImages } from '@/hooks/useImages';
 import { deleteCard } from '@/utils/deleteCard';
 import { Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
 import { useAuthChecker } from '@/utils/useAuthChecker';
-import { useRouter } from 'next/navigation'; // Ensure useRouter is imported
+import { useRouter } from 'next/navigation';
 
 const AppContent = () => {
     // Use the updated hook
@@ -24,6 +24,7 @@ const AppContent = () => {
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
+    const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
     const { images, loading: imagesLoading, refreshImages, totalNotifications } = useImages(sortOrder);
 
     const filteredImages = images.filter(image =>
@@ -48,10 +49,12 @@ const AppContent = () => {
     const handleUploadComplete = useCallback(async (data: any) => {
         try {
             if (refreshImages) {
-                refreshImages();
+                await refreshImages(); // Ensure refresh completes if async
             }
+            setIsUploadDialogOpen(false); // Close the dialog
         } catch (error) {
             console.error("Error updating images:", error);
+            // Optionally keep the dialog open on error or show an error message
         }
     }, [refreshImages]);
 
@@ -140,12 +143,16 @@ const AppContent = () => {
                     />
                 </main>
             </div>
-            <Dialog>
-                <DialogTrigger className="absolute flex px-3 py-2 right-8 bottom-4 bg-acazul rounded-2xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
-                    <Plus></Plus> Adicionar Card
+            {/* Upload Dialog */}
+            <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+                <DialogTrigger asChild>
+                    <button className="absolute flex px-3 py-2 right-8 bottom-4 bg-acazul rounded-2xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
+                        <Plus className="mr-1" /> Adicionar Card
+                    </button>
                 </DialogTrigger>
                 <DialogContent className='!bg-acbgpreto border-none'>
-                    <DialogTitle className='sr-only'> Popup Upload Card</DialogTitle>
+                    <DialogTitle className='sr-only'>Popup Upload Card</DialogTitle>
+                    {/* Pass handleUploadComplete to RightSidebar */}
                     <RightSidebar onUploadComplete={handleUploadComplete} />
                 </DialogContent>
             </Dialog>

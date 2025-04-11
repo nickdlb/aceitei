@@ -123,13 +123,13 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
       <MultipleUploadModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        onSeparate={() => {
-          handleUpload(pendingFiles, false);
+        onSeparate={async () => {
+          await handleUpload(pendingFiles, false);
           setShowModal(false);
           setPendingFiles([]);
         }}
-        onCombine={() => {
-          handleUpload(pendingFiles, true);
+        onCombine={async () => {
+          await handleUpload(pendingFiles, true);
           setShowModal(false);
           setPendingFiles([]);
         }}

@@ -1,8 +1,9 @@
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import PinProps from '@/types/PinProps';
+import PinProps, { CommentReaction } from '@/types/PinProps';
 import { loadCommentsReactions } from './loadCommentsReactions';
+import { Session } from '@supabase/supabase-js';
 
-export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) => void, setComments: (comments: { [key: string]: string }) => void): Promise<void> => {
+export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) => void, setComments: (comments: { [key: string]: string }) => void, session: Session | null): Promise<void> => {
     if (!pageId) return;
 
     try {
@@ -39,7 +40,18 @@ export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) =
             };
         });
 
-        setPins(pinsData);
+        const processedPins = pinsData.map(pin => ({
+            ...pin,
+            canEdit: pin.user_id === session?.user?.id,
+            canDelete: pin.user_id === session?.user?.id,
+            canChangeStatus: true,
+            reactions: pin.reactions?.map((reaction: CommentReaction) => ({
+                ...reaction,
+                canDelete: reaction.user_id === session?.user?.id
+            }))
+        }));
+
+        setPins(processedPins);
 
         const commentState: { [key: string]: string } = {};
         commentsData.forEach(comment => {

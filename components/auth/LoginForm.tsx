@@ -50,7 +50,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
               required
             />
             <button
-              type="button" // Prevent form submission
+              type="button"
               onClick={togglePasswordVisibility}
               className="absolute inset-y-0 right-0 flex items-center px-3 text-actextocinza hover:text-actextocinza focus:outline-none"
               aria-label={showPassword ? "Hide password" : "Show password"}
