@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { X } from "lucide-react";
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -54,7 +52,7 @@ const AuthPopup = ({ isOpen, onClose, onSubmit }: AuthPopupProps) => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            maxLength={30} // Limit name length
+                            maxLength={30}
                         />
                     </div>
                     <div className="grid gap-2">

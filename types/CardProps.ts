@@ -1,4 +1,4 @@
-interface ImageCardProps {
+export default interface ImageCardProps {
     image: {
         id: string;
         document_id: string;
@@ -13,5 +13,3 @@ interface ImageCardProps {
     };
     onDelete: (id: string) => void;
 }
-
-export default ImageCardProps;

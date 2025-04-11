@@ -22,13 +22,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Buscar sessão inicial
+
     createSupabaseClient.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
     });
 
-    // Escutar mudanças na autenticação
     const {
       data: { subscription },
     } = createSupabaseClient.auth.onAuthStateChange((_event, session) => {
@@ -38,8 +37,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  // Removed the conflicting useEffect that handled redirects
 
   return (
     <AuthContext.Provider value={{ session, loading }}>

@@ -1,14 +1,8 @@
 import { createSupabaseClient } from './supabaseClient';
 
-/**
- * Deleta um card (documento) e todos os seus recursos associados no Supabase
- * @param documentId ID do documento a ser excluído
- * @param imageUrl URL da imagem associada ao documento (para exclusão do storage)
- * @returns Um objeto com status de sucesso e mensagem
- */
 export const deleteCard = async (documentId: string, imageUrl?: string) => {
     try {
-        // 1. Primeiro, buscar todas as páginas associadas ao documento
+
         const { data: pages, error: pagesError } = await createSupabaseClient
             .from('pages')
             .select('id')
@@ -16,11 +10,9 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
 
         if (pagesError) throw pagesError;
 
-        // 2. Se houver páginas, buscar todos os comentários associados a essas páginas
         if (pages && pages.length > 0) {
             const pageIds = pages.map(page => page.id);
 
-            // 3. Excluir todas as reações de comentários associadas aos comentários
             const { data: comments, error: commentsFetchError } = await createSupabaseClient
                 .from('comments')
                 .select('id')
@@ -38,7 +30,6 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
                 if (reactionsError) throw reactionsError;
             }
 
-            // 4. Excluir todos os comentários associados às páginas
             const { error: commentsError } = await createSupabaseClient
                 .from('comments')
                 .delete()
@@ -46,7 +37,6 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
 
             if (commentsError) throw commentsError;
 
-            // 5. Excluir todas as páginas associadas ao documento
             const { error: deletePageError } = await createSupabaseClient
                 .from('pages')
                 .delete()
@@ -55,7 +45,6 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
             if (deletePageError) throw deletePageError;
         }
 
-        // 6. Excluir o documento
         const { error: documentError } = await createSupabaseClient
             .from('documents')
             .delete()
@@ -63,9 +52,8 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
 
         if (documentError) throw documentError;
 
-        // 7. Se houver uma URL de imagem, excluir a imagem do storage
         if (imageUrl) {
-            // Extrair o caminho da imagem da URL completa
+
             const imagePath = imageUrl.split('/').pop();
             if (imagePath) {
                 const { error: storageError } = await createSupabaseClient
@@ -75,7 +63,7 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
 
                 if (storageError) {
                     console.error('Erro ao excluir imagem do storage:', storageError);
-                    // Não interrompemos o fluxo se a exclusão da imagem falhar
+
                 }
             }
         }

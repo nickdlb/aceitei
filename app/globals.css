@@ -13,8 +13,6 @@ body {
   }
 }
 
-/* Cores Personalizadas*/
-
 :root {
   --acbg: #f4f4f5;
   --acbgbranco: #ffffff;
@@ -48,8 +46,6 @@ body {
   --acroxo: #5448c8;
 }
 
-/* Sidebar Styling */
-
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -63,7 +59,6 @@ body {
   background-color: var(--actextocinza);
 }
 
-/* shadCN */
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

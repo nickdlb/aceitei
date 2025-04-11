@@ -1,4 +1,4 @@
-'use client' // This component uses client-side features (useState, useEffect, localStorage)
+'use client'
 
 import React, {
   createContext,
@@ -27,18 +27,18 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'light', // Default to light if nothing else is set
+  defaultTheme = 'light',
   storageKey = 'ui-theme',
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Initialize state on the client only
+
     if (typeof window !== 'undefined') {
       try {
         const storedTheme = window.localStorage.getItem(storageKey)
         if (storedTheme === 'light' || storedTheme === 'dark') {
           return storedTheme
         }
-        // Check system preference if no stored theme
+
         const prefersDark = window.matchMedia(
           '(prefers-color-scheme: dark)'
         ).matches
@@ -48,17 +48,15 @@ export function ThemeProvider({
         return defaultTheme
       }
     }
-    // Return default during SSR or if window is undefined
+
     return defaultTheme
   })
 
   useEffect(() => {
-    // Apply theme class to root element and save to localStorage
+
     const root = window.document.documentElement
     root.classList.remove('light', 'dark')
 
-    // The theme state is always resolved to 'light' or 'dark' by the useState initializer
-    // or the setTheme function, so no need to check for 'system' here.
     root.classList.add(theme)
     try {
       localStorage.setItem(storageKey, theme)
@@ -92,7 +90,6 @@ export const useTheme = (): ThemeContextProps => {
   return context
 }
 
-// Optional: Inline script for FOUC mitigation (to be placed in <head>)
 export const ThemeInitScript = ({ storageKey = 'ui-theme' }) => {
   const script = `
     (function() {

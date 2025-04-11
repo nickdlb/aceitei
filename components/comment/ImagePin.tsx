@@ -55,11 +55,10 @@ const ImagePin: React.FC<ExtendedImagePinProps> = ({
       const target = e.currentTarget.parentElement;
       if (target) {
         const rect = target.getBoundingClientRect();
-        // Calculate coordinates as percentages
+
         let x = ((e.clientX - rect.left) / rect.width) * 100;
         let y = ((e.clientY - rect.top) / rect.height) * 100;
 
-        // Clamp coordinates to be within 0% and 100%
         x = Math.max(0, Math.min(100, x));
         y = Math.max(0, Math.min(100, y));
 

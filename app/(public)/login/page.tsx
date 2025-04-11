@@ -7,7 +7,7 @@ import useAuthLogin from '@/hooks/useAuthLogin';
 import { Toggle } from '@/components/ui/toggleDarkmode';
 
 const LoginPage = () => {
-  // Only keep the state and handlers needed for the login form itself
+
   const {
     email,
     setEmail,
@@ -19,7 +19,6 @@ const LoginPage = () => {
     handleGoogleLogin,
   } = useAuthLogin();
 
-  // Always render the login page structure
   return (
     <div className="flex h-screen bg-acbg">
       <div className="w-1/2 bg-cover  bg-[url(/noite-estrelada-comentada.jpg)]">
@@ -33,8 +32,8 @@ const LoginPage = () => {
               setEmail={setEmail}
               password={password}
               setPassword={setPassword}
-              loading={loading} // Keep loading state for the form button
-              error={error}     // Keep error state for displaying login errors
+              loading={loading}
+              error={error}
               handleLogin={handleLogin}
               handleGoogleLogin={handleGoogleLogin}
             />

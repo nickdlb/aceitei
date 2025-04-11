@@ -1,6 +1,6 @@
 import { formatDate } from '@/utils/formatDate';
 import CommentListItemProps from '@/types/CommentListItemProps';
-import { useState } from 'react'; // Import useState
+import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -24,15 +24,14 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   setReplyText,
   toggleReplies,
   handleReplyKeyPressLocal,
-  currentUserId, // Add currentUserId prop
-  session, // Adicionar sessão para verificação de permissões
-  loadComments // Adicionar função para recarregar comentários
+  currentUserId,
+  session,
+  loadComments
 }) => {
-  // State for editing reply ID
-  const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
-  // State for edited reply text
-  const [editedReplyText, setEditedReplyText] = useState<string>('');
 
+  const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
+
+  const [editedReplyText, setEditedReplyText] = useState<string>('');
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -50,15 +49,13 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   const handleEscapePress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
     event.preventDefault();
 
-    // Check if this is a new pin by looking at the original pin.comment
-    // If pin.comment is empty/null, it means this pin hasn't been saved yet
     const pinComment = pin.comment?.trim() || '';
 
     if (!pinComment) {
-      // If it's a new pin (not yet saved), delete it
+
       await CommentDelete(pinId);
     } else {
-      // If it's an existing pin being edited, just discard the edit
+
       setEditingPinId(null);
     }
   };
@@ -71,10 +68,8 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
     }
   };
 
-  // Define max length for replies
   const maxReplyLength = 300;
 
-  // Placeholder functions for reply actions (replace with actual logic later)
   const handleEditReply = (replyId: string, currentText: string) => {
     setEditingReplyId(replyId);
     setEditedReplyText(currentText);
@@ -82,7 +77,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
   const handleSaveReply = async (replyId: string) => {
     console.log("Saving reply:", replyId, editedReplyText);
-    // Add actual save logic here (e.g., call API/Supabase function)
+
     setEditingReplyId(null);
     setEditedReplyText('');
   };
@@ -141,7 +136,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         </div>
         <div id="novadiv" className='!min-w-4 flex justify-between items-center align-middle ml-auto'>
           {(() => {
-            const canDelete = permissions[pin.id]?.canDelete; // Corrigido para usar pin.id
+            const canDelete = permissions[pin.id]?.canDelete;
             return canDelete && (
               <Button
                 variant="ghost"
@@ -157,7 +152,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
       </div>
 
       {editingPinId === pin.id ? (
-        // Main Comment Edit Area
+
         <div id={`comment-edit-${pin.id}`} className="pt-2">
           <div className="relative w-full pr-3">
             <textarea
@@ -181,7 +176,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           </Button>
         </div>
       ) : (
-        // Main Comment View Area
+
         <div className="flex justify-between items-start pt-2" id={`comment-content-${pin.id}`}>
           <div className="flex flex-col">
             <p className="text-sm text-actextocinza max-w-full break-all pr-10">
@@ -233,7 +228,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         </div>
       </div>
       {showReplies[pin.id] && (
-        // Replies Section
+
         <div className="mt-[-4px]" id={`comment-replies-${pin.id}`}>
           {pin.reactions && pin.reactions.length > 0 && (
             <div className="mb-3">
@@ -252,7 +247,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                       </span>
                     </div>
                     {isEditingThisReply ? (
-                      // Reply Edit Area
+
                       <div id={`reply-edit-${reaction.id}`} className="pt-1">
                         <div className="relative w-full">
                           <textarea
@@ -262,7 +257,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                             className="w-full pr-12 resize-none text-sm text-actextocinza break-all bg-transparent focus:outline-none focus:border-b-2 focus:border-gray-200 focus:ring-0 focus:border-transparent border-b-2"
                             placeholder="Editar resposta..."
                             autoFocus
-                            maxLength={maxReplyLength} // Use the same max length
+                            maxLength={maxReplyLength}
                           />
                           <div className="absolute right-4 bottom-2 text-xs text-actextocinza">
                             {editedReplyText.length}/{maxReplyLength}
@@ -281,11 +276,10 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                         </div>
                       </div>
                     ) : (
-                      // Reply View Area
+
                       <div className="flex justify-between items-start" id={`reply-content-${reaction.id}`}>
                         <div className="text-actextocinza break-all pr-2">{reaction.reaction_type}</div>
                         <div className="flex items-center space-x-4 pr-3">
-                          {/* Apenas o autor da resposta pode editar */}
                           {hasReplyPermission && (
                             <Button
                               variant="ghost"
@@ -296,7 +290,6 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                               <Pencil className="w-3 h-3" />
                             </Button>
                           )}
-                          {/* Exibir apenas se tiver permissão */}
                           {permissions[reaction.id]?.canDelete && (
                             <Button
                               variant="ghost"
@@ -323,7 +316,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   e.preventDefault();
-                  toggleReplies(pin.id); // Close replies section when ESC is pressed
+                  toggleReplies(pin.id);
                 } else {
                   handleReplyKeyPressLocal(e, pin.id);
                 }
@@ -332,7 +325,6 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               className="w-full pr-12 resize-none text-sm text-actextocinza break-all bg-transparent focus:outline-none focus:ring-0 focus:border-transparent"
               maxLength={maxReplyLength}
             />
-            {/* Character Counter for Reply */}
             <div className="absolute right-4 bottom-2 text-xs text-actextocinza">
               {replyText.length}/{maxReplyLength}
             </div>

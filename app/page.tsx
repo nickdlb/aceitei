@@ -12,9 +12,9 @@ import { useRouter } from 'next/navigation';
 import BotaoPopupUpload from '@/components/sidebar/BotaoPopupUpload';
 
 const AppContent = () => {
-    // Use the updated hook
+
     const { isLoading: authIsLoading, isAuthenticated, shouldRedirect } = useAuthChecker();
-    const router = useRouter(); // Initialize router
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [sortOrder, setSortOrder] = useState('date');
     const [searchTerm, setSearchTerm] = useState('');
@@ -44,14 +44,11 @@ const AppContent = () => {
         setSortOrder(sortBy);
     };
 
-
-
     const toggleRightSidebar = useCallback(() => {
         const newSidebarState = !isRightSidebarOpen;
         setIsRightSidebarOpen(newSidebarState);
         localStorage.setItem('isRightSidebarOpen', newSidebarState.toString());
     }, [isRightSidebarOpen]);
-
 
     useEffect(() => {
         const handleDragOver = (event: DragEvent) => {
@@ -87,14 +84,13 @@ const AppContent = () => {
         };
     }, [isRightSidebarOpen, draggedOverSidebar, toggleRightSidebar]);
 
-    // Perform redirect if the hook indicates it's needed
     useEffect(() => {
         console.log(`[app/page.tsx Effect] authIsLoading: ${authIsLoading}, shouldRedirect: ${shouldRedirect}`);
         if (!authIsLoading && shouldRedirect) {
             console.log('[app/page.tsx] Triggering replace redirect to /login');
-            router.replace('/login'); // Use replace instead of push
+            router.replace('/login');
         }
-        // Depend on shouldRedirect to trigger effect when redirect status changes
+
     }, [authIsLoading, shouldRedirect, router]);
 
     if (authIsLoading) {
@@ -102,10 +98,9 @@ const AppContent = () => {
         return <div className="flex h-screen items-center justify-center">Loading...</div>;
     }
 
-    // Render redirecting message if redirect is needed or not authenticated
     if (shouldRedirect || !isAuthenticated) {
         console.log(`[app/page.tsx] Rendering Redirecting state (shouldRedirect: ${shouldRedirect}, isAuthenticated: ${isAuthenticated})`);
-        return <div className="flex h-screen items-center justify-center">Redirecting...</div>; // Or null
+        return <div className="flex h-screen items-center justify-center">Redirecting...</div>;
     }
 
     console.log('[app/page.tsx] Rendering main content');

@@ -1,7 +1,7 @@
-import React, { useState } from 'react'; // Import useState
+import React, { useState } from 'react';
 import Link from 'next/link';
 import LoginFormProps from '@/types/LoginFormProps';
-import { Eye, EyeOff } from 'lucide-react'; // Import icons
+import { Eye, EyeOff } from 'lucide-react';
 
 const LoginForm: React.FC<LoginFormProps> = ({
   email,
@@ -13,7 +13,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   handleLogin,
   handleGoogleLogin,
 }) => {
-  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -40,13 +40,13 @@ const LoginForm: React.FC<LoginFormProps> = ({
           <label htmlFor="password" className="block text-actextocinza text-sm mb-1">
             Senha
           </label>
-          <div className="relative"> {/* Added relative container */}
+          <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="text-acpretohover w-full px-2 py-3 pr-10 text-sm border rounded focus:outline-none focus:border-acazul" 
+              className="text-acpretohover w-full px-2 py-3 pr-10 text-sm border rounded focus:outline-none focus:border-acazul"
               required
             />
             <button
@@ -71,7 +71,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         onClick={handleGoogleLogin}
         className="bg-acbgbranco hover:bg-acbg text-actextocinza font-bold py-2 px-4 rounded-xl border border-acpreto focus:outline-none focus:shadow-outline w-full"
       >
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" alt="Google Logo" className="inline h-6 w-6 mr-2" />
+        <img src="https:
         Entrar com Google
       </button>
       <div className="mt-4 text-center">

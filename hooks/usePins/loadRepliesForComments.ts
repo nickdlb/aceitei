@@ -6,7 +6,7 @@ export const loadRepliesForComments = async (pinId: string, setPins: Dispatch<Se
     if (!pinId) return;
 
     try {
-        // Fetch only the reactions for this specific pin
+
         const { data: reactionsData, error: reactionsError } = await createSupabaseClient
             .from('comment_reactions')
             .select('*')
@@ -14,7 +14,6 @@ export const loadRepliesForComments = async (pinId: string, setPins: Dispatch<Se
 
         if (reactionsError) throw reactionsError;
 
-        // Update only the reactions for this pin in the pins state
         setPins(prevPins => prevPins.map(pin => {
             if (pin.id === pinId) {
                 return {

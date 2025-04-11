@@ -1,7 +1,5 @@
 import { UploadZone } from '../dashboard/upload/UploadZone';
-import { Plus } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import SiteUpload from "@/components/dashboard/upload/SiteUpload"
 
 interface RightSidebarProps {

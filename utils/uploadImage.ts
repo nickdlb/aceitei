@@ -2,7 +2,7 @@ import { createSupabaseClient } from './supabaseClient';
 
 export const uploadImage = async (file: File, userId: string, title: string) => {
     try {
-        // 1. Criar um novo documento
+
         const { data: documentData, error: documentError } = await createSupabaseClient
             .from('documents')
             .insert([
@@ -19,7 +19,6 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
             return null;
         }
 
-        // 2. Upload da imagem diretamente no bucket
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
 
@@ -33,7 +32,6 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
             return null;
         }
 
-        // 3. Criar uma nova página
         const { data: pageData, error: pageError } = await createSupabaseClient
             .from('pages')
             .insert([
@@ -55,7 +53,6 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
             return null;
         }
 
-        // 4. Buscar os dados do documento separadamente
         const { data: documentWithPage, error: documentFetchError } = await createSupabaseClient
             .from('documents')
             .select('id, title, created_at, user_id')
@@ -67,7 +64,6 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
             return pageData;
         }
 
-        // 5. Combinar os dados
         return {
             ...pageData,
             documents: documentWithPage

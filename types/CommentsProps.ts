@@ -20,7 +20,7 @@ export interface ImageAreaProps {
     onTitleUpdate: (newTitle: string) => void;
     onTogglePages?: () => void;
     isPagesOpen?: boolean;
-    pagesCount?: number; // Add pagesCount prop
+    pagesCount?: number;
 }
 
 export interface CommentSidebarProps {

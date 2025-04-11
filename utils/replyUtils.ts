@@ -1,9 +1,6 @@
 import { Session } from '@supabase/supabase-js';
 import { createSupabaseClient } from './supabaseClient';
 
-/**
- * Handles submitting a reply to a comment
- */
 export const createReply = async (
     pinId: string,
     replyText: string,
@@ -15,7 +12,6 @@ export const createReply = async (
 ) => {
     if (!replyText.trim()) return;
 
-    // Check if user is logged in
     if (!session?.user?.id) {
         setShowAuthPopup(true);
         return;
@@ -36,7 +32,7 @@ export const createReply = async (
             throw error;
         }
         setReplyText('');
-        // Load all comments
+
         await loadComments();
 
     } catch (error: any) {

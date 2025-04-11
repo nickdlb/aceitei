@@ -13,7 +13,7 @@ export async function checkIsAnonymous() {
 
         if (error) {
             console.error('Error fetching user:', error);
-            return false; // Or handle the error as needed
+            return false;
         }
 
         if (user?.isAnonymous) {

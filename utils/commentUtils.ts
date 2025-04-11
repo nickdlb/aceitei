@@ -17,19 +17,17 @@ export const createComment = async (
     if (!session?.user?.id || !pageId) return;
 
     try {
-        // Se estiver na aba Resolvidos, muda para Ativos
+
         if (statusFilter === 'resolvido') {
             setStatusFilter('ativo');
         }
 
-        // Check for any pin being edited or created
         const pinBeingEdited = pins.find(pin => pin.id === null || pin.isEditing);
         if (pinBeingEdited) {
             console.log('A pin is currently being edited');
             return;
         }
 
-        // Verificar se a página existe
         const { data: pageExists, error: pageError } = await createSupabaseClient
             .from('pages')
             .select('id')
@@ -43,7 +41,6 @@ export const createComment = async (
 
         const pin_Number = pins.length + 1;
 
-        // Inserir o comentário
         const { data: newPinData, error } = await createSupabaseClient
             .from('comments')
             .insert([
@@ -53,7 +50,7 @@ export const createComment = async (
                     pos_x: xPercent,
                     pos_y: yPercent,
                     pin_number: pin_Number,
-                    content: '', // Conteúdo inicial vazio
+                    content: '',
                     user_id: session.user.id,
                     status: 'ativo'
                 }
@@ -75,7 +72,7 @@ export const createComment = async (
                 status: 'ativo' as const,
                 user_id: session.user.id,
                 page_id: pageId,
-                reactions: [] // Initialize with empty reactions array
+                reactions: []
             };
 
             setPins(prevPins => [...prevPins, newPin]);
@@ -89,12 +86,6 @@ export const createComment = async (
     }
 };
 
-/**
- * Handles changing the content of a comment
- * @param pinId ID of the pin to change comment
- * @param value New comment value
- * @param setComments Function to update comments state
- */
 export const editComment = (
     pinId: string,
     value: string,
@@ -110,7 +101,7 @@ export interface CommentPermissions {
 }
 
 export const checkCommentPermissions = async (pin: PinProps, session: any): Promise<boolean | CommentPermissions> => {
-    // If no user is logged in, they have no permissions
+
     if (!session?.user?.id) {
         return false;
     }
@@ -122,35 +113,29 @@ export const checkCommentPermissions = async (pin: PinProps, session: any): Prom
             .eq('id', pin.page_id)
             .single();
 
-        // If there's an error fetching the page, assume no permissions
         if (pageError) {
             console.error('Error fetching page:', pageError);
             return false;
         }
 
-        // Determine if the current user owns the document (page)
         const isDocumentOwner = pageData?.user_id === session.user.id;
 
-        // If the pin has no ID (e.g., it's being created but not saved yet),
-        // permission is granted only if the user owns the document.
         if (!pin || !pin.id) {
             return isDocumentOwner;
         }
 
-        // Fetch the owner of the specific comment (pin)
         const { data: commentData, error: commentError } = await createSupabaseClient
             .from('comments')
             .select('user_id')
             .eq('id', pin.id)
             .single();
 
-        // Handle errors fetching the comment
         if (commentError) {
-            // If comment not found (PGRST116) or other error, permission relies solely on document ownership
-            if (commentError.code !== 'PGRST116') { // Log only if it's not the expected "not found" error
+
+            if (commentError.code !== 'PGRST116') {
                 console.error('Error fetching comment:', commentError);
             }
-            // Document owner can delete and change status, but not edit
+
             return isDocumentOwner ? {
                 canEdit: false,
                 canDelete: true,
@@ -158,33 +143,18 @@ export const checkCommentPermissions = async (pin: PinProps, session: any): Prom
             } : false;
         }
 
-        // Determine if the current user owns the comment itself
         const isCommentOwner = commentData?.user_id === session.user.id;
 
-        // Return detailed permissions:
-        // - Only comment owner can edit
-        // - Both document owner and comment owner can delete and change status
-        // - Document owner always has permission to delete comments
         return {
-            canEdit: isCommentOwner, // Only comment owner can edit
-            canDelete: isDocumentOwner || isCommentOwner, // Both can delete
-            canChangeStatus: isDocumentOwner || isCommentOwner // Both can change status
+            canEdit: isCommentOwner,
+            canDelete: isDocumentOwner || isCommentOwner,
+            canChangeStatus: isDocumentOwner || isCommentOwner
         };
     } catch (error) {
         console.error('Unexpected error checking permissions:', error);
-        return false; // Return false in case of any error
+        return false;
     }
 };
-
-
-/**
- * Handles changing the status of a pin between 'ativo' and 'resolvido'
- * @param pinId ID of the pin to change status
- * @param pins Array of pins
- * @param setPins Function to update pins state
- * @param session Current user session
- * @param loadComments Function to reload comments
- */
 
 export const changeCommentStatus = async (
     pinId: string,
@@ -197,16 +167,14 @@ export const changeCommentStatus = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        // Verificar permissões específicas para alteração de status
         const permissions = await checkCommentPermissions(pin, session);
 
-        // Se as permissões retornarem um objeto (nova estrutura)
         if (typeof permissions === 'object' && !Array.isArray(permissions)) {
             if (!permissions.canChangeStatus) {
                 alert('Você não tem permissão para alterar o status deste comentário.');
                 return;
             }
-        } else if (!permissions) { // Se retornar boolean false (sem permissões)
+        } else if (!permissions) {
             alert('Você não tem permissão para alterar o status deste comentário.');
             return;
         }
@@ -232,17 +200,6 @@ export const changeCommentStatus = async (
     }
 };
 
-/**
- * Handles saving a comment after editing
- * @param pinId ID of the pin to save comment for
- * @param pins Array of pins
- * @param comments Object containing comments by pin ID
- * @param setPins Function to update pins state
- * @param setEditingPinId Function to set the currently editing pin ID
- * @param loadComments Function to reload comments
- * @param setRefreshKey Function to update refresh key
- * @param session Current user session
- */
 export const saveComment = async (
     pinId: string,
     pins: PinProps[],
@@ -257,16 +214,14 @@ export const saveComment = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        // Verificar permissões específicas para edição
         const permissions = await checkCommentPermissions(pin, session);
 
-        // Se as permissões retornarem um objeto (nova estrutura)
         if (typeof permissions === 'object' && !Array.isArray(permissions)) {
             if (!permissions.canEdit) {
                 alert('Você não tem permissão para editar este comentário. Apenas o autor do comentário pode editá-lo.');
                 return;
             }
-        } else if (!permissions) { // Se retornar boolean false (sem permissões)
+        } else if (!permissions) {
             alert('Você não tem permissão para editar este comentário.');
             return;
         }
@@ -281,14 +236,12 @@ export const saveComment = async (
 
         if (error) throw error;
 
-        // Atualizar o pin localmente também
         setPins(prevPins => prevPins.map(p =>
             p.id === pinId ? { ...p, comment: comment } : p
         ));
 
         setEditingPinId(null);
 
-        // Forçar recarregamento completo
         await loadComments();
         setRefreshKey(prev => prev + 1);
 
@@ -298,15 +251,6 @@ export const saveComment = async (
     }
 };
 
-/**
- * Handles deleting a pin and updating pin numbers
- * @param pinId ID of the pin to delete
- * @param pins Array of pins
- * @param setPins Function to update pins state
- * @param setComments Function to update comments state
- * @param setEditingPinId Function to set the currently editing pin ID
- * @param setRefreshKey Function to update refresh key
- */
 export const deleteComment = async (
     pinId: string,
     pins: PinProps[],
@@ -320,20 +264,18 @@ export const deleteComment = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        // Verificar permissões específicas para exclusão
         const permissions = await checkCommentPermissions(pin, session);
 
-        // Se as permissões retornarem um objeto (nova estrutura)
         if (typeof permissions === 'object' && !Array.isArray(permissions)) {
             if (!permissions.canDelete) {
                 alert('Você não tem permissão para excluir este comentário.');
                 return;
             }
-        } else if (!permissions) { // Se retornar boolean false (sem permissões)
+        } else if (!permissions) {
             alert('Você não tem permissão para excluir este comentário.');
             return;
         }
-        // First, delete related records from comment_reactions
+
         const { error: reactionsError } = await createSupabaseClient
             .from('comment_reactions')
             .delete()
@@ -344,7 +286,6 @@ export const deleteComment = async (
             return;
         }
 
-        // Then, delete the comment itself
         const { error } = await createSupabaseClient
             .from('comments')
             .delete()
@@ -362,7 +303,6 @@ export const deleteComment = async (
 
         const deletedNumber = pinToDelete.num || 0;
 
-        // Remove o pin excluído e reordena os números
         setPins(prevPins => {
             return prevPins
                 .filter(pin => pin.id !== pinId)
@@ -381,7 +321,6 @@ export const deleteComment = async (
         setEditingPinId(null);
         setRefreshKey(prev => prev + 1);
 
-        // Atualiza os números no banco de dados
         const updatedPins = pins.filter(pin => pin.id !== pinId);
         for (const pin of updatedPins) {
             if (pin.num > deletedNumber) {

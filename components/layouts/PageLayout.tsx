@@ -18,7 +18,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 }) => {
   const enhancedImageAreaProps = {
     ...imageAreaProps,
-    pagesCount: pages.length, // Pass page count
+    pagesCount: pages.length,
   };
 
   return (
@@ -27,7 +27,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
         <CommentBar {...commentBarProps} />
       </div>
       <div className="flex-1 flex">
-        <ImageArea {...enhancedImageAreaProps} /> {/* Use enhanced props */}
+        <ImageArea {...enhancedImageAreaProps} />
         {pages.length > 1 && isPagesOpen && (
           <ImageSidebar
             pages={pages}

@@ -48,7 +48,6 @@ const RegisterPage = () => {
   return (
     <div className="flex h-screen bg-acbg">
       <div className="w-96 bg-acbg flex flex-col h-full">
-        {/* Header */}
         <div className="p-4 bg-acbgbranco">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-acazul rounded"></div>
@@ -59,7 +58,6 @@ const RegisterPage = () => {
             </div>
           </div>
         </div>
-        {/* Registration Form */}
         <div className="flex-1 p-6 bg-acbgbranco">
           <h1 className="text-2xl font-bold mb-4">Criar Conta</h1>
           {error && <p className="text-red-500 mb-4">{error}</p>}

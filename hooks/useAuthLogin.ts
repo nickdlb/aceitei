@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 
@@ -13,8 +13,6 @@ const useAuthLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-
-  // Removed the useEffect that checked session on mount and caused the redirect loop
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

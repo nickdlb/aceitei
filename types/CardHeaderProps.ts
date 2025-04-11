@@ -1,4 +1,4 @@
-interface CardHeaderProps {
+export default interface CardHeaderProps {
     imageUrl: string;
     imageTitle: string;
     pageId: string | null;
@@ -6,5 +6,3 @@ interface CardHeaderProps {
     handleDelete: (e: React.MouseEvent) => void;
     isDeleting: boolean;
 }
-
-export default CardHeaderProps;

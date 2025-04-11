@@ -15,12 +15,12 @@ const BotaoPopupUpload = ({ refreshImages }: BotaoPopupUploadProps) => {
     const handleUploadComplete = useCallback(async (data: any) => {
         try {
             if (refreshImages) {
-                await refreshImages(); // Ensure refresh completes if async
+                await refreshImages();
             }
-            setIsUploadDialogOpen(false); // Close the dialog
+            setIsUploadDialogOpen(false);
         } catch (error) {
             console.error("Error updating images:", error);
-            // Optionally keep the dialog open on error or show an error message
+
         }
     }, [refreshImages]);
 
@@ -33,7 +33,6 @@ const BotaoPopupUpload = ({ refreshImages }: BotaoPopupUploadProps) => {
             </DialogTrigger>
             <DialogContent className='!bg-acbgpreto border-none'>
                 <DialogTitle className='sr-only'>Popup Upload Card</DialogTitle>
-                {/* Pass handleUploadComplete to RightSidebar */}
                 <RightSidebar onUploadComplete={handleUploadComplete} />
             </DialogContent>
         </Dialog>

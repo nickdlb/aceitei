@@ -18,7 +18,7 @@ export default interface CommentListItemProps {
   setReplyText: (text: string) => void;
   toggleReplies: (pinId: string) => void;
   handleReplyKeyPressLocal: (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => void;
-  currentUserId: string | null | undefined; // Add currentUserId prop
-  session: Session | null; // Adicionar sessão para verificação de permissões
-  loadComments: () => Promise<void>; // Adicionar função para recarregar comentários
+  currentUserId: string | null | undefined;
+  session: Session | null;
+  loadComments: () => Promise<void>;
 }

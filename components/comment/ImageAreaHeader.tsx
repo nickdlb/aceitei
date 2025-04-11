@@ -16,7 +16,7 @@ interface ImageAreaHeaderProps {
   handleZoomChange: (value: string) => void;
   onTogglePages: () => void;
   setNewTitle: (value: string) => void;
-  pagesCount?: number; // Add pagesCount prop
+  pagesCount?: number;
 }
 
 const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
@@ -32,7 +32,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   handleZoomChange,
   onTogglePages,
   setNewTitle,
-  pagesCount // Destructure pagesCount
+  pagesCount
 }) => {
   const getFileFormatLocal = (url: string | undefined) => {
     if (!url) return '';
@@ -64,31 +64,31 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   return (
     <div className="h-14 bg-acbgbranco flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
-      {isEditingTitle ? (
-            <Input
-              type="text"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              className="text-sm border-none !ring-0 pl-0 font-medium !leading-8 min-w-full"
-              autoFocus
-              maxLength={50}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleTitleEdit();
-                }
-              }}
-            />
-          ) : (
-            <h2 className="text-sm font-medium text-actextocinza">{imageTitle}</h2>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleTitleEdit}
-            className="text-acpreto min-w-fit hover:text-aclaranja"
-          >
-            <Pencil className="size-4" />
-          </Button>
+        {isEditingTitle ? (
+          <Input
+            type="text"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            className="text-sm border-none !ring-0 pl-0 font-medium !leading-8 min-w-full"
+            autoFocus
+            maxLength={50}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleTitleEdit();
+              }
+            }}
+          />
+        ) : (
+          <h2 className="text-sm font-medium text-actextocinza">{imageTitle}</h2>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleTitleEdit}
+          className="text-acpreto min-w-fit hover:text-aclaranja"
+        >
+          <Pencil className="size-4" />
+        </Button>
         <p className="min-w-fit text-xs text-actextocinza">Formato: {getFileFormatLocal(exibirImagem)}</p>
       </div>
       <div className="flex items-center gap-4">

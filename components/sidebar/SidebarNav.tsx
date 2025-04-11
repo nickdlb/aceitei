@@ -1,7 +1,7 @@
 import React from 'react';
 import SidebarMenuItem from './SidebarMenuItem';
 import { Home, User, LogOut } from 'lucide-react';
-import { createSupabaseClient } from '../../utils/supabaseClient'; // Import supabase client
+import { createSupabaseClient } from '../../utils/supabaseClient';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useState, useEffect } from 'react';
@@ -39,7 +39,7 @@ const SidebarNav = () => {
   const handleSupabaseSignOut = async () => {
     try {
       await createSupabaseClient.auth.signOut();
-      router.push('/login'); // Redirect to login page after logout
+      router.push('/login');
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -57,7 +57,7 @@ const SidebarNav = () => {
         />
       </ul>
       <div className="absolute bottom-0 left-0 right-0">
-        <SidebarFooter/>
+        <SidebarFooter />
       </div>
     </nav>
   );
