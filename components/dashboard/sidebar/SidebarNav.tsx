@@ -5,7 +5,6 @@ import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 import { useState, useEffect } from 'react';
-import SidebarFooter from './SidebarFooter';
 
 const SidebarNav = () => {
   const router = useRouter();
@@ -50,15 +49,8 @@ const SidebarNav = () => {
       <ul className="space-y-2 p-4">
         <SidebarMenuItem href="/" icon={Home} label="Dashboard" />
         <SidebarMenuItem href="/account" icon={User} label="Minha Conta" />
-        <SidebarMenuItem
-          onClick={handleSupabaseSignOut}
-          icon={LogOut}
-          label="Sair"
-        />
+        <SidebarMenuItem onClick={handleSupabaseSignOut} icon={LogOut} label="Sair" />
       </ul>
-      <div className="absolute bottom-0 left-0 right-0">
-        <SidebarFooter />
-      </div>
     </nav>
   );
 };

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/ui/avatar';
 import { Toggle } from '@/components/common/ui/toggleDarkmode';
 
-const SidebarFooter = () => {
+export const UserProfileSidebar = () => {
   const { session } = useAuth();
   const [userName, setUserName] = useState('Usuário Anônimo');
   const [userPhoto, setUserPhoto] = useState('');
@@ -52,12 +52,9 @@ const SidebarFooter = () => {
             {userName}
           </span>
         </div>
-        <div className='hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'>
-          <Toggle />
-        </div>
       </div>
     </div>
   );
 };
 
-export default SidebarFooter;
+export default UserProfileSidebar;

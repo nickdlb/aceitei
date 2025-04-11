@@ -1,5 +1,5 @@
 
-import SidebarFooter from '@/components/dashboard/sidebar/SidebarFooter';
+import UserProfileSidebar from '@/components/dashboard/sidebar/UserProfileSidebar';
 import { CommentSidebarProps } from '@/types/CommentsProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
@@ -299,7 +299,7 @@ const CommentBar = ({
           </div>
         </div>
       </div>
-      <SidebarFooter />
+      <UserProfileSidebar />
     </div>
   );
 };

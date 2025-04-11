@@ -6,4 +6,5 @@ export default interface HeaderProps {
     sortOrder: string;
     handleSort: (sortBy: string) => void;
     totalNotifications: number;
+    refreshImages: () => Promise<void>;
 }

@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ImagesProvider } from '@/contexts/ImagesContext';
 import Sidebar from '@/components/dashboard/sidebar/Sidebar';
-import Header from '@/components/dashboard/DashboardHeader';
-import ImageGallery from '@/components/dashboard/CardGallery';
+import Header from '@/components/dashboard/header/DashboardHeader';
+import ProjectHeader from '@/components/dashboard/gallery/ProjectHeader';
 import { useImages } from '@/hooks/useImages';
 import { deleteCard } from '@/utils/deleteCard';
 import { useAuthChecker } from '@/utils/useAuthChecker';
 import { useRouter } from 'next/navigation';
-import BotaoPopupUpload from '@/components/dashboard/sidebar/BotaoPopupUpload';
+import CardGallery from '@/components/dashboard/gallery/CardGallery';
 
 const AppContent = () => {
 
@@ -23,7 +23,7 @@ const AppContent = () => {
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
 
-    const { images, loading: imagesLoading, refreshImages, totalNotifications } = useImages(sortOrder);
+    const { images, loading: imagesLoading, totalNotifications, refreshImages } = useImages(sortOrder);
 
     const filteredImages = images.filter(image =>
         image.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -115,17 +115,20 @@ const AppContent = () => {
                     setSearchTerm={setSearchTerm}
                     sortOrder={sortOrder}
                     handleSort={handleSort}
+                    refreshImages={refreshImages}
                     totalNotifications={totalNotifications}
                 />
-                <main className="p-6 flex-1 overflow-y-auto h-[calc(100vh - 65px)] pb-30">
-                    <ImageGallery
+                <main className="flex flex-col p-6 gap-4">
+                    <ProjectHeader sortOrder={sortOrder} handleSort={handleSort} />
+                    <CardGallery
                         isLoading={isLoading || imagesLoading}
                         images={filteredImages}
                         handleCardDelete={handleCardDeleteWrapper}
+                        sortOrder={sortOrder}
+                        handleSort={handleSort}
                     />
                 </main>
             </div>
-            <BotaoPopupUpload refreshImages={refreshImages} />
         </div>
     );
 };

@@ -25,10 +25,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   isEditingTitle,
   newTitle,
   zoomLevel,
-  isPagesOpen,
   handleTitleEdit,
-  getFileFormat,
-  handleDownload,
   handleZoomChange,
   onTogglePages,
   setNewTitle,
@@ -62,7 +59,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   };
 
   return (
-    <div className="h-14 bg-acbgbranco flex items-center justify-between px-4">
+    <div className="h-16 bg-acbgbranco flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
         {isEditingTitle ? (
           <Input

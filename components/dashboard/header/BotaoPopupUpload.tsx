@@ -27,8 +27,8 @@ const BotaoPopupUpload = ({ refreshImages }: BotaoPopupUploadProps) => {
     return (
         <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
             <DialogTrigger asChild>
-                <button className="absolute flex px-3 py-2 right-8 bottom-4 bg-acazul rounded-2xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
-                    <Plus className="mr-1" /> Adicionar Card
+                <button className="flex items-center px-2 py-1 text-sm bg-acazul rounded-2xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
+                    <Plus className="size-5" /> Adicionar Card
                 </button>
             </DialogTrigger>
             <DialogContent className='!bg-acbgpreto border-none'>

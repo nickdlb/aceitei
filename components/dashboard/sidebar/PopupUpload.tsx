@@ -1,6 +1,6 @@
-import { UploadZone } from '@/components/dashboard/upload/UploadZone';
+import { UploadZone } from '@/components/dashboard/header/UploadZone';
 import { Card, CardContent } from "@/components/common/ui/card"
-import SiteUpload from "@/components/dashboard/upload/SiteUpload"
+import SiteUpload from "@/components/dashboard/header/SiteUpload"
 
 interface RightSidebarProps {
     onUploadComplete: (data: any) => void;

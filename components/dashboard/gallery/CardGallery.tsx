@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Card from './Card';
+import OrdenacaoFiltro from './OrdenacaoFiltro';
 import ImageProps from '@/types/ImageProps';
 import CardGalleryProps from '@/types/CardGalleryProps';
 
-const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isLoading }) => {
+const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isLoading}) => {
   const [localImages, setLocalImages] = useState<ImageProps[]>(images);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isL
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <p>Carregando Cards...</p>;
   }
 
   if (!localImages || localImages.length === 0) {
@@ -32,10 +33,12 @@ const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isL
   }
 
   return (
-    <div className="grid grid-cols-5 gap-4">
-      {localImages.map((image) => (
-        <Card key={image.id} image={image} onDelete={handleLocalCardDelete} />
-      ))}
+    <div className='space-y-4'>
+      <div className="grid grid-cols-5 gap-4">
+        {localImages.map((image) => (
+          <Card key={image.id} image={image} onDelete={handleLocalCardDelete} />
+        ))}
+      </div>
     </div>
   );
 };

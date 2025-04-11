@@ -33,7 +33,7 @@ const SidebarHeader = () => {
   }, [session]);
 
   return (
-    <div className="p-4 h-12">
+    <div className="p-4 h-16 flex items-center">
       <div className="flex items-center justify-between">
         <Link href="/" className="font-semibold text-acpreto hover:text-acazul">
           Aceitei

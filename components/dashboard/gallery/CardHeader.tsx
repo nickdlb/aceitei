@@ -36,7 +36,7 @@ export const CardHeader = ({
   };
 
   return (
-    <div className="relative aspect-video cursor-pointer group" onClick={handleClick}>
+    <div className="relative h-40 cursor-pointer group" onClick={handleClick}>
       <Image
         src={imageUrl}
         alt={imageTitle || "Imagem"}
