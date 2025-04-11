@@ -146,7 +146,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => handleDeleteReply(reply.id)}
+                onClick={() => CommentDelete(pin.id)}
                 className="!h-4 !w-4 text-acpreto hover:text-acvermelho"
               >
                 <X className="" />
