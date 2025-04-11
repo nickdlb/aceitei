@@ -1,8 +1,9 @@
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import PinProps from '@/types/PinProps';
 import { loadCommentsReactions } from './loadCommentsReactions';
+import { Session } from '@supabase/supabase-js';
 
-export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) => void, setComments: (comments: { [key: string]: string }) => void): Promise<void> => {
+export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) => void, setComments: (comments: { [key: string]: string }) => void, session: Session | null): Promise<void> => {
     if (!pageId) return;
 
     try {
