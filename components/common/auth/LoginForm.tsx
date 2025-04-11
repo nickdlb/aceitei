@@ -69,9 +69,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
       </form>
       <button
         onClick={handleGoogleLogin}
-        className="bg-acbgbranco hover:bg-acbg text-actextocinza font-bold py-2 px-4 rounded-xl border border-acpreto focus:outline-none focus:shadow-outline w-full"
+        className="bg-acbgbranco hover:bg-acbg text-actextocinza flex gap-2 justify-center font-bold py-2 px-4 rounded-xl border border-acpreto focus:outline-none focus:shadow-outline w-full"
       >
-        <img src="https:
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" alt="Google Icon" className="size-6" />
         Entrar com Google
       </button>
       <div className="mt-4 text-center">

@@ -3,6 +3,8 @@ import ProfilePhotoProps from '@/types/ProfilePhotoProps';
 
 import React, { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/ui/avatar';
+import { Button } from '@/components/common/ui/button';
 
 const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, userId }) => {
   const [newPhoto, setNewPhoto] = useState<File | null>(null);
@@ -35,7 +37,6 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
     if (photoURL) {
       fetchUserName();
     }
-
   }, [photoURL, userId]);
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +60,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
 
       if (uploadError) throw uploadError;
 
-      const url = `https:
+      const url = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/fotoperfil/${fileName}`;
 
       if (photoURL && photoURL.includes('fotoperfil')) {
         const oldFileName = photoURL.split('/').pop();
