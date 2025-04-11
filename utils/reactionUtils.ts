@@ -6,15 +6,15 @@ import { CommentReaction } from '@/types/PinProps';
  * Verifica as permissões para excluir uma reação (resposta) a um comentário
  * @param reactionId ID da reação a ser verificada
  * @param session Sessão do usuário atual
- * @returns Objeto com permissão para excluir
+ * @returns Objeto com permissão para excluir e ID do usuário da reação
  */
 export const checkReactionPermissions = async (
     reactionId: string,
     session: Session | null
-): Promise<{ canDelete: boolean }> => {
+): Promise<{ canDelete: boolean, reactionUserId?: string }> => {
     // Se não houver usuário logado, não tem permissão
     if (!session?.user?.id) {
-        return { canDelete: false };
+        return { canDelete: false, reactionUserId: undefined };
     }
 
     try {
@@ -28,12 +28,12 @@ export const checkReactionPermissions = async (
         // Verificar dados básicos da reação
         if (!reactionData?.user_id || !reactionData?.comment_id) {
             console.error('Dados incompletos da reação:', reactionData);
-            return { canDelete: false };
+            return { canDelete: false, reactionUserId: undefined };
         }
 
         if (reactionError) {
             console.error('Erro ao buscar reação:', reactionError);
-            return { canDelete: false };
+            return { canDelete: false, reactionUserId: undefined };
         }
 
         // Verificar se o usuário é o autor da reação
@@ -50,10 +50,10 @@ export const checkReactionPermissions = async (
 
         // Comparação segura com coerção explícita
         const canDelete = reactionData.user_id.toString() === session.user.id.toString();
-        return { canDelete };
+        return { canDelete, reactionUserId: reactionData.user_id };
     } catch (error) {
         console.error('Erro inesperado ao verificar permissões:', error);
-        return { canDelete: false };
+        return { canDelete: false, reactionUserId: undefined };
     }
 };
 
@@ -72,7 +72,7 @@ export const deleteReaction = async (
         // Verificar permissões
         console.log('[DEBUG] Tentando excluir reactionId:', reactionId);
         console.log('[DEBUG] Sessão do usuário:', session?.user?.id);
-        
+
         const permissions = await checkReactionPermissions(reactionId, session);
 
         if (!permissions.canDelete) {
