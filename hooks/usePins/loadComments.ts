@@ -39,7 +39,18 @@ export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) =
             };
         });
 
-        setPins(pinsData);
+        const processedPins = pinsData.map(pin => ({
+            ...pin,
+            canEdit: pin.user_id === session?.user?.id,
+            canDelete: pin.user_id === session?.user?.id,
+            canChangeStatus: true,
+            reactions: pin.reactions?.map(reaction => ({
+                ...reaction,
+                canDelete: reaction.user_id === session?.user?.id
+            }))
+        }));
+
+        setPins(processedPins);
 
         const commentState: { [key: string]: string } = {};
         commentsData.forEach(comment => {
