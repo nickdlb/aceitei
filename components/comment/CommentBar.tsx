@@ -25,12 +25,13 @@ const CommentBar = ({
 }: CommentSidebarProps) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [localComments, setLocalComments] = useState<{ [key: string]: string }>(comments || {});
-  const [permissions, setPermissions] = useState<{ [key: string]: boolean }>({});
-  // Removed isPageOwner state as it's no longer derived or used here
+  // Atualizado para armazenar a estrutura de permissões mais complexa
+  const [permissions, setPermissions] = useState<{ [key: string]: { canEdit: boolean, canDelete: boolean, canChangeStatus: boolean } }>({});
   const [replyText, setReplyText] = useState('');
   const [showReplies, setShowReplies] = useState<{ [key: string]: boolean }>({});
   const openRepliesRef = useRef<{ [key: string]: boolean }>({});
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
+
 
   useEffect(() => {
     setLocalComments(comments || {});
@@ -53,14 +54,24 @@ const CommentBar = ({
 
   useEffect(() => {
     const loadPermissions = async () => {
-      const perms: { [key: string]: boolean } = {};
+      const perms: { [key: string]: { canEdit: boolean, canDelete: boolean, canChangeStatus: boolean } } = {};
 
       // Check permissions for each pin
       for (const pin of pins) {
-        // Call the simplified function which returns the boolean directly
+        // Chamar a função que agora retorna um objeto de permissões detalhado
         const commentPermission = await checkCommentPermissions(pin, session);
-        // Assign the boolean result to the permissions map
-        perms[pin.id] = commentPermission;
+
+        // Verificar o tipo de retorno e atribuir ao mapa de permissões
+        if (typeof commentPermission === 'object' && !Array.isArray(commentPermission)) {
+          // Se for um objeto de permissões, atribuir diretamente
+          perms[pin.id] = commentPermission;
+        } else if (commentPermission === true) {
+          // Para compatibilidade com versões anteriores, se for true, conceder todas as permissões
+          perms[pin.id] = { canEdit: true, canDelete: true, canChangeStatus: true };
+        } else {
+          // Se for false, negar todas as permissões
+          perms[pin.id] = { canEdit: false, canDelete: false, canChangeStatus: false };
+        }
       }
       // Update the permissions state
       setPermissions(perms);
@@ -191,7 +202,8 @@ const CommentBar = ({
         () => loadComments(),
         () => loadComments(),
         setEditingPinId,
-        setRefreshKey
+        setRefreshKey,
+        session
       );
 
       // Após a exclusão, recarrega os comentários para garantir sincronização
@@ -295,6 +307,9 @@ const CommentBar = ({
                 setReplyText={setReplyText}
                 toggleReplies={toggleRepliesLocal}
                 handleReplyKeyPressLocal={handleReplyKeyPressLocal}
+                currentUserId={session?.user?.id}
+                session={session}
+                loadComments={loadComments}
               />
             ))}
           </div>

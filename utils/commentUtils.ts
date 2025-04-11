@@ -103,7 +103,13 @@ export const editComment = (
     setComments(prev => ({ ...prev, [pinId]: value }));
 };
 
-export const checkCommentPermissions = async (pin: PinProps, session: any): Promise<boolean> => { // Explicitly type the return as boolean
+export interface CommentPermissions {
+    canEdit: boolean;
+    canDelete: boolean;
+    canChangeStatus: boolean;
+}
+
+export const checkCommentPermissions = async (pin: PinProps, session: any): Promise<boolean | CommentPermissions> => {
     // If no user is logged in, they have no permissions
     if (!session?.user?.id) {
         return false;
@@ -142,22 +148,34 @@ export const checkCommentPermissions = async (pin: PinProps, session: any): Prom
         if (commentError) {
             // If comment not found (PGRST116) or other error, permission relies solely on document ownership
             if (commentError.code !== 'PGRST116') { // Log only if it's not the expected "not found" error
-                 console.error('Error fetching comment:', commentError);
+                console.error('Error fetching comment:', commentError);
             }
-            return isDocumentOwner;
+            // Document owner can delete and change status, but not edit
+            return isDocumentOwner ? {
+                canEdit: false,
+                canDelete: true,
+                canChangeStatus: true
+            } : false;
         }
 
         // Determine if the current user owns the comment itself
         const isCommentOwner = commentData?.user_id === session.user.id;
-        // Calculate final permission: User has permission if they own the document OR the comment
-        const commentPermission = isDocumentOwner || isCommentOwner;
 
-        return commentPermission; // Return only the final boolean permission
+        // Return detailed permissions:
+        // - Only comment owner can edit
+        // - Both document owner and comment owner can delete and change status
+        // - Document owner always has permission to delete comments
+        return {
+            canEdit: isCommentOwner, // Only comment owner can edit
+            canDelete: isDocumentOwner || isCommentOwner, // Both can delete
+            canChangeStatus: isDocumentOwner || isCommentOwner // Both can change status
+        };
     } catch (error) {
         console.error('Unexpected error checking permissions:', error);
         return false; // Return false in case of any error
     }
 };
+
 
 /**
  * Handles changing the status of a pin between 'ativo' and 'resolvido'
@@ -179,7 +197,19 @@ export const changeCommentStatus = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        await checkCommentPermissions(pin, session);
+        // Verificar permissões específicas para alteração de status
+        const permissions = await checkCommentPermissions(pin, session);
+
+        // Se as permissões retornarem um objeto (nova estrutura)
+        if (typeof permissions === 'object' && !Array.isArray(permissions)) {
+            if (!permissions.canChangeStatus) {
+                alert('Você não tem permissão para alterar o status deste comentário.');
+                return;
+            }
+        } else if (!permissions) { // Se retornar boolean false (sem permissões)
+            alert('Você não tem permissão para alterar o status deste comentário.');
+            return;
+        }
 
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
 
@@ -227,9 +257,16 @@ export const saveComment = async (
         const pin = pins.find(p => p.id === pinId);
         if (!pin) return;
 
-        // Call the simplified function which now returns a boolean directly
-        const commentPermission = await checkCommentPermissions(pin, session);
-        if (!commentPermission) { // Check the boolean result
+        // Verificar permissões específicas para edição
+        const permissions = await checkCommentPermissions(pin, session);
+
+        // Se as permissões retornarem um objeto (nova estrutura)
+        if (typeof permissions === 'object' && !Array.isArray(permissions)) {
+            if (!permissions.canEdit) {
+                alert('Você não tem permissão para editar este comentário. Apenas o autor do comentário pode editá-lo.');
+                return;
+            }
+        } else if (!permissions) { // Se retornar boolean false (sem permissões)
             alert('Você não tem permissão para editar este comentário.');
             return;
         }
@@ -276,9 +313,26 @@ export const deleteComment = async (
     setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void,
     setEditingPinId: (id: string | null) => void,
-    setRefreshKey: (refreshKeyOrUpdater: number | ((prev: number) => number)) => void
+    setRefreshKey: (refreshKeyOrUpdater: number | ((prev: number) => number)) => void,
+    session: any
 ) => {
     try {
+        const pin = pins.find(p => p.id === pinId);
+        if (!pin) return;
+
+        // Verificar permissões específicas para exclusão
+        const permissions = await checkCommentPermissions(pin, session);
+
+        // Se as permissões retornarem um objeto (nova estrutura)
+        if (typeof permissions === 'object' && !Array.isArray(permissions)) {
+            if (!permissions.canDelete) {
+                alert('Você não tem permissão para excluir este comentário.');
+                return;
+            }
+        } else if (!permissions) { // Se retornar boolean false (sem permissões)
+            alert('Você não tem permissão para excluir este comentário.');
+            return;
+        }
         // First, delete related records from comment_reactions
         const { error: reactionsError } = await createSupabaseClient
             .from('comment_reactions')

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Pencil, Check, Cog, X, MessageCircle } from "lucide-react";
+import { deleteReaction } from '@/utils/reactionUtils';
 
 const CommentListItem: React.FC<CommentListItemProps> = ({
   pin,
@@ -23,7 +24,9 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   setReplyText,
   toggleReplies,
   handleReplyKeyPressLocal,
-  currentUserId // Add currentUserId prop
+  currentUserId, // Add currentUserId prop
+  session, // Adicionar sessão para verificação de permissões
+  loadComments // Adicionar função para recarregar comentários
 }) => {
   // State for editing reply ID
   const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
@@ -85,8 +88,11 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   };
 
   const handleDeleteReply = async (replyId: string) => {
-    console.log("Deleting reply:", replyId);
-    // Add actual delete logic here (e.g., call API/Supabase function)
+    try {
+      await deleteReaction(replyId, session, loadComments);
+    } catch (error) {
+      console.error('Erro ao excluir resposta:', error);
+    }
   };
 
   const handleCancelEditReply = () => {
@@ -135,12 +141,12 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         </div>
         <div id="novadiv" className='!min-w-4 flex justify-between items-center align-middle ml-auto'>
           {(() => {
-            const hasPermission = permissions[pin.id];
-            return hasPermission && (
+            const canDelete = permissions[pin.id]?.canDelete; // Corrigido para usar pin.id
+            return canDelete && (
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => CommentDelete(pin.id)}
+                onClick={() => handleDeleteReply(reply.id)}
                 className="!h-4 !w-4 text-acpreto hover:text-acvermelho"
               >
                 <X className="" />
@@ -200,7 +206,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
           </Button>
         </div>
         <div className="flex items-center">
-          {permissions[pin.id] && !editingPinId && (
+          {permissions[pin.id]?.canEdit && !editingPinId && (
             <Button
               variant="ghost"
               size="icon"
@@ -210,7 +216,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
               <Pencil className="w-4 h-4" />
             </Button>
           )}
-          {permissions[pin.id] && (
+          {permissions[pin.id]?.canChangeStatus && (
             <Button
               variant="ghost"
               size="icon"
@@ -278,8 +284,9 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                       // Reply View Area
                       <div className="flex justify-between items-start" id={`reply-content-${reaction.id}`}>
                         <div className="text-actextocinza break-all pr-2">{reaction.reaction_type}</div>
-                        {hasReplyPermission && (
-                          <div className="flex items-center space-x-4 pr-3">
+                        <div className="flex items-center space-x-4 pr-3">
+                          {/* Apenas o autor da resposta pode editar */}
+                          {hasReplyPermission && (
                             <Button
                               variant="ghost"
                               size="icon"
@@ -288,16 +295,19 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
                             >
                               <Pencil className="w-3 h-3" />
                             </Button>
+                          )}
+                          {/* Exibir apenas se tiver permissão */}
+                          {permissions[reaction.id]?.canDelete && (
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleDeleteReply(reaction.id)} // Placeholder
+                              onClick={() => handleDeleteReply(reaction.id)}
                               className="!h-4 !w-4 hover:text-red-500"
                             >
                               <X className="w-3 h-3" />
                             </Button>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
