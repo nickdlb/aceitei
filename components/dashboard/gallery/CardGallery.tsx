@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Card from './Card';
-import OrdenacaoFiltro from './OrdenacaoFiltro';
 import ImageProps from '@/types/ImageProps';
 import CardGalleryProps from '@/types/CardGalleryProps';
 

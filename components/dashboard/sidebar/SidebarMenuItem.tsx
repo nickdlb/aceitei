@@ -26,7 +26,7 @@ const SidebarMenuItem = ({ icon: Icon, label, href, badge, onClick }: SidebarMen
       <div className='flex gap-3'>
         {href ? (
           <Link href={href} className="flex items-center gap-3 w-full">
-            <Icon className="w-5 h-5 group-hover:text-acazul" />
+            <Icon className={`w-5 h-5 group-hover:text-acazul ${isActive ? 'text-acazul' : 'hover:bg-acbg'}`} />
             <span>{label}</span>
             {badge && (
               <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">
