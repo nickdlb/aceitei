@@ -3,9 +3,8 @@ import { useAuth } from '@/components/common/auth/AuthProvider';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/ui/avatar';
-import { Toggle } from '@/components/common/ui/toggleDarkmode';
 
-export const UserProfileSidebar = () => {
+export const UserProfile = () => {
   const { session } = useAuth();
   const [userName, setUserName] = useState('Usuário Anônimo');
   const [userPhoto, setUserPhoto] = useState('');
@@ -35,7 +34,7 @@ export const UserProfileSidebar = () => {
   }, [session]);
 
   return (
-    <div className="p-4 bg-acbgbranco">
+    <div className="p-4">
       <div className="flex items-center gap-2">
         {userPhoto ? (
           <Avatar className="w-8 h-8">
@@ -47,9 +46,12 @@ export const UserProfileSidebar = () => {
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
         )}
-        <div className="flex items-center justify-between flex-1">
+        <div className="flex flex-col">
           <span className="text-actextocinza font-medium">
             {userName}
+          </span>
+          <span className='text-xs'>
+            Seja Bem Vindo ao Aceitei
           </span>
         </div>
       </div>
@@ -57,4 +59,4 @@ export const UserProfileSidebar = () => {
   );
 };
 
-export default UserProfileSidebar;
+export default UserProfile;

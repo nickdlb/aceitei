@@ -1,5 +1,5 @@
 
-import UserProfileSidebar from '@/components/dashboard/sidebar/UserProfileSidebar';
+import UserProfileSidebar from '@/components/dashboard/sidebar/UserProfile';
 import { CommentSidebarProps } from '@/types/CommentsProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';

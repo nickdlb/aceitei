@@ -1,79 +1,36 @@
-import { Search, Bell } from 'lucide-react';
 import HeaderProps from '@/types/HeaderProps';
-import { Button } from '@/components/common/ui/button';
-import { Input } from '@/components/common/ui/input';
 import BotaoPopupUpload from './BotaoPopupUpload';
-import UserProfileSidebar from '../sidebar/UserProfileSidebar';
+import UserProfile from '../sidebar/UserProfile';
 import { ToggleDarkModeAnimation } from '../../common/ui/toggleDarkmode';
+import { totalNotifications } from '@/utils/notificationsData';
+import NotificationsBell from '@/components/common/NotificationsBell';
 
-interface NotificationsBellProps {
+interface HeaderPropsWithNotifications extends HeaderProps {
   totalNotifications: number;
 }
 
-const NotificationsBell: React.FC<NotificationsBellProps> = ({ totalNotifications }) => {
-  return (
-    <div className="ml-3 relative w-8 h-8 flex items-center justify-center hover:bg-acbg rounded-full">
-      <Bell className="w-4 h-4 text-actextocinza" />
-      {totalNotifications > 0 && (
-        <div className="animate-[pulse_1s_ease-in-out_3] absolute top-0 right-0 w-4 h-4 bg-acazul rounded-full text-acbrancohover text-xs flex items-center justify-center">{totalNotifications}</div>
-      )}
-    </div>
-  );
-};
-
-interface SearchCardProps {
-  showSearchForm: boolean;
-  setShowSearchForm: (show: boolean) => void;
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-}
-
-const SearchCard: React.FC<SearchCardProps> = ({ showSearchForm, setShowSearchForm, searchTerm, setSearchTerm }) => {
-  return (
-    <div className="flex items-center">
-      <Button
-        onClick={() => setShowSearchForm(!showSearchForm)}
-        variant="ghost"
-        size="icon"
-        className="text-acpreto p-2 rounded-md  focus:outline-none"
-      >
-        <Search className="h-6 w-6" />
-      </Button>
-      {showSearchForm && (
-        <Input
-          type="text"
-          placeholder="Pesquisar..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-64 ml-2 !ring-0 border-none leading-8"
-        />
-      )}
-    </div>
-  );
-};
-
-const Header: React.FC<HeaderProps> = ({
+const Header: React.FC<HeaderPropsWithNotifications> = ({
   showSearchForm,
   setShowSearchForm,
   searchTerm,
   setSearchTerm,
   sortOrder,
   handleSort,
-  totalNotifications,
-  refreshImages
+  refreshImages,
+  totalNotifications
 }) => {
   return (
-    <div className="bg-acbgbranco px-4 py-2 w-full flex items-center justify-between gap-4 h-16">
+    <div className="bg-acbgbranco px-6 py-2 w-full flex items-center justify-between gap-4 h-18">
       <div className='flex items-center gap-4'>
-        <NotificationsBell totalNotifications={totalNotifications} />
-        <SearchCard showSearchForm={showSearchForm}
-          setShowSearchForm={setShowSearchForm}
-          searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+        <span className='font-semibold'>Projetos Recentes</span>
       </div>
       <div className='flex items-center gap-4'>
-      <BotaoPopupUpload refreshImages={refreshImages} />
+        <NotificationsBell totalNotifications={totalNotifications} />
+        <BotaoPopupUpload refreshImages={refreshImages} />
         <ToggleDarkModeAnimation />
-        <UserProfileSidebar/>
+        <div className="border-l-[1.5px] border-acbg">        
+          <UserProfile/>
+        </div>
       </div>
     </div>
   );

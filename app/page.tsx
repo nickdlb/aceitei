@@ -119,7 +119,14 @@ const AppContent = () => {
                     totalNotifications={totalNotifications}
                 />
                 <main className="flex flex-col p-6 gap-4">
-                    <ProjectHeader sortOrder={sortOrder} handleSort={handleSort} />
+                    <ProjectHeader
+                        sortOrder={sortOrder}
+                        handleSort={handleSort}
+                        showSearchForm={showSearchForm}
+                        setShowSearchForm={setShowSearchForm}
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                    />
                     <CardGallery
                         isLoading={isLoading || imagesLoading}
                         images={filteredImages}
