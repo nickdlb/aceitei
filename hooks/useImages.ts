@@ -16,6 +16,7 @@ interface ProcessedDocument {
     title: string;
     user_id: string;
     notifications: number;
+    type: 'imagem' | 'site'; // Add type property
 }
 
 export const useImages = (sortOrder: string) => {
@@ -71,62 +72,96 @@ export const useImages = (sortOrder: string) => {
         try {
             setLoading(true);
 
-            const { data: documents, error: documentsError } = await createSupabaseClient
+            // 1. Fetch basic documents
+            const { data: basicDocuments, error: documentsError } = await createSupabaseClient
                 .from('documents')
-                .select(`
-                    id,
-                    title,
-                    created_at,
-                    user_id,
-                    pages!pages_document_id_fkey (
-                        id,
-                        image_url,
-                        imageTitle,
-                        page_number,
-                        comments!comments_page_id_fkey (
-                            status
-                        )
-                    )
-                `)
+                .select('id, title, created_at, user_id, type')
                 .eq('user_id', session.user.id)
-                .eq('pages.page_number', 1)
                 .order('created_at', { ascending: false });
 
             if (documentsError) {
-                console.error('Error fetching documents:', documentsError);
+                console.error('Error fetching basic documents:', documentsError);
+                setImages([]); // Clear images on error
+                setTotalNotifications(0);
                 return;
             }
 
-            const documentsWithNewComments = await Promise.all(documents?.map(async doc => {
-                const firstPage = doc.pages[0];
-                if (!firstPage) return null;
+            if (!basicDocuments) {
+                setImages([]);
+                setTotalNotifications(0);
+                return;
+            }
 
-                const comments = firstPage.comments || [];
-                const activeCount = comments.filter(comment => comment.status === 'ativo').length;
-                const resolvedCount = comments.filter(comment => comment.status === 'resolvido').length;
+            // 2. Fetch related data and combine
+            const processedDocumentsPromises = basicDocuments.map(async (doc) => {
+                // Fetch first page
+                const { data: pageData, error: pageError } = await createSupabaseClient
+                    .from('pages')
+                    .select('id, image_url, imageTitle')
+                    .eq('document_id', doc.id)
+                    .eq('page_number', 1)
+                    .single(); // Assuming only one page with page_number 1 per document
+
+                if (pageError || !pageData) {
+                    console.warn(`Error or no page found for document ${doc.id}:`, pageError);
+                    // Decide how to handle this - maybe return null or a default structure
+                    return null;
+                }
+
+                // Fetch comment counts for the page
+                const { data: commentsData, error: commentsError, count: commentCount } = await createSupabaseClient
+                    .from('comments')
+                    .select('status', { count: 'exact', head: true }) // Use head:true for count only
+                    .eq('page_id', pageData.id);
+
+                let activeCount = 0;
+                let resolvedCount = 0;
+                if (!commentsError && commentCount !== null) {
+                     // Need separate queries for counts by status if head:true doesn't work as expected
+                     const { count: activeC, error: activeE } = await createSupabaseClient
+                        .from('comments')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('page_id', pageData.id)
+                        .eq('status', 'ativo');
+                     activeCount = activeE ? 0 : activeC ?? 0;
+
+                     const { count: resolvedC, error: resolvedE } = await createSupabaseClient
+                        .from('comments')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('page_id', pageData.id)
+                        .eq('status', 'resolvido');
+                     resolvedCount = resolvedE ? 0 : resolvedC ?? 0;
+                } else if (commentsError) {
+                    console.warn(`Error fetching comment counts for page ${pageData.id}:`, commentsError);
+                }
+
+
+                // Get new comment count
                 const newCommentCount = await getNewCommentCount(doc.id);
 
                 return {
                     id: doc.id,
                     document_id: doc.id,
-                    image_url: firstPage.image_url,
-                    imageTitle: firstPage.imageTitle || doc.title || 'Sem título',
+                    image_url: pageData.image_url,
+                    imageTitle: pageData.imageTitle || doc.title || 'Sem título',
                     created_at: doc.created_at,
-                    page_id: firstPage.id,
+                    page_id: pageData.id,
                     active_comments: activeCount,
                     resolved_comments: resolvedCount,
                     title: doc.title,
                     user_id: doc.user_id,
-                    notifications: newCommentCount
+                    notifications: newCommentCount,
+                    type: doc.type
                 };
-            }));
+            });
 
-            const processedDocuments = documentsWithNewComments?.filter((doc): doc is ProcessedDocument => doc !== null) ?? [];
+            const resolvedDocuments = await Promise.all(processedDocumentsPromises);
+            const validProcessedDocuments = resolvedDocuments.filter((doc): doc is ProcessedDocument => doc !== null);
 
-            const total = processedDocuments.reduce((sum, doc) => sum + doc.notifications, 0);
+            const total = validProcessedDocuments.reduce((sum, doc) => sum + doc.notifications, 0);
             setTotalNotifications(total);
 
-            let sortedDocuments = [...processedDocuments];
+            let sortedDocuments = [...validProcessedDocuments]; // Use the correctly processed documents
 
             switch (sortOrder) {
                 case 'title':

@@ -14,4 +14,5 @@ export interface DocumentProps {
     title: any;
     created_at: any;
     user_id: any;
+    type: 'imagem' | 'site'; // Add the type property
 }

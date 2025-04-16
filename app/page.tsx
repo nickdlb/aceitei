@@ -18,6 +18,7 @@ const AppContent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [sortOrder, setSortOrder] = useState('date');
     const [searchTerm, setSearchTerm] = useState('');
+    const [activeFilter, setActiveFilter] = useState<string>('todos'); // <-- Add state here
     const [showSearchForm, setShowSearchForm] = useState(false);
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [initialWidthSet, setInitialWidthSet] = useState(false);
@@ -25,9 +26,16 @@ const AppContent = () => {
 
     const { images, loading: imagesLoading, totalNotifications, refreshImages } = useImages(sortOrder);
 
-    const filteredImages = images.filter(image =>
-        image.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Update filtering logic
+    // Update filtering logic using image.type directly from ProcessedDocument
+    const filteredImages = images.filter(image => {
+        const matchesSearchTerm = image.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFilter = activeFilter === 'todos' ||
+                              (activeFilter === 'imagens' && image.type === 'imagem') ||
+                              (activeFilter === 'sites' && image.type === 'site');
+        return matchesSearchTerm && matchesFilter;
+    });
+
 
     const handleCardDeleteWrapper = async (id: string, imageUrl?: string) => {
         await deleteCard(id, imageUrl);
@@ -126,6 +134,8 @@ const AppContent = () => {
                         setShowSearchForm={setShowSearchForm}
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
+                        activeFilter={activeFilter} // <-- Pass prop
+                        setActiveFilter={setActiveFilter} // <-- Pass prop
                     />
                     <CardGallery
                         isLoading={isLoading || imagesLoading}

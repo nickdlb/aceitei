@@ -10,10 +10,22 @@ interface ProjectHeaderProps {
     setShowSearchForm: (show: boolean) => void;
     searchTerm: string;
     setSearchTerm: (term: string) => void;
+    // Add props for filter state management
+    activeFilter: string;
+    setActiveFilter: (filter: string) => void;
 }
 
-const ProjectHeader: React.FC<ProjectHeaderProps> = ({ sortOrder, handleSort, showSearchForm, setShowSearchForm, searchTerm, setSearchTerm }) => {
-    const [activeFilter, setActiveFilter] = useState<string>('todos');
+const ProjectHeader: React.FC<ProjectHeaderProps> = ({
+    sortOrder,
+    handleSort,
+    showSearchForm,
+    setShowSearchForm,
+    searchTerm,
+    setSearchTerm,
+    activeFilter, // Receive prop
+    setActiveFilter // Receive prop
+}) => {
+    // Remove local state: const [activeFilter, setActiveFilter] = useState<string>('todos');
 
     return (
         <div className="flex items-center justify-between gap-4">
