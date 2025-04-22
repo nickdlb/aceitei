@@ -26,8 +26,6 @@ const AppContent = () => {
 
     const { images, loading: imagesLoading, totalNotifications, refreshImages } = useImages(sortOrder);
 
-    // Update filtering logic
-    // Update filtering logic using image.type directly from ProcessedDocument
     const filteredImages = images.filter(image => {
         const matchesSearchTerm = image.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = activeFilter === 'todos' ||
