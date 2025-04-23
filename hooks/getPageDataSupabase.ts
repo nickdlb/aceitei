@@ -3,7 +3,7 @@ import { createSupabaseClient } from '@/utils/supabaseClient';
 import { type Page as DocumentPage } from '@/types/DocumentProps';
 import { useRouter } from 'next/navigation';
 
-export function usePageData(pageId: string) {
+export function getPageDataSupabase(pageId: string) {
     const [loading, setLoading] = useState(true);
     const [pageData, setPageData] = useState<DocumentPage | null>(null);
     const [pages, setPages] = useState<Array<{

@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 import { usePins } from '@/hooks/usePins';
-import { usePageData } from '@/hooks/usePageData';
+import { getPageDataSupabase } from '@/hooks/getPageDataSupabase';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { createSupabaseClient } from '@/utils/supabaseClient';
@@ -14,7 +14,7 @@ import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
-import PageLayout from '@/components/common/layouts/PageLayout';
+import PageLayout from '@/components/comment/CommentPageLayout';
 
 export default function Page() {
     const params = useParams();
@@ -22,7 +22,7 @@ export default function Page() {
     const { session } = useAuth();
     const imageRef = useRef<HTMLImageElement>(null);
     const [isPagesOpen, setIsPagesOpen] = useState(true);
-    const { loading, pageData, pages } = usePageData(pageId);
+    const { loading, pageData, pages } = getPageDataSupabase(pageId);
     const router = useRouter();
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
