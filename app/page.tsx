@@ -124,7 +124,7 @@ const AppContent = () => {
                     refreshImages={refreshImages}
                     totalNotifications={totalNotifications}
                 />
-                <main className="flex flex-col p-6 gap-4">
+                <main className="flex flex-col p-6 gap-4 overflow-y-auto">
                     <ProjectHeader
                         sortOrder={sortOrder}
                         handleSort={handleSort}
