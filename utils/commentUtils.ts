@@ -18,7 +18,6 @@ export const createComment = async (
     if (!session?.user?.id || !pageId) return;
 
     try {
-
         if (statusFilter === 'resolvido') {
             setStatusFilter('ativo');
         }
@@ -40,7 +39,21 @@ export const createComment = async (
             return;
         }
 
-        const pin_Number = pins.length + 1;
+        const { data: existingComments, error: fetchError } = await createSupabaseClient
+            .from('comments')
+            .select('pin_number')
+            .eq('page_id', pageId)
+
+        if (fetchError) {
+            console.error('Error fetching existing comments:', fetchError);
+            return;
+        }
+
+        // Find the maximum pin_number value
+        const maxPinNumber = existingComments.reduce((max, comment) => Math.max(max, comment.pin_number), 0);
+
+        // Increment the maximum value by 1
+        const pin_Number = maxPinNumber + 1;
 
         const { data: newPinData, error } = await createSupabaseClient
             .from('comments')
@@ -183,12 +196,6 @@ export const changeCommentStatus = async (
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
         const updateData: any = { status: newStatus };
 
-        if (newStatus === 'resolvido') {
-            updateData.closed_at = formatISO(new Date());
-        } else {
-            updateData.closed_at = null; // Set to null if status is changed back to active
-        }
-
         const { error } = await createSupabaseClient
             .from('comments')
             .update(updateData)
@@ -314,10 +321,6 @@ export const deleteComment = async (
         setPins(prevPins => {
             return prevPins
                 .filter(pin => pin.id !== pinId)
-                .map(pin => ({
-                    ...pin,
-                    num: pin.num > deletedNumber ? pin.num - 1 : pin.num
-                }));
         });
 
         setComments(prev => {
@@ -329,22 +332,8 @@ export const deleteComment = async (
         setEditingPinId(null);
         setRefreshKey(prev => prev + 1);
 
-        const updatedPins = pins.filter(pin => pin.id !== pinId);
-        for (const pin of updatedPins) {
-            if (pin.num > deletedNumber) {
-                try {
-                    const { error } = await createSupabaseClient
-                        .from('comments')
-                        .update({ pin_number: pin.num - 1 })
-                        .eq('id', pin.id);
-
-                    if (error) {
-                        console.error("Erro ao atualizar número do pin:", error);
-                    }
-                } catch (updateError) {
-                    console.error("Erro inesperado ao atualizar número do pin:", updateError);
-                }
-            }
+        if (pins.length === 1) {
+            setPins([]);
         }
     } catch (error) {
         console.error("Erro ao processar exclusão do pin:", error);
