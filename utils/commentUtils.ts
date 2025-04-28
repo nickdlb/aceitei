@@ -1,5 +1,6 @@
 import PinProps from '@/types/PinProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
+import { formatISO } from 'date-fns';
 
 export const createComment = async (
     xPercent: number,
@@ -180,10 +181,17 @@ export const changeCommentStatus = async (
         }
 
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
+        const updateData: any = { status: newStatus };
+
+        if (newStatus === 'resolvido') {
+            updateData.closed_at = formatISO(new Date());
+        } else {
+            updateData.closed_at = null; // Set to null if status is changed back to active
+        }
 
         const { error } = await createSupabaseClient
             .from('comments')
-            .update({ status: newStatus })
+            .update(updateData)
             .eq('id', pinId);
 
         if (error) throw error;
