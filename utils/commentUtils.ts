@@ -1,4 +1,4 @@
-import PinProps from '@/types/PinProps';
+import { PinProps } from '@/types';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { formatISO } from 'date-fns';
 

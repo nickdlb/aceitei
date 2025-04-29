@@ -1,4 +1,4 @@
-export default interface MultipleUploadModalProps {
+export interface MultipleUploadModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSeparate: () => void;

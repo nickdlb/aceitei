@@ -9,6 +9,18 @@ interface PageContextProps {
   pages: any[];
   currentTitle: string;
   handleTitleUpdate: (title: string) => void;
+  documentData: DocumentDataProps;
+}
+
+interface DocumentDataProps {
+  created_at: string;
+  id: string;
+  last_acessed_at: string;
+  status: string;
+  title: string;
+  type: string;
+  url: string;
+  user_id: string;
 }
 
 const PageContext = createContext<PageContextProps | undefined>(undefined);

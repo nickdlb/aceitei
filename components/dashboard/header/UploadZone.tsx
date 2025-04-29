@@ -5,7 +5,7 @@ import { useAuth } from '../../common/auth/AuthProvider';
 import { UploadCloud } from 'lucide-react';
 import MultipleUploadModal from './MultipleUploadModal';
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import UploadZoneProps from '@/types/UploadZoneProps';
+import { UploadZoneProps } from '@/types';
 
 export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
   const { session } = useAuth();

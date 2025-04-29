@@ -1,20 +1,29 @@
+'use client';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Edit, MessageSquare, CheckCircle } from 'lucide-react';
-import CardContentProps from '@/types/CardContentProps';
 import { Button } from '@/components/common/ui/button';
 import { Input } from '@/components/common/ui/input';
+import { useCardContext } from '@/contexts/CardContext';
+
+interface CardContentProps {
+  title: string;
+  isEditing: boolean;
+  setTitle: (title: string) => void;
+  handleTitleEdit: () => void;
+  setIsEditing: (editing: boolean) => void;
+}
 
 export const CardContent = ({
   title,
-  created_at,
-  active_comments,
-  resolved_comments,
   isEditing,
   setTitle,
   handleTitleEdit,
   setIsEditing,
 }: CardContentProps) => {
+  const { image } = useCardContext();
+
   return (
     <div className="pb-4 pt-2 px-4">
       <div className="!p-0 flex gap-1 flex-col">
@@ -54,17 +63,17 @@ export const CardContent = ({
           <div className="flex items-center">
             <MessageSquare className="w-4 h-4 text-actextocinza" />
             <span className="text-xs text-actextocinza ml-1">
-              {active_comments || 0}
+              {image.active_comments || 0}
             </span>
           </div>
           <div className="flex items-center">
             <CheckCircle className="w-4 h-4 text-actextocinza" />
             <span className="text-xs text-actextocinza ml-1">
-              {resolved_comments || 0}
+              {image.resolved_comments || 0}
             </span>
           </div>
           <p className="text-xs text-actextocinza">
-            {format(new Date(created_at), "d'/'MM'/'yyyy", { locale: ptBR })}
+            {format(new Date(image.created_at), "d'/'MM'/'yyyy", { locale: ptBR })}
           </p>
         </div>
       </div>

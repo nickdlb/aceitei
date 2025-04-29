@@ -19,6 +19,13 @@ interface ProcessedDocument {
     type: 'imagem' | 'site'; // Add type property
 }
 
+interface UseImagesResult {
+    images: ProcessedDocument[];
+    loading: boolean;
+    refreshImages: () => Promise<void>;
+    totalNotifications: number;
+  }  
+
 export const useImages = (sortOrder: string) => {
     const [images, setImages] = useState<ProcessedDocument[]>([]);
     const [loading, setLoading] = useState(true);
@@ -185,5 +192,5 @@ export const useImages = (sortOrder: string) => {
         refreshImages();
     }, [refreshImages]);
 
-    return { images, loading, refreshImages, totalNotifications };
+    return { images, loading, refreshImages: refreshImages as () => Promise<void>, totalNotifications }
 };

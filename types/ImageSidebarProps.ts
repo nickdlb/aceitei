@@ -1,4 +1,4 @@
-export default interface ImageSidebarProps {
+export interface ImageSidebarProps {
     pages: Array<{
         id: string;
         image_url: string;

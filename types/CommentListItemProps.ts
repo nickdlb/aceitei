@@ -1,7 +1,7 @@
-import PinProps from './PinProps';
+import { PinProps } from './PinProps';
 import { Session } from '@supabase/supabase-js';
 
-export default interface CommentListItemProps {
+export interface CommentListItemProps {
   pin: PinProps;
   localComments: { [key: string]: string };
   editingPinId: string | null;

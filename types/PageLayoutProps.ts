@@ -1,4 +1,4 @@
-export default interface PageLayoutProps {
+export interface PageLayoutProps {
   commentBarProps: any;
   imageAreaProps: any;
   isPagesOpen: boolean;

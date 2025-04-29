@@ -1,6 +1,5 @@
 'use client';
-import ProfilePhotoProps from '@/types/ProfilePhotoProps';
-
+import {ProfilePhotoProps} from '@/types';
 import React, { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/ui/avatar';

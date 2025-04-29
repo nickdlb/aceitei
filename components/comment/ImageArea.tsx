@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import ImagePin from './ImagePin';
-import { ImageAreaProps } from '@/types/CommentsProps';
+import { ImageAreaProps } from '@/types';
 import ImageAreaHeader from './ImageAreaHeader';
 
 interface Props extends ImageAreaProps {

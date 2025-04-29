@@ -1,3 +1,3 @@
-export default interface UploadZoneProps {
+export interface UploadZoneProps {
     onUploadSuccess: (data: any) => void;
 }

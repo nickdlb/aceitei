@@ -1,4 +1,4 @@
-export default interface UserInfoProps {
+export interface UserInfoProps {
   userData: {
     nome: string;
     email: string;

@@ -1,83 +1,80 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useImageCard } from '@/hooks/useImageCard';
 import { CardHeader } from './CardHeader';
 import { CardContent } from './CardContent';
-import { createSupabaseClient } from '@/utils/supabaseClient';
-import { useEffect, useState } from 'react';
-import ImageCardProps from '@/types/CardProps';
-import ImageProps from '@/types/ImageProps';
+import { CardProvider } from '@/contexts/CardContext';
+import { ImageCardProps } from '@/types';
+import { ImageProps } from '@/types';
 
 export default function ImageCard({ image, onDelete }: ImageCardProps) {
-    const [firstPageId, setFirstPageId] = useState<string | null>(null);
-    const {
-        isDeleting,
-        imageError,
-        showShareLink,
-        isEditing,
-        title,
-        imageUrl,
-        handleShare,
-        handleTitleEdit,
-        handleDelete,
-        setTitle,
-        setIsEditing
-    } = useImageCard(image as ImageProps, onDelete);
+  const [firstPageId, setFirstPageId] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchFirstPageId = async () => {
-            const { data, error } = await createSupabaseClient
-                .from('pages')
-                .select('id')
-                .eq('document_id', image.document_id)
-                .order('page_number', { ascending: true })
-                .limit(1)
-                .single();
+  const {
+    isDeleting,
+    imageError,
+    showShareLink,
+    isEditing,
+    title,
+    imageUrl,
+    handleShare,
+    handleTitleEdit,
+    handleDelete,
+    setTitle,
+    setIsEditing,
+  } = useImageCard(image, onDelete); // ✅ onDelete agora com a assinatura correta
 
-            if (data) {
-                setFirstPageId(data.id);
-            }
-        };
+  useEffect(() => {
+    const fetchFirstPageId = async () => {
+      const { data } = await createSupabaseClient
+        .from('pages')
+        .select('id')
+        .eq('document_id', image.document_id)
+        .order('page_number', { ascending: true })
+        .limit(1)
+        .single();
 
-        fetchFirstPageId();
-    }, [image.document_id]);
+      if (data) {
+        setFirstPageId(data.id);
+      }
+    };
 
-    if (!imageUrl || imageError) {
-        return (
-            <div className="bg-acbg rounded-lg p-4 text-center">
-                <p className="text-actextocinza">Imagem não disponível</p>
-            </div>
-        );
-    }
+    fetchFirstPageId();
+  }, [image.document_id]);
 
+  if (!imageUrl || imageError) {
     return (
-        <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
-            <CardHeader
-                imageUrl={imageUrl}
-                imageTitle={image.imageTitle}
-                pageId={firstPageId || image.document_id}
-                handleShare={handleShare}
-                handleDelete={handleDelete}
-                isDeleting={isDeleting}
-                imageId={image.id}
-                notifications={image.notifications}
-            />
-
-            <CardContent
-                title={title}
-                created_at={image.created_at}
-                active_comments={image.active_comments}
-                resolved_comments={image.resolved_comments}
-                isEditing={isEditing}
-                setTitle={setTitle}
-                handleTitleEdit={handleTitleEdit}
-                setIsEditing={setIsEditing}
-                notifications={image.notifications}
-            />
-
-            {showShareLink && (
-                <div className="absolute bottom-0 left-0 right-0 bg-acbgbranco p-2 text-xs text-center">
-                    Link copiado!
-                </div>
-            )}
-        </div>
+      <div className="bg-acbg rounded-lg p-4 text-center">
+        <p className="text-actextocinza">Imagem não disponível</p>
+      </div>
     );
+  }
+
+  return (
+    <CardProvider value={{ image, onDelete }}>
+      <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
+        <CardHeader
+          imageUrl={imageUrl}
+          pageId={firstPageId || image.document_id}
+          isDeleting={isDeleting}
+          handleShare={handleShare}
+          handleDelete={handleDelete}
+        />
+        <CardContent
+          title={title}
+          isEditing={isEditing}
+          setTitle={setTitle}
+          handleTitleEdit={handleTitleEdit}
+          setIsEditing={setIsEditing}
+        />
+        {showShareLink && (
+          <div className="absolute bottom-0 left-0 right-0 bg-acbgbranco p-2 text-xs text-center">
+            Link copiado!
+          </div>
+        )}
+      </div>
+    </CardProvider>
+  );
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import LoginFormProps from '@/types/LoginFormProps';
+import { LoginFormProps } from '@/types';
 import { Eye, EyeOff } from 'lucide-react';
 
 const LoginForm: React.FC<LoginFormProps> = ({

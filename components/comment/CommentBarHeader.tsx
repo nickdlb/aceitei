@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import CommentHeaderProps from '@/types/CommentHeaderProps';
+import {CommentHeaderProps} from '@/types/CommentHeaderProps';
 
 const CommentHeader: React.FC<CommentHeaderProps> = ({ totalComments }) => {
   return (

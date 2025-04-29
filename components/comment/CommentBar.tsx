@@ -9,6 +9,8 @@ import { createReply } from '@/utils/replyUtils';
 import CommentFilter from './CommentBarFilter';
 import CommentHeader from './CommentBarHeader';
 import CommentListItem from './CommentBarListItem';
+import { usePageContext } from '@/contexts/PageContext';
+
 
 const CommentBar = ({
   pins,
@@ -25,7 +27,7 @@ const CommentBar = ({
 }: CommentSidebarProps) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [localComments, setLocalComments] = useState<{ [key: string]: string }>(comments || {});
-
+  const { documentData } = usePageContext();
   const [permissions, setPermissions] = useState<{ [key: string]: { canEdit: boolean, canDelete: boolean, canChangeStatus: boolean } }>({});
   const [replyText, setReplyText] = useState('');
   const [showReplies, setShowReplies] = useState<{ [key: string]: boolean }>({});

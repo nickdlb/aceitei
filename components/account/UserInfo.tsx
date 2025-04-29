@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/common/auth/AuthProvider';
-import UserInfoProps from '@/types/UserInfoProps';
+import {UserInfoProps} from '@/types';
 import { Input } from '@/components/common/ui/input';
 import { Button } from '@/components/common/ui/button';
 

@@ -1,4 +1,4 @@
-export default interface PinProps {
+export interface PinProps {
     id: string;
     x: number;
     y: number;
@@ -8,11 +8,11 @@ export default interface PinProps {
     status: 'ativo' | 'resolvido';
     user_id: string;
     page_id: string;
-    reactions?: CommentReaction[];
+    reactions?: CommentReactionPin[];
     isEditing?: boolean;
 }
 
-export interface CommentReaction {
+export interface CommentReactionPin {
     id: string;
     comment_id: string;
     user_id: string;

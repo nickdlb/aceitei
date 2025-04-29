@@ -9,7 +9,7 @@ import {
 import { Label } from "@/components/common/ui/label"
 import { Input } from "@/components/common/ui/input"
 import { Button } from "@/components/common/ui/button"
-import AuthPopupProps from '@/types/AuthPopupProps';
+import { AuthPopupProps } from '@/types';
 
 const AuthPopup = ({ isOpen, onClose, onSubmit }: AuthPopupProps) => {
     const [name, setName] = useState('');

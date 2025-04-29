@@ -1,6 +1,6 @@
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { createComment } from '@/utils/commentUtils';
-import PinProps from '@/types/PinProps';
+import { PinProps } from '@/types';
 
 export const handleImageClick = async (
     xPercent: number,

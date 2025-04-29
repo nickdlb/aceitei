@@ -10,6 +10,8 @@ import { deleteCard } from '@/utils/deleteCard';
 import { useAuthChecker } from '@/utils/useAuthChecker';
 import { useRouter } from 'next/navigation';
 import CardGallery from '@/components/dashboard/gallery/CardGallery';
+import { GalleryProvider } from '@/contexts/GalleryContext';
+
 
 const AppContent = () => {
 
@@ -111,40 +113,38 @@ const AppContent = () => {
 
     console.log('[app/page.tsx] Rendering main content');
     return (
-        <div className="flex h-screen bg-acbg overflow-hidden">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-                <Header
-                    showSearchForm={showSearchForm}
-                    setShowSearchForm={setShowSearchForm}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    sortOrder={sortOrder}
-                    handleSort={handleSort}
-                    refreshImages={refreshImages}
-                    totalNotifications={totalNotifications}
-                />
-                <main className="flex flex-col p-6 gap-4 overflow-y-auto">
-                    <ProjectHeader
-                        sortOrder={sortOrder}
-                        handleSort={handleSort}
-                        showSearchForm={showSearchForm}
-                        setShowSearchForm={setShowSearchForm}
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        activeFilter={activeFilter} // <-- Pass prop
-                        setActiveFilter={setActiveFilter} // <-- Pass prop
-                    />
-                    <CardGallery
-                        isLoading={isLoading || imagesLoading}
-                        images={filteredImages}
-                        handleCardDelete={handleCardDeleteWrapper}
-                        sortOrder={sortOrder}
-                        handleSort={handleSort}
-                    />
-                </main>
-            </div>
-        </div>
+        <GalleryProvider
+  value={{
+    sortOrder,
+    setSortOrder,
+    searchTerm,
+    setSearchTerm,
+    activeFilter,
+    setActiveFilter,
+    showSearchForm,
+    setShowSearchForm,
+    isRightSidebarOpen,
+    toggleRightSidebar,
+    refreshImages: async () => {
+        await refreshImages(); // se o refreshImages original já é async
+      },
+    filteredImages,
+    isLoading: isLoading || imagesLoading,
+    handleCardDelete: handleCardDeleteWrapper,
+    totalNotifications,
+  }}
+>
+  <div className="flex h-screen bg-acbg overflow-hidden">
+    <Sidebar />
+    <div className="flex-1 flex flex-col">
+      <Header />
+      <main className="flex flex-col p-6 gap-4 overflow-y-auto">
+        <ProjectHeader />
+        <CardGallery />
+      </main>
+    </div>
+  </div>
+</GalleryProvider>
     );
 };
 

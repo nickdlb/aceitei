@@ -1,4 +1,4 @@
-export default interface LoginFormProps {
+export interface LoginFormProps {
   email: string;
   setEmail: (email: string) => void;
   password: string;

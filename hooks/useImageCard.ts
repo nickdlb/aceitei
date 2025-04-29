@@ -1,13 +1,17 @@
-import { useState } from 'react';
+'use client';
+
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { useImages } from '@/contexts/ImagesContext';
 import { deleteCard } from '@/utils/deleteCard';
 import ImageProps from '@/types/ImageProps';
-import { useEffect } from 'react';
 
-export const useImageCard = (image: ImageProps, onDelete: (id: string) => void) => {
+export const useImageCard = (
+  image: ImageProps,
+  onDelete: (id: string, imageUrl?: string) => Promise<void>
+) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showShareLink, setShowShareLink] = useState(false);
@@ -30,9 +34,7 @@ export const useImageCard = (image: ImageProps, onDelete: (id: string) => void) 
         console.error('Error fetching document title:', error);
         setDocumentTitle('Sem título');
         setTitle('Sem título');
-      }
-
-      if (data) {
+      } else if (data) {
         setDocumentTitle(data.title || 'Sem título');
         setTitle(data.title || 'Sem título');
       }
@@ -56,15 +58,10 @@ export const useImageCard = (image: ImageProps, onDelete: (id: string) => void) 
     if (!title) {
       setTitle('Sem título');
     }
-    try {/*
-      const { error } = await createSupabaseClient
-        .from('pages')
-        .update({ imageTitle: title })
-        .eq('id', image.page_id);
-*/
+    try {
       const { error } = await createSupabaseClient
         .from('documents')
-        .update({ title: title })
+        .update({ title })
         .eq('id', image.document_id);
 
       if (error) throw error;
@@ -78,9 +75,8 @@ export const useImageCard = (image: ImageProps, onDelete: (id: string) => void) 
     setIsDeleting(true);
     try {
       const result = await deleteCard(imageId, image.image_url);
-
       if (result.success) {
-        onDelete(image.id);
+        await onDelete(image.id, image.image_url); // ✅ Correto agora
         await refreshImages();
       } else {
         alert(`Falha ao excluir: ${result.message}`);

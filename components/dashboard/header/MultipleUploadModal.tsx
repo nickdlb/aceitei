@@ -1,5 +1,5 @@
 import { Copy, File } from 'lucide-react';
-import MultipleUploadModalProps from '@/types/MultipleUploadModalProps';
+import { MultipleUploadModalProps } from '@/types';
 import { Button } from '@/components/common/ui/button';
 import {
   Dialog,

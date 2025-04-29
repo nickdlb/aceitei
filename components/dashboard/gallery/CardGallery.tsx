@@ -1,26 +1,28 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import Card from './Card';
-import ImageProps from '@/types/ImageProps';
-import CardGalleryProps from '@/types/CardGalleryProps';
+import { ImageProps } from '@/types';
+import { useGalleryContext } from '@/contexts/GalleryContext';
 
-const CardGallery: React.FC<CardGalleryProps> = ({ images, handleCardDelete, isLoading}) => {
-  const [localImages, setLocalImages] = useState<ImageProps[]>(images);
+const CardGallery: React.FC = () => {
+  const {
+    filteredImages,
+    handleCardDelete,
+    isLoading,
+  } = useGalleryContext();
+
+  const [localImages, setLocalImages] = useState<ImageProps[]>(filteredImages);
 
   useEffect(() => {
-    setLocalImages(images);
-  }, [images]);
+    setLocalImages(filteredImages);
+  }, [filteredImages]);
 
-  const handleLocalCardDelete = async (id: string) => {
-    const imageToDelete = localImages.find((image) => image.id === id);
-    if (imageToDelete) {
-      try {
-        await handleCardDelete(id, imageToDelete.image_url);
-      } finally {
-        setLocalImages((prevImages) =>
-          prevImages.filter((image) => image.id !== id)
-        );
-      }
-    }
+  const handleLocalCardDelete = async (id: string, imageUrl?: string) => {
+    await handleCardDelete(id, imageUrl);
+    setLocalImages((prevImages) =>
+      prevImages.filter((image) => image.id !== id)
+    );
   };
 
   if (isLoading) {

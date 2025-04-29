@@ -1,4 +1,4 @@
-export default interface CardHeaderProps {
+export interface CardHeaderProps {
     imageUrl: string;
     imageTitle: string;
     pageId: string | null;

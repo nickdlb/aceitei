@@ -1,41 +1,43 @@
-import React, { useState } from 'react';
+'use client';
+
+import React from 'react';
 import OrdenacaoFiltro from './OrdenacaoFiltro';
 import SearchCard from '@/components/common/SearchCard';
 import FiltroTipoCard from './FiltroTipoCard';
+import { useGalleryContext } from '@/contexts/GalleryContext';
 
-interface ProjectHeaderProps {
-    sortOrder: string;
-    handleSort: (sortBy: string) => void;
-    showSearchForm: boolean;
-    setShowSearchForm: (show: boolean) => void;
-    searchTerm: string;
-    setSearchTerm: (term: string) => void;
-    // Add props for filter state management
-    activeFilter: string;
-    setActiveFilter: (filter: string) => void;
-}
-
-const ProjectHeader: React.FC<ProjectHeaderProps> = ({
+const ProjectHeader: React.FC = () => {
+  const {
     sortOrder,
-    handleSort,
+    setSortOrder, // ou handleSort, se quiser renomear
     showSearchForm,
     setShowSearchForm,
     searchTerm,
     setSearchTerm,
-    activeFilter, // Receive prop
-    setActiveFilter // Receive prop
-}) => {
-    // Remove local state: const [activeFilter, setActiveFilter] = useState<string>('todos');
+    activeFilter,
+    setActiveFilter
+  } = useGalleryContext();
 
-    return (
-        <div className="flex items-center justify-between gap-4">
-            <FiltroTipoCard activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
-            <div className='flex gap-4'>
-                <OrdenacaoFiltro sortOrder={sortOrder} handleSort={handleSort} />
-                <SearchCard showSearchForm={showSearchForm} setShowSearchForm={setShowSearchForm} searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
-            </div>
-        </div>
-    );
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <FiltroTipoCard
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+      />
+      <div className='flex gap-4'>
+        <OrdenacaoFiltro
+          sortOrder={sortOrder}
+          handleSort={setSortOrder} // ou handleSort, se mantiver esse nome no contexto
+        />
+        <SearchCard
+          showSearchForm={showSearchForm}
+          setShowSearchForm={setShowSearchForm}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default ProjectHeader;

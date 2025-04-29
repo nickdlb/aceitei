@@ -1,5 +1,5 @@
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import PinProps, { CommentReaction } from '@/types/PinProps';
+import { PinProps, CommentReactionPin } from '@/types';
 import { loadCommentsReactions } from './loadCommentsReactions';
 import { Session } from '@supabase/supabase-js';
 
@@ -45,7 +45,7 @@ export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) =
             canEdit: pin.user_id === session?.user?.id,
             canDelete: pin.user_id === session?.user?.id,
             canChangeStatus: true,
-            reactions: pin.reactions?.map((reaction: CommentReaction) => ({
+            reactions: pin.reactions?.map((reaction: CommentReactionPin) => ({
                 ...reaction,
                 canDelete: reaction.user_id === session?.user?.id
             }))

@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 import { usePins } from '@/hooks/usePins';
-import { getPageDataSupabase } from '@/hooks/getPageDataSupabase';
+import { getPageDataSupabase } from '@/hooks/getDataSupabaseCommentPage';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { createSupabaseClient } from '@/utils/supabaseClient';
@@ -20,11 +20,11 @@ import { PageProvider } from '@/contexts/PageContext';
 
 export default function Page() {
     const params = useParams();
-    const pageId = params ? (params.id as string) : "";
+    const documentId = params ? (params.id as string) : "";
     const { session } = useAuth();
     const imageRef = useRef<HTMLImageElement>(null);
     const [isPagesOpen, setIsPagesOpen] = useState(true);
-    const { loading, pageData, pages } = getPageDataSupabase(pageId);
+    const { loading, pageData, pages } = getPageDataSupabase(documentId);
     const router = useRouter();
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -38,12 +38,13 @@ export default function Page() {
     }, [pageData]);
 
     useEffect(() => {
+        if (!pageData?.id) return; 
         const updateDocumentLastAccessed = async () => {
             try {
                 const { data: page, error: pageError } = await createSupabaseClient
                     .from('pages')
                     .select('document_id')
-                    .eq('id', pageId)
+                    .eq('id', pageData?.id ?? '')
                     .single();
 
                 if (pageError) {
@@ -71,13 +72,12 @@ export default function Page() {
         };
 
         updateDocumentLastAccessed();
-    }, [pageId]);
+    }, [pageData?.id ?? '']);
 
     useEffect(() => {
-        console.log('✅ pageId:', pageId);
         console.log('✅ pageData:', pageData);
         console.log('✅ pages:', pages);
-      }, [pageId, pageData, pages]);
+      }, [pageData?.id ?? '', pageData, pages]);
       
 
     const {
@@ -97,9 +97,9 @@ export default function Page() {
         setShowAuthPopup,
         loadComments,
         loadRepliesForPin
-    } = usePins(pageId, session);
+    } = usePins(pageData?.id ?? '', session);
 
-    useRealtimeComments(pageId, loadComments);
+    useRealtimeComments(pageData?.id ?? '', loadComments);
 
     const setPins = (pinsOrUpdater: any) => {
         loadComments();
@@ -127,7 +127,7 @@ export default function Page() {
         await handleImageClickUtil(
             xPercent,
             yPercent,
-            pageId,
+            pageData?.id ?? '',
             pins,
             setPins,
             setComments,
@@ -177,7 +177,7 @@ export default function Page() {
                 const { error } = await createSupabaseClient
                     .from('pages')
                     .update({ imageTitle: newTitle })
-                    .eq('id', pageId);
+                    .eq('id', pageData?.id ?? '');
 
                 if (error) {
                     console.error('Erro ao atualizar o título:', error);
@@ -232,7 +232,7 @@ export default function Page() {
     const imageAreaProps = {
         exibirImagem: imageUrl,
         imageTitle: currentTitle || 'Sem título',
-        imageId: pageId,
+        imageId: pageData?.id ?? '',
         pins: filteredPins,
         handleImageClick: handleImageClickPin,
         draggingPin: draggingPin,
@@ -247,11 +247,20 @@ export default function Page() {
     };
 
     const handleAuthSubmitAnonForm = async (name: string, email: string) => {
-        await authAnonymousComment(name, email, pageId, pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
+        await authAnonymousComment(name, email, pageData?.id ?? '', pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
     };
 
     return (
-        <PageProvider value={{pageId,pageData,pages,currentTitle, handleTitleUpdate}}>
+        <PageProvider value={{pageId: pageData?.id ?? '',pageData,pages,currentTitle, handleTitleUpdate,  documentData: {
+            id: pageData?.documents?.id ?? '',
+            title: pageData?.documents?.title ?? '',
+            created_at: pageData?.documents?.created_at ?? '',
+            user_id: pageData?.documents?.user_id ?? '',
+            last_acessed_at: pageData?.documents?.last_acessed_at ?? '',
+            status: pageData?.documents?.status ?? '',
+            type: pageData?.documents?.type ?? '',
+            url: pageData?.documents?.url ?? '',
+          }}}>
             <PageLayout
                 commentBarProps={commentBarProps}
                 imageAreaProps={imageAreaProps}

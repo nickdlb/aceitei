@@ -1,3 +1,3 @@
-export default interface CommentHeaderProps {
+export  interface CommentHeaderProps {
     totalComments: number;
   }

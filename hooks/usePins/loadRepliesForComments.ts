@@ -1,5 +1,5 @@
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import PinProps from '@/types/PinProps';
+import { PinProps } from '@/types';
 import { Dispatch, SetStateAction } from 'react';
 
 export const loadRepliesForComments = async (pinId: string, setPins: Dispatch<SetStateAction<PinProps[]>>) => {
