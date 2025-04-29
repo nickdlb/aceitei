@@ -6,11 +6,7 @@ import { useRouter } from 'next/navigation';
 export function getPageDataSupabase(pageId: string) {
     const [loading, setLoading] = useState(true);
     const [pageData, setPageData] = useState<DocumentPage | null>(null);
-    const [pages, setPages] = useState<Array<{
-        id: string;
-        image_url: string;
-        page_number: number;
-    }>>([]);
+    const [pages, setPages] = useState<any[]>([]);
     const router = useRouter();
 
     useEffect(() => {
@@ -18,6 +14,7 @@ export function getPageDataSupabase(pageId: string) {
             if (!pageId) return;
 
             try {
+                // Busca o documento pelo pageId (caso ele seja o próprio ID do documento)
                 const { data: document } = await createSupabaseClient
                     .from('documents')
                     .select('id')
@@ -26,6 +23,7 @@ export function getPageDataSupabase(pageId: string) {
 
                 let targetPageId = pageId;
 
+                // Se o ID da URL for de um documento, redireciona para a primeira página
                 if (document) {
                     const { data: firstPage } = await createSupabaseClient
                         .from('pages')
@@ -39,16 +37,12 @@ export function getPageDataSupabase(pageId: string) {
                     }
                 }
 
+                // Busca os dados completos da página, incluindo todos os campos do documento relacionado
                 const { data: page } = await createSupabaseClient
                     .from('pages')
                     .select(`
                         *,
-                        documents!pages_document_id_fkey (
-                            id,
-                            title,
-                            created_at,
-                            user_id
-                        )
+                        documents:documents!pages_document_id_fkey (*)
                     `)
                     .eq('id', targetPageId)
                     .single();
@@ -58,12 +52,17 @@ export function getPageDataSupabase(pageId: string) {
                     return;
                 }
 
+                // Busca todas as páginas do mesmo documento com todos os dados
                 const { data: allPages } = await createSupabaseClient
                     .from('pages')
-                    .select('id, image_url, page_number')
+                    .select(`
+                        *,
+                        documents:documents!pages_document_id_fkey (*)
+                    `)
                     .eq('document_id', page.document_id)
                     .order('page_number');
 
+                // Redireciona se o pageId inicial era do documento
                 if (document && targetPageId !== pageId) {
                     router.replace(`/${targetPageId}`, { scroll: false });
                 }

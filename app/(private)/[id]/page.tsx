@@ -15,6 +15,8 @@ import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
 import PageLayout from '@/components/comment/CommentPageLayout';
+import { PageProvider } from '@/contexts/PageContext';
+
 
 export default function Page() {
     const params = useParams();
@@ -70,6 +72,13 @@ export default function Page() {
 
         updateDocumentLastAccessed();
     }, [pageId]);
+
+    useEffect(() => {
+        console.log('✅ pageId:', pageId);
+        console.log('✅ pageData:', pageData);
+        console.log('✅ pages:', pages);
+      }, [pageId, pageData, pages]);
+      
 
     const {
         pins,
@@ -242,16 +251,16 @@ export default function Page() {
     };
 
     return (
-        <PageLayout
-            commentBarProps={commentBarProps}
-            imageAreaProps={imageAreaProps}
-            pages={pages}
-            pageId={pageId}
-            isPagesOpen={isPagesOpen}
-            showAuthPopup={showAuthPopup}
-            setShowAuthPopup={setShowAuthPopup}
-            handleAuthSubmitAnonForm={handleAuthSubmitAnonForm}
-            handlePageChange={handlePageChange}
-        />
+        <PageProvider value={{pageId,pageData,pages,currentTitle, handleTitleUpdate}}>
+            <PageLayout
+                commentBarProps={commentBarProps}
+                imageAreaProps={imageAreaProps}
+                isPagesOpen={isPagesOpen}
+                showAuthPopup={showAuthPopup}
+                setShowAuthPopup={setShowAuthPopup}
+                handleAuthSubmitAnonForm={handleAuthSubmitAnonForm}
+                handlePageChange={handlePageChange}
+            />
+        </PageProvider>
     );
 }
