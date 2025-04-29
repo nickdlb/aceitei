@@ -1,4 +1,4 @@
-export interface Page {
+export interface DocumentPage {
     id: string;
     document_id: string;
     image_url: string;

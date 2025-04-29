@@ -11,7 +11,7 @@ export type { CommentSidebarProps } from './CommentsProps';
 export type { CommentItemProps } from './CommentsProps';
 export type { ImagePinProps } from './CommentsProps';
 export type { CommentReaction } from './CommentsProps';
-export type { Page } from './DocumentProps.ts'
+export type { DocumentPage } from './DocumentProps.ts'
 export type { ImageProps } from './ImageProps';
 export type { ImageSidebarProps } from './ImageSidebarProps';
 export type { LoginFormProps } from './LoginFormProps';

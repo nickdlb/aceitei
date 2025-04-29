@@ -57,7 +57,6 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
       <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
         <CardHeader
           imageUrl={imageUrl}
-          pageId={firstPageId || image.document_id}
           isDeleting={isDeleting}
           handleShare={handleShare}
           handleDelete={handleDelete}

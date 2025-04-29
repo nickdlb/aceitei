@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import { Page as DocumentPage } from '@/types';
+import { DocumentPage } from '@/types';
 import { useRouter } from 'next/navigation';
 
 export function getPageDataSupabase(documentId: string) {
@@ -14,7 +14,6 @@ export function getPageDataSupabase(documentId: string) {
             if (!documentId) return;
 
             try {
-                // Busca todas as páginas do documento
                 const { data: allPages } = await createSupabaseClient
                     .from('pages')
                     .select(`
@@ -29,10 +28,7 @@ export function getPageDataSupabase(documentId: string) {
                     return;
                 }
 
-                // Define todas as páginas
                 setPages(allPages);
-
-                // Define como pageData a primeira página (page_number = 1)
                 const firstPage = allPages.find(page => page.page_number === 1) || allPages[0];
                 setPageData(firstPage);
 
@@ -46,5 +42,6 @@ export function getPageDataSupabase(documentId: string) {
         loadPage();
     }, [documentId, router]);
 
-    return { loading, pageData, pages };
+    // ✅ Adicione 'setPageData' ao retorno
+    return { loading, pageData, pages, setPageData };
 }

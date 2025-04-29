@@ -2,6 +2,7 @@ import React from 'react';
 import { Download, Pencil, LayoutList } from 'lucide-react';
 import { Button } from "@/components/common/ui/button"
 import { Input } from "@/components/common/ui/input"
+import { usePageContext } from '@/contexts/PageContext';
 
 interface ImageAreaHeaderProps {
   imageTitle: string;
@@ -31,6 +32,9 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   setNewTitle,
   pagesCount
 }) => {
+
+  const { pageData, handleTitleUpdate, pages } = usePageContext();
+  
   const getFileFormatLocal = (url: string | undefined) => {
     if (!url) return '';
     const extension = url.split('.').pop()?.toLowerCase() || '';
@@ -76,7 +80,9 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
             }}
           />
         ) : (
-          <h2 className="text-sm font-medium text-actextocinza">{imageTitle}</h2>
+          <div>
+              <h2 className="text-sm font-medium text-actextocinza">{imageTitle}</h2>
+          </div>
         )}
         <Button
           variant="ghost"

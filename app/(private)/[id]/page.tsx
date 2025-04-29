@@ -16,20 +16,21 @@ import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
 import PageLayout from '@/components/comment/CommentPageLayout';
 import { PageProvider } from '@/contexts/PageContext';
+import type { DocumentPage } from '@/types';
 
 
-export default function Page() {
+export default function Page() { 
     const params = useParams();
     const documentId = params ? (params.id as string) : "";
     const { session } = useAuth();
     const imageRef = useRef<HTMLImageElement>(null);
     const [isPagesOpen, setIsPagesOpen] = useState(true);
-    const { loading, pageData, pages } = getPageDataSupabase(documentId);
+    const { loading, pageData, pages, setPageData } = getPageDataSupabase(documentId);
     const router = useRouter();
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
-
     const [currentTitle, setCurrentTitle] = useState<string>('');
+    const [currentPageData, setCurrentPageData] = useState<DocumentPage | null>(null);      
 
     useEffect(() => {
         if (pageData?.imageTitle) {
@@ -168,8 +169,39 @@ export default function Page() {
     };
 
     const handlePageChange = async (newPageId: string) => {
-        router.push(`/${newPageId}`, { scroll: false });
-    };
+        try {
+          const { data: newPageData, error } = await createSupabaseClient
+            .from('pages')
+            .select(`
+              *,
+              documents:documents!pages_document_id_fkey (
+                id,
+                title,
+                created_at,
+                user_id,
+                last_acessed_at,
+                status,
+                url
+              )
+            `)
+            .eq('id', newPageId)
+            .single();
+      
+          if (error) {
+            console.error('Erro ao buscar nova página:', error.message);
+            return;
+          }
+      
+          if (!newPageData) {
+            console.warn('Nenhuma página encontrada com o ID fornecido.');
+            return;
+          }
+      
+          setPageData(newPageData);
+        } catch (error) {
+          console.error('Erro inesperado ao carregar nova página:', error);
+        }
+      };      
 
     const handleTitleUpdate = async (newTitle: string) => {
         if (pageData) {
