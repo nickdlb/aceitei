@@ -5,16 +5,17 @@ import Image from 'next/image';
 import { Button } from '@/components/common/ui/button';
 import { useState } from 'react';
 import { useCardContext } from '@/contexts/CardContext';
+import { usePageContext } from '@/contexts/PageContext';
 
 interface CardHeaderProps {
-  imageUrl: string;
+  imageUrl?: string;
   isDeleting: boolean;
   handleShare: () => void;
   handleDelete: (imageId: string) => void;
 }
 
 export const CardHeader = ({
-  imageUrl,
+  imageUrl = '/noite-estrelada-comentada.jpg',
   isDeleting,
   handleShare,
   handleDelete,
@@ -24,9 +25,14 @@ export const CardHeader = ({
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    /*
+    if (documentData.type == 'site'){
+      console.log('É um site')
+    }*/
+
     if (isNavigating || !image.document_id) return;
     setIsNavigating(true);
-    window.location.href = `/${image.document_id}`; // ✅ redireciona usando documentId
+    window.location.href = `/${image.document_id}`;
   };
 
   return (

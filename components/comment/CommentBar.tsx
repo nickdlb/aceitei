@@ -35,6 +35,10 @@ const CommentBar = ({
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
+    console.log('✅ document:', documentData);
+  });
+
+  useEffect(() => {
     setLocalComments(comments || {});
   }, [comments]);
 

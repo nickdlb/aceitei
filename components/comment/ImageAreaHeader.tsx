@@ -1,54 +1,70 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Download, Pencil, LayoutList } from 'lucide-react';
-import { Button } from "@/components/common/ui/button"
-import { Input } from "@/components/common/ui/input"
+import { Button } from "@/components/common/ui/button";
+import { Input } from "@/components/common/ui/input";
 import { usePageContext } from '@/contexts/PageContext';
 
 interface ImageAreaHeaderProps {
-  imageTitle: string;
   exibirImagem: string;
-  isEditingTitle: boolean;
-  newTitle: string;
   zoomLevel: string;
   isPagesOpen: boolean;
-  handleTitleEdit: () => Promise<void>;
-  getFileFormat: (url: string | undefined) => string;
-  handleDownload: () => Promise<void>;
   handleZoomChange: (value: string) => void;
   onTogglePages: () => void;
-  setNewTitle: (value: string) => void;
-  pagesCount?: number;
 }
 
 const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
-  imageTitle,
   exibirImagem,
-  isEditingTitle,
-  newTitle,
   zoomLevel,
-  handleTitleEdit,
   handleZoomChange,
   onTogglePages,
-  setNewTitle,
-  pagesCount
+  isPagesOpen
 }) => {
+  const {
+    documentData,
+    handleTitleUpdate,
+    pages
+  } = usePageContext();
 
-  const { pageData, handleTitleUpdate, pages } = usePageContext();
-  
-  const getFileFormatLocal = (url: string | undefined) => {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [newTitle, setNewTitle] = useState(documentData.title);
+
+  useEffect(() => {
+    setNewTitle(documentData.title); // atualiza input ao trocar documento
+  }, [documentData.title]);
+
+  const handleTitleEdit = async () => {
+    if (isEditingTitle) {
+      if (newTitle.trim()) {
+        try {
+          await handleTitleUpdate(newTitle); // atualiza título do documento
+          setIsEditingTitle(false);
+        } catch (error) {
+          console.error('Erro ao atualizar título do documento:', error);
+        }
+      } else {
+        setIsEditingTitle(false);
+        setNewTitle(documentData.title);
+      }
+    } else {
+      setNewTitle(documentData.title);
+      setIsEditingTitle(true);
+    }
+  };
+
+  const getFileFormat = (url: string | undefined) => {
     if (!url) return '';
     const extension = url.split('.').pop()?.toLowerCase() || '';
     return extension === 'jpg' ? 'JPEG' : extension.toUpperCase();
   };
 
-  const handleDownloadLocal = async () => {
+  const handleDownload = async () => {
     try {
       const response = await fetch(exibirImagem);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${imageTitle || 'imagem'}.${getFileFormatLocal(exibirImagem).toLowerCase()}`;
+      a.download = `${documentData.title || 'imagem'}.${getFileFormat(exibirImagem).toLowerCase()}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -56,10 +72,6 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
     } catch (error) {
       console.error('Erro ao baixar imagem:', error);
     }
-  };
-
-  const handleZoomChangeLocal = (value: string) => {
-    handleZoomChange(value);
   };
 
   return (
@@ -74,15 +86,11 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
             autoFocus
             maxLength={50}
             onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleTitleEdit();
-              }
+              if (e.key === 'Enter') handleTitleEdit();
             }}
           />
         ) : (
-          <div>
-              <h2 className="text-sm font-medium text-actextocinza">{imageTitle}</h2>
-          </div>
+          <h2 className="text-sm font-medium text-actextocinza">{documentData.title}</h2>
         )}
         <Button
           variant="ghost"
@@ -92,12 +100,14 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
         >
           <Pencil className="size-4" />
         </Button>
-        <p className="min-w-fit text-xs text-actextocinza">Formato: {getFileFormatLocal(exibirImagem)}</p>
+        <p className="min-w-fit text-xs text-actextocinza">
+          Formato: {getFileFormat(exibirImagem)}
+        </p>
       </div>
       <div className="flex items-center gap-4">
         <select
           value={zoomLevel}
-          onChange={(e) => handleZoomChangeLocal(e.target.value)}
+          onChange={(e) => handleZoomChange(e.target.value)}
           className="rounded px-2 py-1 text-sm text-acpretohover"
         >
           <option value="100">100%</option>
@@ -107,12 +117,12 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleDownloadLocal}
+          onClick={handleDownload}
           className="text-acpreto hover:text-acazul"
         >
           <Download className="w-5 h-5" />
         </Button>
-        {pagesCount && pagesCount > 1 && (
+        {pages.length > 1 && (
           <Button
             variant="ghost"
             size="icon"

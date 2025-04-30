@@ -6,7 +6,7 @@ import { createSupabaseClient } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { useImages } from '@/contexts/ImagesContext';
 import { deleteCard } from '@/utils/deleteCard';
-import ImageProps from '@/types/ImageProps';
+import { ImageProps } from '@/types/ImageProps';
 
 export const useImageCard = (
   image: ImageProps,
@@ -19,7 +19,7 @@ export const useImageCard = (
   const [documentTitle, setDocumentTitle] = useState('');
   const [title, setTitle] = useState('');
   const router = useRouter();
-  const imageUrl = getImageUrl(image.image_url);
+  const imageUrl = image.image_url ? getImageUrl(image.image_url) : '/noite-estrelada-comentada.jpg';
   const { refreshImages } = useImages();
 
   useEffect(() => {

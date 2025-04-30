@@ -13,9 +13,8 @@ import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageCli
 import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/utils/commentUtils';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
-import PageImageNotFound from '@/components/common/PageImageNotFound';
 import PageLayout from '@/components/comment/CommentPageLayout';
-import { PageProvider } from '@/contexts/PageContext';
+import { PageProvider} from '@/contexts/PageContext';
 import type { DocumentPage } from '@/types';
 
 
@@ -30,7 +29,7 @@ export default function Page() {
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
     const [currentTitle, setCurrentTitle] = useState(pageData?.documents?.title ?? '');
-    const [currentPageData, setCurrentPageData] = useState<DocumentPage | null>(null);      
+    const [currentPageData, setCurrentPageData] = useState<DocumentPage | null>(null);     
 
     useEffect(() => {
         if (pageData?.imageTitle) {
@@ -238,10 +237,6 @@ export default function Page() {
     }
 
     const imageUrl = getImageUrl(pageData.image_url);
-
-    if (!imageUrl) {
-        return <PageImageNotFound />;
-    }
 
     const filteredPins = pins.filter(pin => pin.status === statusFilter);
 

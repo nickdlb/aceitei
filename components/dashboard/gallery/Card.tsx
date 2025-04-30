@@ -44,14 +44,6 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
     fetchFirstPageId();
   }, [image.document_id]);
 
-  if (!imageUrl || imageError) {
-    return (
-      <div className="bg-acbg rounded-lg p-4 text-center">
-        <p className="text-actextocinza">Imagem não disponível</p>
-      </div>
-    );
-  }
-
   return (
     <CardProvider value={{ image, onDelete }}>
       <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
