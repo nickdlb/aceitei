@@ -16,13 +16,12 @@ interface CardContentProps {
 }
 
 export const CardContent = ({
-  title,
   isEditing,
   setTitle,
   handleTitleEdit,
   setIsEditing,
 }: CardContentProps) => {
-  const { image } = useCardContext();
+  const { pageData, documentData } = useCardContext();
 
   return (
     <div className="pb-4 pt-2 px-4">
@@ -31,7 +30,7 @@ export const CardContent = ({
           {isEditing ? (
             <Input
               type="text"
-              value={title}
+              value={documentData.title}
               onChange={(e) => setTitle(e.target.value)}
               className="text-sm text-acpreto font-medium !leading-8 !p-0 !border-none !ring-0 flex-1"
               autoFocus
@@ -43,7 +42,7 @@ export const CardContent = ({
           ) : (
             <>
               <h3 className="text-sm font-medium text-actextocinza truncate">
-                {title || 'Sem título'}
+                {documentData.title || 'Sem título'}
               </h3>
               <Button
                 onClick={(e) => {
@@ -63,17 +62,17 @@ export const CardContent = ({
           <div className="flex items-center">
             <MessageSquare className="w-4 h-4 text-actextocinza" />
             <span className="text-xs text-actextocinza ml-1">
-              {image.active_comments || 0}
+              {pageData.active_comments || 0}
             </span>
           </div>
           <div className="flex items-center">
             <CheckCircle className="w-4 h-4 text-actextocinza" />
             <span className="text-xs text-actextocinza ml-1">
-              {image.resolved_comments || 0}
+              {pageData.resolved_comments || 0}
             </span>
           </div>
           <p className="text-xs text-actextocinza">
-            {format(new Date(image.created_at), "d'/'MM'/'yyyy", { locale: ptBR })}
+            {format(new Date(documentData.created_at), "d'/'MM'/'yyyy", { locale: ptBR })}
           </p>
         </div>
       </div>

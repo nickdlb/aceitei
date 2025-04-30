@@ -1,10 +1,31 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import { ImageProps } from '@/types';
+
+interface DocumentData {
+  id: string;
+  title: string;
+  created_at: string;
+  user_id: string;
+  last_acessed_at?: string;
+  status?: string;
+  type: 'imagem' | 'site';
+  url?: string;
+}
+
+interface PageData {
+  id: string;
+  image_url: string;
+  imageTitle: string;
+  document_id: string;
+  active_comments: number;
+  resolved_comments: number;
+  notifications: number;
+}
 
 interface CardContextProps {
-  image: ImageProps;
+  pageData: PageData;
+  documentData: DocumentData;
   onDelete: (id: string, imageUrl?: string) => Promise<void>;
 }
 

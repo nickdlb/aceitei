@@ -20,7 +20,7 @@ export const CardHeader = ({
   handleShare,
   handleDelete,
 }: CardHeaderProps) => {
-  const { image } = useCardContext();
+  const { pageData, documentData } = useCardContext();
   const [isNavigating, setIsNavigating] = useState(false);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -30,26 +30,26 @@ export const CardHeader = ({
       console.log('É um site')
     }*/
 
-    if (isNavigating || !image.document_id) return;
+    if (isNavigating || !documentData.id) return;
     setIsNavigating(true);
-    window.location.href = `/${image.document_id}`;
+    window.location.href = `/${documentData.id}`;
   };
 
   return (
     <div className="relative h-40 cursor-pointer group" onClick={handleClick}>
       <Image
         src={imageUrl}
-        alt={image.imageTitle || 'Imagem'}
+        alt={pageData.imageTitle || 'Imagem'}
         fill
         className="object-cover"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         unoptimized
       />
       <div className="absolute inset-y-0 right-0 flex flex-col items-center justify-center mr-2 space-y-2 transition-opacity duration-300">
-        {image.notifications > 0 && (
+        {pageData.notifications > 0 && (
           <div className="!opacity-100 flex items-center justify-center">
             <div className="z-50 size-8 rounded-full text-acbrancohover text-xs flex items-center justify-center bg-acazul">
-              {image.notifications}
+              {pageData.notifications}
             </div>
           </div>
         )}
@@ -75,7 +75,7 @@ export const CardHeader = ({
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            handleDelete(image.id);
+            handleDelete(documentData.id);
           }}
           variant="ghost"
           size="icon"

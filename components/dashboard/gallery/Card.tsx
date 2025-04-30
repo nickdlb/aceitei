@@ -45,7 +45,27 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
   }, [image.document_id]);
 
   return (
-    <CardProvider value={{ image, onDelete }}>
+    <CardProvider
+      value={{
+        pageData: {
+          id: image.page_id,
+          image_url: image.image_url,
+          imageTitle: image.imageTitle,
+          document_id: image.document_id,
+          active_comments: image.active_comments,
+          resolved_comments: image.resolved_comments,
+          notifications: image.notifications,
+        },
+        documentData: {
+          id: image.document_id,
+          title: image.title,
+          created_at: image.created_at,
+          user_id: image.user_id,
+          type: image.type,
+        },
+        onDelete,
+      }}
+    >
       <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
         <CardHeader
           imageUrl={imageUrl}
