@@ -2,14 +2,13 @@
 
 import React from 'react';
 import Card from './Card';
-import { useGalleryContext } from '@/contexts/GalleryContext';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 
 const CardGallery: React.FC = () => {
   const {
     filteredImages,
-    handleCardDelete,
     isLoading,
-  } = useGalleryContext();
+  } = useDashboardContext();
 
   if (isLoading) {
     return <p>Carregando Cards...</p>;
@@ -20,10 +19,10 @@ const CardGallery: React.FC = () => {
   }
 
   return (
-    <div className='space-y-4'>
+    <div className='bg-acbg py-2 px-4 space-y-4'>
       <div className="grid grid-cols-5 gap-4">
         {filteredImages.map((image) => (
-          <Card key={image.id} image={image} onDelete={handleCardDelete} />
+          <Card key={image.id} image={image} />
         ))}
       </div>
     </div>

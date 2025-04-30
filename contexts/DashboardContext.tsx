@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react';
 
-interface GalleryContextProps {
+interface DashboardContextProps {
   sortOrder: string;
   setSortOrder: (sort: string) => void;
   searchTerm: string;
@@ -11,29 +11,26 @@ interface GalleryContextProps {
   setActiveFilter: (filter: string) => void;
   showSearchForm: boolean;
   setShowSearchForm: (show: boolean) => void;
-  isRightSidebarOpen: boolean;
-  toggleRightSidebar: () => void;
   refreshImages: () => Promise<void>;
   filteredImages: any[];
   isLoading: boolean;
-  handleCardDelete: (id: string, imageUrl?: string) => Promise<void>;
   totalNotifications: number;
 }
 
-const GalleryContext = createContext<GalleryContextProps | undefined>(undefined);
+const DashboardContext = createContext<DashboardContextProps | undefined>(undefined);
 
-export function useGalleryContext() {
-  const context = useContext(GalleryContext);
+export function useDashboardContext() {
+  const context = useContext(DashboardContext);
   if (!context) {
     throw new Error('useGalleryContext must be used within a GalleryProvider');
   }
   return context;
 }
 
-export function GalleryProvider({ children, value }: { children: React.ReactNode, value: GalleryContextProps }) {
+export function DashboardProvider({ children, value }: { children: React.ReactNode, value: DashboardContextProps }) {
   return (
-    <GalleryContext.Provider value={value}>
+    <DashboardContext.Provider value={value}>
       {children}
-    </GalleryContext.Provider>
+    </DashboardContext.Provider>
   );
 }

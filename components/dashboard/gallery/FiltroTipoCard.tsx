@@ -1,17 +1,17 @@
 'use client';
 
 import { List, Image, Globe } from 'lucide-react';
-import { useGalleryContext } from '@/contexts/GalleryContext';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 
 const FiltroTipoCard: React.FC = () => {
-  const { activeFilter, setActiveFilter } = useGalleryContext();
+  const { activeFilter, setActiveFilter } = useDashboardContext();
 
   const handleFilterClick = (filter: string) => {
     setActiveFilter(filter);
   };
 
   return (
-    <div className="flex gap-2 bg-white rounded-xl px-4 py-3">
+    <div className="flex gap-2 bg-acbgbranco rounded-xl px-4 py-3">
       <button
         onClick={() => handleFilterClick('todos')}
         className={`flex items-center gap-1 px-3 py-1 rounded-xl text-sm font-medium ${activeFilter === 'todos' ? 'bg-acazul text-acbrancohover' : 'bg-acbg text-actext'}`}

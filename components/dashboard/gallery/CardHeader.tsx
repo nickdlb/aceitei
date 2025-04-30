@@ -9,6 +9,7 @@ import { useImageCard } from '@/hooks/useImageCard';
 
 export const CardHeader = () => {
   const { pageData, onDelete } = useCardContext();
+  const { documentData } = useCardContext()
   const {
     isDeleting,
     showShareLink,
@@ -19,15 +20,20 @@ export const CardHeader = () => {
 
   const [isNavigating, setIsNavigating] = useState(false);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const openCommentPage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isNavigating || !pageData.document_id) return;
     setIsNavigating(true);
-    window.location.href = `/${pageData.document_id}`;
+    if (documentData.type == 'site' ) {
+      window.location.href = `/site/${pageData.document_id}`;
+    }
+    else {
+      window.location.href = `/${pageData.document_id}`;
+    }
   };
 
   return (
-    <div className="relative h-40 cursor-pointer group" onClick={handleClick}>
+    <div className="relative h-40 cursor-pointer group" onClick={openCommentPage}>
       <Image
         src={imageUrl}
         alt={pageData.imageTitle || 'Imagem'}
@@ -44,7 +50,7 @@ export const CardHeader = () => {
             </div>
           </div>
         )}
-        <Button onClick={handleClick} variant="ghost" size="icon" className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100">
+        <Button onClick={openCommentPage} variant="ghost" size="icon" className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100">
           <Eye className="size-4" />
         </Button>
         <Button
@@ -61,7 +67,7 @@ export const CardHeader = () => {
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            handleDelete(); // ✅ correto
+            handleDelete()
           }}
           variant="ghost"
           size="icon"

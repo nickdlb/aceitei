@@ -7,10 +7,7 @@ export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) =
     if (!pageId) return;
 
     try {
-        const { data: commentsData, error: commentsError } = await createSupabaseClient
-            .from('comments')
-            .select('*')
-            .eq('page_id', pageId);
+        const { data: commentsData, error: commentsError } = await createSupabaseClient.from('comments').select('*').eq('page_id', pageId);
 
         if (commentsError) throw commentsError;
 
@@ -26,17 +23,7 @@ export const loadComments = async (pageId: string, setPins: (pins: PinProps[]) =
 
         const pinsData = commentsData.map(comment => {
             const reactions = commentReactionsMap.get(comment.id) || [];
-            return {
-                id: comment.id,
-                x: comment.pos_x,
-                y: comment.pos_y,
-                num: comment.pin_number,
-                comment: comment.content || '',
-                created_at: comment.created_at,
-                status: comment.status || 'ativo',
-                user_id: comment.user_id,
-                page_id: comment.page_id,
-                reactions: reactions
+            return { id: comment.id, x: comment.pos_x, y: comment.pos_y, num: comment.pin_number, comment: comment.content || '', created_at: comment.created_at, status: comment.status || 'ativo', user_id: comment.user_id, page_id: comment.page_id, reactions: reactions
             };
         });
 

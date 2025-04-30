@@ -13,7 +13,7 @@ import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageCli
 import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/utils/commentUtils';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
-import PageLayout from '@/components/comment/CommentPageLayout';
+import PageLayoutSite from '@/components/comment/CommentPageLayoutSite';
 import { PageProvider} from '@/contexts/PageContext';
 import type { DocumentPage } from '@/types';
 
@@ -294,7 +294,7 @@ export default function Page() {
             type: pageData?.documents?.type ?? '',
             url: pageData?.documents?.url ?? '',
           }}}>
-            <PageLayout
+            <PageLayoutSite
                 commentBarProps={commentBarProps}
                 imageAreaProps={imageAreaProps}
                 isPagesOpen={isPagesOpen}

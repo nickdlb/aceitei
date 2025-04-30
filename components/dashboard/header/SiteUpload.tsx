@@ -10,7 +10,7 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
 
   const handleLinkUpload = async (url: string) => {
     if (!session?.user?.id) return;
-
+    url = handleHttpsInput(url);
     try {
       const { data: document, error: documentError } = await createSupabaseClient
         .from('documents')
@@ -18,6 +18,7 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
           url,
           user_id: session.user.id,
           title: 'Link enviado',
+          type: 'site'
         })
         .select()
         .single();
@@ -49,6 +50,15 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
       console.error('Erro ao fazer upload do link:', error.message);
     }
   };
+
+  const handleHttpsInput = (url: string): string  => {
+    if (!url) return '';
+    const trimmed = url.trim();
+    if (/^https?:\/\//i.test(trimmed)) {
+      return url = trimmed;
+    }
+    return url = `https://${trimmed}`;
+  }
 
   const handleUploadSite = () => {
     if (!link.trim()) return;

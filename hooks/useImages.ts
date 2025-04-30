@@ -19,13 +19,6 @@ interface ProcessedDocument {
     type: 'imagem' | 'site'; // Add type property
 }
 
-interface UseImagesResult {
-    images: ProcessedDocument[];
-    loading: boolean;
-    refreshImages: () => Promise<void>;
-    totalNotifications: number;
-  }  
-
 export const useImages = (sortOrder: string) => {
     const [images, setImages] = useState<ProcessedDocument[]>([]);
     const [loading, setLoading] = useState(true);
@@ -78,8 +71,6 @@ export const useImages = (sortOrder: string) => {
 
         try {
             setLoading(true);
-
-            // 1. Fetch basic documents
             const { data: basicDocuments, error: documentsError } = await createSupabaseClient
                 .from('documents')
                 .select('id, title, created_at, user_id, type')
@@ -88,7 +79,7 @@ export const useImages = (sortOrder: string) => {
 
             if (documentsError) {
                 console.error('Error fetching basic documents:', documentsError);
-                setImages([]); // Clear images on error
+                setImages([]);
                 setTotalNotifications(0);
                 return;
             }
@@ -99,26 +90,22 @@ export const useImages = (sortOrder: string) => {
                 return;
             }
 
-            // 2. Fetch related data and combine
             const processedDocumentsPromises = basicDocuments.map(async (doc) => {
-                // Fetch first page
                 const { data: pageData, error: pageError } = await createSupabaseClient
                     .from('pages')
                     .select('id, image_url, imageTitle')
                     .eq('document_id', doc.id)
                     .eq('page_number', 1)
-                    .single(); // Assuming only one page with page_number 1 per document
+                    .single();
 
                 if (pageError || !pageData) {
                     console.warn(`Error or no page found for document ${doc.id}:`, pageError);
-                    // Decide how to handle this - maybe return null or a default structure
                     return null;
                 }
 
-                // Fetch comment counts for the page
                 const { data: commentsData, error: commentsError, count: commentCount } = await createSupabaseClient
                     .from('comments')
-                    .select('status', { count: 'exact', head: true }) // Use head:true for count only
+                    .select('status', { count: 'exact', head: true })
                     .eq('page_id', pageData.id);
 
                 let activeCount = 0;
@@ -164,11 +151,10 @@ export const useImages = (sortOrder: string) => {
 
             const resolvedDocuments = await Promise.all(processedDocumentsPromises);
             const validProcessedDocuments = resolvedDocuments.filter((doc): doc is ProcessedDocument => doc !== null);
-
             const total = validProcessedDocuments.reduce((sum, doc) => sum + doc.notifications, 0);
             setTotalNotifications(total);
 
-            let sortedDocuments = [...validProcessedDocuments]; // Use the correctly processed documents
+            let sortedDocuments = [...validProcessedDocuments];
 
             switch (sortOrder) {
                 case 'title':

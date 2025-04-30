@@ -4,13 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { ImagesProvider } from '@/contexts/ImagesContext';
 import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import Header from '@/components/dashboard/header/DashboardHeader';
-import ProjectHeader from '@/components/dashboard/gallery/ProjectHeader';
+import GalleryHeader from '@/components/dashboard/gallery/GalleryHeader';
 import { useImages } from '@/hooks/useImages';
-import { deleteCard } from '@/utils/deleteCard';
 import { useAuthChecker } from '@/utils/useAuthChecker';
 import { useRouter } from 'next/navigation';
 import CardGallery from '@/components/dashboard/gallery/CardGallery';
-import { GalleryProvider } from '@/contexts/GalleryContext';
+import { DashboardProvider } from '@/contexts/DashboardContext';
 
 
 const AppContent = () => {
@@ -22,7 +21,6 @@ const AppContent = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeFilter, setActiveFilter] = useState<string>('todos'); // <-- Add state here
     const [showSearchForm, setShowSearchForm] = useState(false);
-    const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
 
@@ -31,20 +29,14 @@ const AppContent = () => {
     const filteredImages = images.filter(image => {
         const matchesSearchTerm = image.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = activeFilter === 'todos' ||
-                              (activeFilter === 'imagens' && image.type === 'imagem') ||
-                              (activeFilter === 'sites' && image.type === 'site');
+            (activeFilter === 'imagens' && image.type === 'imagem') ||
+            (activeFilter === 'sites' && image.type === 'site');
         return matchesSearchTerm && matchesFilter;
     });
-
-
-    const handleCardDeleteWrapper = async (id: string, imageUrl?: string) => {
-        await deleteCard(id, imageUrl);
-    };
 
     useEffect(() => {
         const sidebarState = localStorage.getItem('isRightSidebarOpen');
         const shouldBeOpen = sidebarState === 'true';
-        setIsRightSidebarOpen(shouldBeOpen);
         setInitialWidthSet(true);
     }, []);
 
@@ -52,19 +44,9 @@ const AppContent = () => {
         setSortOrder(sortBy);
     };
 
-    const toggleRightSidebar = useCallback(() => {
-        const newSidebarState = !isRightSidebarOpen;
-        setIsRightSidebarOpen(newSidebarState);
-        localStorage.setItem('isRightSidebarOpen', newSidebarState.toString());
-    }, [isRightSidebarOpen]);
-
     useEffect(() => {
         const handleDragOver = (event: DragEvent) => {
             event.preventDefault();
-            if (!isRightSidebarOpen) {
-                toggleRightSidebar();
-                setDraggedOverSidebar(true);
-            }
         };
 
         const handleDragLeave = (event: DragEvent) => {
@@ -72,7 +54,6 @@ const AppContent = () => {
                 draggedOverSidebar &&
                 (!event.relatedTarget || !document.documentElement.contains(event.relatedTarget as Node))
             ) {
-                toggleRightSidebar();
                 setDraggedOverSidebar(false);
             }
         };
@@ -90,7 +71,7 @@ const AppContent = () => {
             window.removeEventListener('dragleave', handleDragLeave);
             window.removeEventListener('drop', handleDrop);
         };
-    }, [isRightSidebarOpen, draggedOverSidebar, toggleRightSidebar]);
+    }, []);
 
     useEffect(() => {
         console.log(`[app/page.tsx Effect] authIsLoading: ${authIsLoading}, shouldRedirect: ${shouldRedirect}`);
@@ -113,38 +94,35 @@ const AppContent = () => {
 
     console.log('[app/page.tsx] Rendering main content');
     return (
-        <GalleryProvider
-  value={{
-    sortOrder,
-    setSortOrder,
-    searchTerm,
-    setSearchTerm,
-    activeFilter,
-    setActiveFilter,
-    showSearchForm,
-    setShowSearchForm,
-    isRightSidebarOpen,
-    toggleRightSidebar,
-    refreshImages: async () => {
-        await refreshImages(); // se o refreshImages original já é async
-      },
-    filteredImages,
-    isLoading: isLoading || imagesLoading,
-    handleCardDelete: handleCardDeleteWrapper,
-    totalNotifications,
-  }}
->
-  <div className="flex h-screen bg-acbg overflow-hidden">
-    <Sidebar />
-    <div className="flex-1 flex flex-col">
-      <Header />
-      <main className="flex flex-col p-6 gap-4 overflow-y-auto">
-        <ProjectHeader />
-        <CardGallery />
-      </main>
-    </div>
-  </div>
-</GalleryProvider>
+        <DashboardProvider
+            value={{
+                sortOrder,
+                setSortOrder,
+                searchTerm,
+                setSearchTerm,
+                activeFilter,
+                setActiveFilter,
+                showSearchForm,
+                setShowSearchForm,
+                refreshImages: async () => {
+                    await refreshImages();
+                },
+                filteredImages,
+                isLoading: isLoading || imagesLoading,
+                totalNotifications,
+            }}
+        >
+            <div className="flex h-screen bg-acbg overflow-hidden">
+                <Sidebar />
+                <div className="flex-1 flex flex-col">
+                    <Header />
+                    <main className=" bg-acbgbranco flex flex-col overflow-y-auto">
+                        <GalleryHeader />
+                        <CardGallery />
+                    </main>
+                </div>
+            </div>
+        </DashboardProvider>
     );
 };
 

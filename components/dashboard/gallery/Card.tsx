@@ -7,9 +7,8 @@ import { CardHeader } from './CardHeader';
 import { CardContent } from './CardContent';
 import { CardProvider } from '@/contexts/CardContext';
 import { ImageCardProps } from '@/types';
-import { ImageProps } from '@/types';
 
-export default function Card({ image, onDelete }: ImageCardProps) {
+export default function Card({ image }: ImageCardProps) {
   const [firstPageId, setFirstPageId] = useState<string | null>(null);
 
   const {
@@ -58,7 +57,6 @@ export default function Card({ image, onDelete }: ImageCardProps) {
           user_id: image.user_id,
           type: image.type,
         },
-        onDelete,
       }}
     >
       <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">

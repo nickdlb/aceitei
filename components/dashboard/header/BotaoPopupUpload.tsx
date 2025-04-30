@@ -3,16 +3,15 @@
 import { useState, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/common/ui/dialog';
-import RightSidebar from '@/components/dashboard/sidebar/PopupUpload';
-import { useGalleryContext } from '@/contexts/GalleryContext';
+import PopupUpload from '@/components/dashboard/header/PopupUpload';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 
 const BotaoPopupUpload = () => {
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
-  const { refreshImages } = useGalleryContext(); // ✅ agora vindo do contexto
-
+  const { refreshImages } = useDashboardContext();
   const handleUploadComplete = useCallback(async (data: any) => {
     try {
-      await refreshImages(); // ✅ direto do contexto
+      await refreshImages();
       setIsUploadDialogOpen(false);
     } catch (error) {
       console.error("Error updating images:", error);
@@ -28,7 +27,7 @@ const BotaoPopupUpload = () => {
       </DialogTrigger>
       <DialogContent className='!bg-acbgpreto border-none'>
         <DialogTitle className='sr-only'>Popup Upload Card</DialogTitle>
-        <RightSidebar onUploadComplete={handleUploadComplete} />
+        <PopupUpload onUploadComplete={handleUploadComplete} />
       </DialogContent>
     </Dialog>
   );

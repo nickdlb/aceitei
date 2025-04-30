@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
-import { useGalleryContext } from '@/contexts/GalleryContext';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 import { deleteCard } from '@/utils/deleteCard';
 import { PageData } from '@/contexts/CardContext';
 
@@ -13,7 +13,7 @@ export const useImageCard = (pageData: PageData) => {
   const [imageError, setImageError] = useState(false);
   const [showShareLink, setShowShareLink] = useState(false);
   const imageUrl = pageData.image_url ? getImageUrl(pageData.image_url) : '/noite-estrelada-comentada.jpg';
-  const { refreshImages } = useGalleryContext();
+  const { refreshImages } = useDashboardContext();
 
   const handleShare = async () => {
     const linkToShare = `${window.location.origin}/${pageData.document_id}`;

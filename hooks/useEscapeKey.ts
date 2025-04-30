@@ -15,7 +15,6 @@ export function useEscapeKey(editingPinId: string | null, setEditingPinId: (id: 
                 }
             }
         };
-
         window.addEventListener('keydown', handleKeyDown);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);

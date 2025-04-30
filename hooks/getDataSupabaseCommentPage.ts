@@ -12,7 +12,6 @@ export function getPageDataSupabase(documentId: string) {
     useEffect(() => {
         const loadPage = async () => {
             if (!documentId) return;
-
             try {
                 const { data: allPages } = await createSupabaseClient
                     .from('pages')
@@ -27,21 +26,16 @@ export function getPageDataSupabase(documentId: string) {
                     console.error('Nenhuma página encontrada para este documento.');
                     return;
                 }
-
                 setPages(allPages);
                 const firstPage = allPages.find(page => page.page_number === 1) || allPages[0];
                 setPageData(firstPage);
-
                 setLoading(false);
             } catch (error) {
                 console.error('Erro ao carregar as páginas do documento:', error);
                 setLoading(false);
             }
         };
-
         loadPage();
     }, [documentId, router]);
-
-    // ✅ Adicione 'setPageData' ao retorno
     return { loading, pageData, pages, setPageData };
 }

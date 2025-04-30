@@ -2,11 +2,11 @@ import { UploadZone } from '@/components/dashboard/header/UploadZone';
 import { Card, CardContent } from "@/components/common/ui/card"
 import SiteUpload from "@/components/dashboard/header/SiteUpload"
 
-interface RightSidebarProps {
+interface PopupUploadProps {
     onUploadComplete: (data: any) => void;
 }
 
-const RightSidebar = ({ onUploadComplete }: RightSidebarProps) => {
+const PopupUpload = ({ onUploadComplete }: PopupUploadProps) => {
     const handleUploadSuccess = async (data: any) => {
         console.log('Upload success:', data);
         if (data && onUploadComplete) {
@@ -33,4 +33,4 @@ const RightSidebar = ({ onUploadComplete }: RightSidebarProps) => {
     );
 };
 
-export default RightSidebar;
+export default PopupUpload;

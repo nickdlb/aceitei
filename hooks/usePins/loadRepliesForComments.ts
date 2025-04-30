@@ -6,7 +6,6 @@ export const loadRepliesForComments = async (pinId: string, setPins: Dispatch<Se
     if (!pinId) return;
 
     try {
-
         const { data: reactionsData, error: reactionsError } = await createSupabaseClient
             .from('comment_reactions')
             .select('*')

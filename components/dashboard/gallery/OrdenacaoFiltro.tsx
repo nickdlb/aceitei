@@ -7,13 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/ui/select';
-import { useGalleryContext } from '@/contexts/GalleryContext';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 
 const OrdenacaoFiltro: React.FC = () => {
-  const { sortOrder, setSortOrder } = useGalleryContext();
+  const { sortOrder, setSortOrder } = useDashboardContext();
 
   return (
-    <div className='flex items-center bg-acbranco px-4 py-2 rounded-xl'>
+    <div className='flex items-center bg-acbgbranco px-4 py-2 rounded-xl'>
       <span className="text-sm text-actextocinza">Ordenar por:</span>
       <Select onValueChange={setSortOrder} value={sortOrder}>
         <SelectTrigger className="px-2 !h-7 text-sm ml-2">

@@ -1,11 +1,9 @@
 import React from 'react';
 import { Bell } from 'lucide-react';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 
-interface NotificationsBellProps {
-  totalNotifications: number;
-}
-
-const NotificationsBell: React.FC<NotificationsBellProps> = ({ totalNotifications }) => {
+const NotificationsBell: React.FC = () => {
+  const { totalNotifications } = useDashboardContext();
   return (
     <div className="ml-3 relative w-8 h-8 flex items-center justify-center hover:bg-acbg rounded-full">
       <Bell className="w-4 h-4 text-actextocinza" />

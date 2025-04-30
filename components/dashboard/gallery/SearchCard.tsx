@@ -2,17 +2,12 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Input } from '@/components/common/ui/input';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 
-interface SearchCardProps {
-  showSearchForm: boolean;
-  setShowSearchForm: (show: boolean) => void;
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-}
-
-const SearchCard: React.FC<SearchCardProps> = ({ showSearchForm, setShowSearchForm, searchTerm, setSearchTerm }) => {
+const SearchCard: React.FC = () => {
+  const {showSearchForm, setShowSearchForm, searchTerm, setSearchTerm} = useDashboardContext()
   return (
-    <div className="flex items-center px-4 py-2 bg-acbranco rounded-xl">
+    <div className="flex items-center px-4 py-2 bg-acbgbranco rounded-xl">
       <Button
         onClick={() => setShowSearchForm(!showSearchForm)}
         variant="ghost"

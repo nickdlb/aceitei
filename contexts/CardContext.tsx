@@ -26,7 +26,6 @@ export interface PageData {
 interface CardContextProps {
   pageData: PageData;
   documentData: DocumentData;
-  onDelete: (id: string, imageUrl?: string) => Promise<void>;
 }
 
 const CardContext = createContext<CardContextProps | undefined>(undefined);
