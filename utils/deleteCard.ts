@@ -1,76 +1,76 @@
 import { createSupabaseClient } from './supabaseClient';
 
 export const deleteCard = async (documentId: string, imageUrl?: string) => {
-    try {
+  const supabase = createSupabaseClient;
 
-        const { data: pages, error: pagesError } = await createSupabaseClient
-            .from('pages')
-            .select('id')
-            .eq('document_id', documentId);
+  try {
+    const { data: pages, error: pagesError } = await supabase
+      .from('pages')
+      .select('id')
+      .eq('document_id', documentId);
 
-        if (pagesError) throw pagesError;
+    if (pagesError) throw pagesError;
 
-        if (pages && pages.length > 0) {
-            const pageIds = pages.map(page => page.id);
+    const pageIds = pages?.map(p => p.id) ?? [];
 
-            const { data: comments, error: commentsFetchError } = await createSupabaseClient
-                .from('comments')
-                .select('id')
-                .in('page_id', pageIds);
+    if (pageIds.length > 0) {
+      const { data: comments, error: commentsError } = await supabase
+        .from('comments')
+        .select('id')
+        .in('page_id', pageIds);
 
-            if (commentsFetchError) throw commentsFetchError;
+      if (commentsError) throw commentsError;
 
-            if (comments && comments.length > 0) {
-                const commentIds = comments.map(comment => comment.id);
-                const { error: reactionsError } = await createSupabaseClient
-                    .from('comment_reactions')
-                    .delete()
-                    .in('comment_id', commentIds);
+      const commentIds = comments?.map(c => c.id) ?? [];
 
-                if (reactionsError) throw reactionsError;
-            }
+      if (commentIds.length > 0) {
+        const { error: reactionsError } = await supabase
+          .from('comment_reactions')
+          .delete()
+          .in('comment_id', commentIds);
+        if (reactionsError) throw reactionsError;
+      }
 
-            const { error: commentsError } = await createSupabaseClient
-                .from('comments')
-                .delete()
-                .in('page_id', pageIds);
+      const { error: deleteCommentsError } = await supabase
+        .from('comments')
+        .delete()
+        .in('page_id', pageIds);
+      if (deleteCommentsError) throw deleteCommentsError;
 
-            if (commentsError) throw commentsError;
-
-            const { error: deletePageError } = await createSupabaseClient
-                .from('pages')
-                .delete()
-                .eq('document_id', documentId);
-
-            if (deletePageError) throw deletePageError;
-        }
-
-        const { error: documentError } = await createSupabaseClient
-            .from('documents')
-            .delete()
-            .eq('id', documentId);
-
-        if (documentError) throw documentError;
-
-        if (imageUrl) {
-
-            const imagePath = imageUrl.split('/').pop();
-            if (imagePath) {
-                const { error: storageError } = await createSupabaseClient
-                    .storage
-                    .from('images')
-                    .remove([imagePath]);
-
-                if (storageError) {
-                    console.error('Erro ao excluir imagem do storage:', storageError);
-
-                }
-            }
-        }
-
-        return { success: true, message: 'Documento excluído com sucesso' };
-    } catch (error: any) {
-        console.error('Erro ao excluir documento:', error);
-        return { success: false, message: error.message || 'Erro ao excluir documento' };
+      const { error: deletePagesError } = await supabase
+        .from('pages')
+        .delete()
+        .eq('document_id', documentId);
+      if (deletePagesError) throw deletePagesError;
     }
+
+    const { error: deleteDocumentError } = await supabase
+      .from('documents')
+      .delete()
+      .eq('id', documentId);
+    if (deleteDocumentError) throw deleteDocumentError;
+
+    // Excluir imagem do storage (se aplicável)
+    if (imageUrl) {
+      const imagePath = imageUrl.split('/').pop();
+      if (imagePath) {
+        const { error: storageError } = await supabase
+          .storage
+          .from('images')
+          .remove([imagePath]);
+        if (storageError) {
+          console.warn('⚠️ Erro ao excluir imagem do storage:', storageError);
+        }
+      }
+    }
+
+    return { success: true, message: 'Documento excluído com sucesso' };
+
+  } catch (error: any) {
+    console.error('❌ Erro ao excluir documento:', error);
+    return {
+      success: false,
+      message: error?.message || 'Erro desconhecido ao excluir documento'
+    };
+  }
 };

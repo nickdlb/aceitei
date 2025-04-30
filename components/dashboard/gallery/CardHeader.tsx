@@ -5,34 +5,25 @@ import Image from 'next/image';
 import { Button } from '@/components/common/ui/button';
 import { useState } from 'react';
 import { useCardContext } from '@/contexts/CardContext';
-import { usePageContext } from '@/contexts/PageContext';
+import { useImageCard } from '@/hooks/useImageCard';
 
-interface CardHeaderProps {
-  imageUrl?: string;
-  isDeleting: boolean;
-  handleShare: () => void;
-  handleDelete: (imageId: string) => void;
-}
+export const CardHeader = () => {
+  const { pageData, onDelete } = useCardContext();
+  const {
+    isDeleting,
+    showShareLink,
+    imageUrl,
+    handleShare,
+    handleDelete,
+  } = useImageCard(pageData);
 
-export const CardHeader = ({
-  imageUrl = '/noite-estrelada-comentada.jpg',
-  isDeleting,
-  handleShare,
-  handleDelete,
-}: CardHeaderProps) => {
-  const { pageData, documentData } = useCardContext();
   const [isNavigating, setIsNavigating] = useState(false);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    /*
-    if (documentData.type == 'site'){
-      console.log('É um site')
-    }*/
-
-    if (isNavigating || !documentData.id) return;
+    if (isNavigating || !pageData.document_id) return;
     setIsNavigating(true);
-    window.location.href = `/${documentData.id}`;
+    window.location.href = `/${pageData.document_id}`;
   };
 
   return (
@@ -53,12 +44,7 @@ export const CardHeader = ({
             </div>
           </div>
         )}
-        <Button
-          onClick={handleClick}
-          variant="ghost"
-          size="icon"
-          className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100"
-        >
+        <Button onClick={handleClick} variant="ghost" size="icon" className="p-2 bg-acbgbranco rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100">
           <Eye className="size-4" />
         </Button>
         <Button
@@ -75,7 +61,7 @@ export const CardHeader = ({
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            handleDelete(documentData.id);
+            handleDelete(); // ✅ correto
           }}
           variant="ghost"
           size="icon"

@@ -1,27 +1,35 @@
 'use client';
 
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Edit, MessageSquare, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Input } from '@/components/common/ui/input';
 import { useCardContext } from '@/contexts/CardContext';
+import { createSupabaseClient } from '@/utils/supabaseClient';
 
-interface CardContentProps {
-  title: string;
-  isEditing: boolean;
-  setTitle: (title: string) => void;
-  handleTitleEdit: () => void;
-  setIsEditing: (editing: boolean) => void;
-}
-
-export const CardContent = ({
-  isEditing,
-  setTitle,
-  handleTitleEdit,
-  setIsEditing,
-}: CardContentProps) => {
+export const CardContent = () => {
   const { pageData, documentData } = useCardContext();
+  const [title, setTitle] = useState(documentData.title || '');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleTitleEdit = async () => {
+    const finalTitle = title.trim() === '' ? 'Sem título' : title;
+
+    try {
+      const { error } = await createSupabaseClient
+        .from('documents')
+        .update({ title: finalTitle })
+        .eq('id', documentData.id);
+
+      if (error) throw error;
+
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Erro ao atualizar título:', error);
+    }
+  };
 
   return (
     <div className="pb-4 pt-2 px-4">
@@ -30,19 +38,19 @@ export const CardContent = ({
           {isEditing ? (
             <Input
               type="text"
-              value={documentData.title}
+              value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="text-sm text-acpreto font-medium !leading-8 !p-0 !border-none !ring-0 flex-1"
               autoFocus
               onBlur={handleTitleEdit}
-              onKeyPress={(e) => {
+              onKeyDown={(e) => {
                 if (e.key === 'Enter') handleTitleEdit();
               }}
             />
           ) : (
             <>
               <h3 className="text-sm font-medium text-actextocinza truncate">
-                {documentData.title || 'Sem título'}
+                {title || 'Sem título'}
               </h3>
               <Button
                 onClick={(e) => {
@@ -58,6 +66,7 @@ export const CardContent = ({
             </>
           )}
         </div>
+
         <div className="flex items-center space-x-3">
           <div className="flex items-center">
             <MessageSquare className="w-4 h-4 text-actextocinza" />

@@ -13,7 +13,7 @@ interface DocumentData {
   url?: string;
 }
 
-interface PageData {
+export interface PageData {
   id: string;
   image_url: string;
   imageTitle: string;

@@ -9,22 +9,17 @@ import { CardProvider } from '@/contexts/CardContext';
 import { ImageCardProps } from '@/types';
 import { ImageProps } from '@/types';
 
-export default function ImageCard({ image, onDelete }: ImageCardProps) {
+export default function Card({ image, onDelete }: ImageCardProps) {
   const [firstPageId, setFirstPageId] = useState<string | null>(null);
 
   const {
     isDeleting,
     imageError,
     showShareLink,
-    isEditing,
-    title,
     imageUrl,
     handleShare,
-    handleTitleEdit,
     handleDelete,
-    setTitle,
-    setIsEditing,
-  } = useImageCard(image, onDelete); // ✅ onDelete agora com a assinatura correta
+  } = useImageCard(image);
 
   useEffect(() => {
     const fetchFirstPageId = async () => {
@@ -68,18 +63,8 @@ export default function ImageCard({ image, onDelete }: ImageCardProps) {
     >
       <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
         <CardHeader
-          imageUrl={imageUrl}
-          isDeleting={isDeleting}
-          handleShare={handleShare}
-          handleDelete={handleDelete}
         />
-        <CardContent
-          title={title}
-          isEditing={isEditing}
-          setTitle={setTitle}
-          handleTitleEdit={handleTitleEdit}
-          setIsEditing={setIsEditing}
-        />
+        <CardContent/>
         {showShareLink && (
           <div className="absolute bottom-0 left-0 right-0 bg-acbgbranco p-2 text-xs text-center">
             Link copiado!

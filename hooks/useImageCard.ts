@@ -1,50 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
-import { useImages } from '@/contexts/ImagesContext';
+import { useGalleryContext } from '@/contexts/GalleryContext';
 import { deleteCard } from '@/utils/deleteCard';
-import { ImageProps } from '@/types/ImageProps';
+import { PageData } from '@/contexts/CardContext';
 
-export const useImageCard = (
-  image: ImageProps,
-  onDelete: (id: string, imageUrl?: string) => Promise<void>
-) => {
+export const useImageCard = (pageData: PageData) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showShareLink, setShowShareLink] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [documentTitle, setDocumentTitle] = useState('');
-  const [title, setTitle] = useState('');
-  const router = useRouter();
-  const imageUrl = image.image_url ? getImageUrl(image.image_url) : '/noite-estrelada-comentada.jpg';
-  const { refreshImages } = useImages();
-
-  useEffect(() => {
-    const fetchDocumentTitle = async () => {
-      const { data, error } = await createSupabaseClient
-        .from('documents')
-        .select('title')
-        .eq('id', image.document_id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching document title:', error);
-        setDocumentTitle('Sem título');
-        setTitle('Sem título');
-      } else if (data) {
-        setDocumentTitle(data.title || 'Sem título');
-        setTitle(data.title || 'Sem título');
-      }
-    };
-
-    fetchDocumentTitle();
-  }, [image.document_id]);
+  const imageUrl = pageData.image_url ? getImageUrl(pageData.image_url) : '/noite-estrelada-comentada.jpg';
+  const { refreshImages } = useGalleryContext();
 
   const handleShare = async () => {
-    const linkToShare = `${window.location.origin}/${image.document_id}`;
+    const linkToShare = `${window.location.origin}/${pageData.document_id}`;
     try {
       await navigator.clipboard.writeText(linkToShare);
       setShowShareLink(true);
@@ -54,29 +26,11 @@ export const useImageCard = (
     }
   };
 
-  const handleTitleEdit = async () => {
-    if (!title) {
-      setTitle('Sem título');
-    }
-    try {
-      const { error } = await createSupabaseClient
-        .from('documents')
-        .update({ title })
-        .eq('id', image.document_id);
-
-      if (error) throw error;
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Erro ao atualizar título:', error);
-    }
-  };
-
-  const handleDelete = async (imageId: string) => {
+  const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const result = await deleteCard(imageId, image.image_url);
+      const result = await deleteCard(pageData.document_id, pageData.image_url);
       if (result.success) {
-        await onDelete(image.id, image.image_url); // ✅ Correto agora
         await refreshImages();
       } else {
         alert(`Falha ao excluir: ${result.message}`);
@@ -93,13 +47,9 @@ export const useImageCard = (
     isDeleting,
     imageError,
     showShareLink,
-    isEditing,
-    title,
     imageUrl,
     handleShare,
-    handleTitleEdit,
     handleDelete,
-    setTitle,
-    setIsEditing,
   };
 };
+
