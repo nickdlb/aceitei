@@ -8,11 +8,9 @@ import FiltroTipoCard from './FiltroTipoCard';
 const GalleryHeader: React.FC = () => {
   return (
     <div className="flex items-center justify-between gap-4 bg-acbg p-4 rounded-tl-xl rounded-tr-xl">
-      <FiltroTipoCard
-      />
+      <FiltroTipoCard/>
       <div className='flex gap-4'>
-        <OrdenacaoFiltro
-        />
+        <OrdenacaoFiltro/>
         <SearchCard />
       </div>
     </div>

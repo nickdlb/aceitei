@@ -101,8 +101,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
     <>
       <div
         {...getRootProps()}
-        className={`relative group flex flex-col items-center justify-cenwter min-h-[200px] w-full border-2 border-dashed rounded-lg ${isDragActive ? 'border-acazul bg-acazul' : 'border-acazul hover:border-acazul'} transition-all duration-200 ease-in-out cursor-pointer overflow-hidden`}
-      >
+        className={`relative group flex flex-col items-center justify-cenwter min-h-[200px] w-full border-2 border-dashed rounded-lg ${isDragActive ? 'border-acazul bg-acazul' : 'border-acazul hover:border-acazul'} transition-all duration-200 ease-in-out cursor-pointer overflow-hidden`}>
         <input {...getInputProps()} />
         <div
           className={`absolute inset-0 flex flex-col items-center justify-center bg-acbgbranco bg-opacity-90 transition-opacity duration-200 ${isDragActive ? 'opacity-0' : 'group-hover:opacity-0'}`}
@@ -119,7 +118,6 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           <p className="text-xs text-acbranco mt-1">ou arraste e solte aqui</p>
         </div>
       </div>
-
       <MultipleUploadModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}

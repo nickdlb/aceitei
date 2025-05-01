@@ -60,8 +60,7 @@ export default function Card({ image }: ImageCardProps) {
       }}
     >
       <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
-        <CardHeader
-        />
+        <CardHeader/>
         <CardContent/>
         {showShareLink && (
           <div className="absolute bottom-0 left-0 right-0 bg-acbgbranco p-2 text-xs text-center">
