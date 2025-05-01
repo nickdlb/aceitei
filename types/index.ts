@@ -1,23 +1,3 @@
-export type { AuthPopupProps } from './AuthPopupProps';
-export type { CardContentProps } from './CardContentProps';
-export type { CardGalleryProps } from './CardGalleryProps';
-export type { CardHeaderProps } from './CardHeaderProps';
-export type { ImageCardProps } from './CardProps';
-export type { CommentHeaderProps } from './CommentHeaderProps';
-export type { CommentListItemProps } from './CommentListItemProps';
-export type { Comment } from './CommentsProps';
-export type { ImageAreaProps } from './CommentsProps';
-export type { CommentSidebarProps } from './CommentsProps';
-export type { CommentItemProps } from './CommentsProps';
-export type { ImagePinProps } from './CommentsProps';
-export type { CommentReaction } from './CommentsProps';
+export type { ImageAreaProps } from './ImageAreaProps';
 export type { DocumentPage } from './DocumentProps.ts'
-export type { ImageProps } from './ImageProps';
-export type { ImageSidebarProps } from './ImageSidebarProps';
-export type { LoginFormProps } from './LoginFormProps';
-export type { MultipleUploadModalProps } from './MultipleUploadModalProps';
-export type { PageLayoutProps } from './PageLayoutProps';
 export type { PinProps, CommentReactionPin } from './PinProps';
-export type { ProfilePhotoProps } from './ProfilePhotoProps';
-export type { UploadZoneProps } from './UploadZoneProps';
-export type { UserInfoProps } from './UserInfoProps';

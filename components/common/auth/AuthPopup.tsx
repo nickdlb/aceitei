@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/common/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, } from "@/components/common/ui/dialog"
 import { Label } from "@/components/common/ui/label"
 import { Input } from "@/components/common/ui/input"
 import { Button } from "@/components/common/ui/button"
-import { AuthPopupProps } from '@/types';
+
+export interface AuthPopupProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (name: string, email: string) => Promise<void>;
+}
 
 const AuthPopup = ({ isOpen, onClose, onSubmit }: AuthPopupProps) => {
     const [name, setName] = useState('');

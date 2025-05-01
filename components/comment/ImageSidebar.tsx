@@ -1,6 +1,15 @@
 import Image from 'next/image';
 import { getImageUrl } from '@/utils/getImageUrl';
-import { ImageSidebarProps } from '@/types';
+
+interface ImageSidebarProps {
+    pages: Array<{
+        id: string;
+        image_url: string;
+        page_number: number;
+    }>;
+    currentPage: string;
+    onPageChange: (pageId: string) => void;
+}
 
 const ImageSidebar = ({ pages, currentPage, onPageChange }: ImageSidebarProps) => {
     return (

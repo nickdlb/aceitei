@@ -1,9 +1,15 @@
 'use client';
-import {ProfilePhotoProps} from '@/types';
+
 import React, { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/ui/avatar';
 import { Button } from '@/components/common/ui/button';
+
+interface ProfilePhotoProps {
+  photoURL: string;
+  onUpdatePhoto: (url: string) => void;
+  userId: string | null;
+}
 
 const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, userId }) => {
   const [newPhoto, setNewPhoto] = useState<File | null>(null);

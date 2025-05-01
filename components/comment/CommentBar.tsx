@@ -1,6 +1,5 @@
 
 import UserProfileSidebar from '@/components/dashboard/sidebar/UserProfile';
-import { CommentSidebarProps } from '@/types/CommentsProps';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { saveComment as saveComment } from '@/utils/commentUtils';
@@ -10,7 +9,22 @@ import CommentFilter from './CommentBarFilter';
 import CommentHeader from './CommentBarHeader';
 import CommentListItem from './CommentBarListItem';
 import { usePageContext } from '@/contexts/PageContext';
+import { Session } from '@supabase/supabase-js';
+import { PinProps } from '@/types';
 
+interface CommentBarProps {
+    pins: PinProps[];
+    statusFilter: 'ativo' | 'resolvido' | null;
+    setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => void;
+    editingPinId: string | null;
+    comments: { [key: string]: string };
+    setEditingPinId: (pinId: string | null) => void;
+    userNames: { [key: string]: string };
+    session: Session | null;
+    loadComments: () => Promise<void>;
+    loadRepliesForPin?: (pinId: string) => Promise<void>;
+    setShowAuthPopup: (show: boolean) => void;
+}
 
 const CommentBar = ({
   pins,
@@ -24,7 +38,7 @@ const CommentBar = ({
   loadComments,
   loadRepliesForPin,
   setShowAuthPopup
-}: CommentSidebarProps) => {
+}: CommentBarProps) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [localComments, setLocalComments] = useState<{ [key: string]: string }>(comments || {});
   const { documentData } = usePageContext();

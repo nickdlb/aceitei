@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { ImagePinProps } from '@/types';
+import { PinProps } from '@/types';
 
-interface ExtendedImagePinProps extends ImagePinProps {
-  style?: React.CSSProperties;
+interface ImagePinProps {
+    pin: PinProps;
+    draggingPin: PinProps | null;
+    setDraggingPin: (pin: PinProps | null) => void;
+    isDragging: boolean;
+    setIsDragging: (isDragging: boolean) => void;
+    updatePinPosition: (pinId: string, x: number, y: number) => void;
+    style?: React.CSSProperties;
 }
 
-const ImagePin: React.FC<ExtendedImagePinProps> = ({
+const ImagePin: React.FC<ImagePinProps> = ({
   pin,
   draggingPin,
   setDraggingPin,

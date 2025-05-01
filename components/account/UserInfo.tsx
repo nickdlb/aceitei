@@ -3,9 +3,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/common/auth/AuthProvider';
-import {UserInfoProps} from '@/types';
 import { Input } from '@/components/common/ui/input';
 import { Button } from '@/components/common/ui/button';
+
+export interface UserInfoProps {
+  userData: {
+    nome: string;
+    email: string;
+  };
+  onUpdateName: (newName: string) => void;
+  userId: string | null;
+}
 
 const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) => {
   const [editingName, setEditingName] = useState(false);

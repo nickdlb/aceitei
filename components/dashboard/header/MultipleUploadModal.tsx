@@ -1,5 +1,4 @@
 import { Copy, File } from 'lucide-react';
-import { MultipleUploadModalProps } from '@/types';
 import { Button } from '@/components/common/ui/button';
 import {
   Dialog,
@@ -7,6 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/common/ui/dialog';
+
+export interface MultipleUploadModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSeparate: () => void;
+  onCombine: () => void;
+  filesCount: number;
+}
 
 export default function MultipleUploadModal({
   isOpen,

@@ -6,7 +6,25 @@ import { useImageCard } from '@/hooks/useImageCard';
 import { CardHeader } from './CardHeader';
 import { CardContent } from './CardContent';
 import { CardProvider } from '@/contexts/CardContext';
-import { ImageCardProps } from '@/types';
+
+export interface ImageProps {
+  id: string;
+  document_id: string;
+  image_url: string;
+  imageTitle: string;
+  created_at: string;
+  page_id: string;
+  title: string;
+  user_id: string;
+  active_comments: number;
+  resolved_comments: number;
+  notifications: number;
+  type: 'imagem' | 'site';
+} 
+
+export interface ImageCardProps {
+  image: ImageProps;
+}
 
 export default function Card({ image }: ImageCardProps) {
   const [firstPageId, setFirstPageId] = useState<string | null>(null);

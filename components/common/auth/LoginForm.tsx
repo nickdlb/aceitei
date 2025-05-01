@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { LoginFormProps } from '@/types';
 import { Eye, EyeOff } from 'lucide-react';
+
+export interface LoginFormProps {
+  email: string;
+  setEmail: (email: string) => void;
+  password: string;
+  setPassword: (password: string) => void;
+  loading: boolean;
+  error: string;
+  handleLogin: (e: React.FormEvent) => void;
+  handleGoogleLogin: () => void;
+}
 
 const LoginForm: React.FC<LoginFormProps> = ({
   email,

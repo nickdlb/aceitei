@@ -3,8 +3,17 @@ import CommentBar from '@/components/comment/CommentBar';
 import SiteArea from '@/components/comment/SiteArea';
 import ImageSidebar from '@/components/comment/ImageSidebar';
 import AuthPopup from '@/components/common/auth/AuthPopup';
-import { PageLayoutProps } from '@/types';
 import { usePageContext } from '@/contexts/PageContext';
+
+interface PageLayoutProps {
+  commentBarProps: any;
+  imageAreaProps: any;
+  isPagesOpen: boolean;
+  showAuthPopup: boolean;
+  setShowAuthPopup: (show: boolean) => void;
+  handleAuthSubmitAnonForm: (name: string, email: string) => Promise<void>;
+  handlePageChange: (newPageId: string) => Promise<void>;
+}
 
 const PageLayoutSite: React.FC<PageLayoutProps> = ({
   commentBarProps,
