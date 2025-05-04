@@ -31,6 +31,10 @@ const ImageArea: React.FC<Props> = ({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState(imageTitle);
 
+  const toggleEditTitle = () => {
+    setIsEditingTitle((prev) => !prev);
+  };
+
   const handleZoomChange = useCallback((value: string) => {
     setZoomLevel(value);
     if (scrollContainerRef.current) {
@@ -90,6 +94,7 @@ const ImageArea: React.FC<Props> = ({
   return (
     <div className="flex-1 flex-col">
       <ImageAreaHeader
+        toggleEditTitle={toggleEditTitle}
         imageTitle={imageTitle}
         exibirImagem={exibirImagem}
         isEditingTitle={isEditingTitle}
