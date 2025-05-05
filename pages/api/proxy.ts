@@ -57,8 +57,8 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
   })
 
   // Corrige srcset
-  html = html.replace(/srcset=["']([^"']+)["']/gi, (match, value) => {
-    const entries = value.split(',').map(entry => {
+  html = html.replace(/srcset=["']([^"']+)["']/gi, (match: string, value: string) => {
+    const entries = value.split(',').map((entry: string) => {
       const [url, descriptor] = entry.trim().split(' ')
       const absoluteUrl = url.startsWith('http') || url.startsWith('//')
         ? url.startsWith('//') ? `https:${url}` : url
@@ -82,7 +82,7 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
 function fixInlineStyleUrls(html: string, baseUrl: string) {
   const base = new URL(baseUrl)
   return html.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, (match, cssContent) => {
-    const rewrittenCss = cssContent.replace(/url\(["']?([^)"']+)["']?\)/gi, (urlMatch, urlPath) => {
+    const rewrittenCss = cssContent.replace(/url\(["']?([^)"']+)["']?\)/gi, (urlMatch: string, urlPath: string) => {
       if (/^(https?:|\/\/|data:)/i.test(urlPath)) {
         const fullUrl = urlPath.startsWith('//') ? `https:${urlPath}` : urlPath
         return `url("/api/proxy-resource?url=${encodeURIComponent(fullUrl)}")`
