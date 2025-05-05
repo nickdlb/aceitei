@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { useDashboardContext } from '@/contexts/DashboardContext';
 import { deleteCard } from '@/utils/deleteCard';

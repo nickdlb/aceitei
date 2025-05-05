@@ -1,7 +1,6 @@
 import { supabase } from './supabaseClient';
 
 export const deleteCard = async (documentId: string, imageUrl?: string) => {
-  const supabase = supabase;
 
   try {
     const { data: pages, error: pagesError } = await supabase
