@@ -6,8 +6,8 @@ import { checkIsAnonymous } from '@/utils/checkIsAnonymous';
 import ProfilePhoto from './ProfilePhoto';
 import UserInfo from './UserInfo';
 import { useAuth } from '@/components/common/auth/AuthProvider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
-import { Skeleton } from '@/components/common/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const AccountContainer = () => {
   const [photoURL, setPhotoURL] = useState('');

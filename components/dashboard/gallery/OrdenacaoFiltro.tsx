@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/common/ui/select';
+} from '@/components/ui/select';
 import { useDashboardContext } from '@/contexts/DashboardContext';
 
 const OrdenacaoFiltro: React.FC = () => {

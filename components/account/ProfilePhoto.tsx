@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/ui/avatar';
-import { Button } from '@/components/common/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 interface ProfilePhotoProps {
   photoURL: string;

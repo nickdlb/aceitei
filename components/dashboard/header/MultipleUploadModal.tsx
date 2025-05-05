@@ -1,11 +1,11 @@
 import { Copy, File } from 'lucide-react';
-import { Button } from '@/components/common/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/common/ui/dialog';
+} from '@/components/ui/dialog';
 
 export interface MultipleUploadModalProps {
   isOpen: boolean;

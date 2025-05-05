@@ -1,0 +1,68 @@
+import Lottie from "lottie-react";
+import designersLottie from "@/components/lotties/designers-lottie.json";
+import criadoresLottie from "@/components/lotties/criadores-lottie.json";
+import equipesLottie from "@/components/lotties/equipes-lottie.json";
+import cameraLottie from "@/components/lotties/camera-lottie.json";
+import agenciasLottie from "@/components/lotties/agencias-lottie.json";
+import empreendedoresLottie from "@/components/lotties/empreendedores-lottie.json";
+
+export default function ProfissionalsSection() {
+
+    const professionals = [
+        {
+          animation: designersLottie,
+          title: "Designers e ilustradores",
+          description: "Simplifique a revisão de artes e evite perder feedbacks importantes.",
+        },
+        {
+          animation: criadoresLottie,
+          title: "Criadores de conteúdo",
+          description: "Receba sugestões organizadas diretamente sobre suas postagens e crie com mais confiança.",
+        },
+        {
+          animation: equipesLottie,
+          title: "Equipes de marketing",
+          description: "Centralize aprovações, reduza retrabalho e acelere campanhas com um fluxo otimizado.",
+        },
+        {
+          animation: cameraLottie,
+          title: "Fotógrafos e editores",
+          description: "Compartilhe imagens para revisão, receba ajustes visuais claros e finalize projetos mais rápido.",
+        },
+        {
+          animation: agenciasLottie,
+          title: "Agências e estúdios",
+          description: "Facilite a comunicação com clientes e equipe, garantindo que todas as alterações fiquem documentadas.",
+        },
+        {
+          animation: empreendedoresLottie,
+          title: "Empreendedores e freelancers",
+          description: "Organize feedbacks de parceiros e clientes sem complicação, mantendo controle total das mudanças.",
+        },
+      ];
+
+    return(
+        <section className="bg-white py-20 px-6">
+        <div className="max-w-6xl mx-auto text-center">
+            <p className="text-sm text-blue-600 font-medium uppercase tracking-wide mb-2">
+            PINIFY É PARA VOCÊ? DESCUBRA AGORA!
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-12">
+            Profissionais que vão elevar sua produtividade com o <span className="text-blue-500">Pinify</span>
+            </h2>
+
+            <div className="grid md:grid-cols-3 gap-8">
+            {professionals.map((item) => (
+                <div key={item.title} className="bg-white p-6 rounded-xl shadow-md text-left hover:shadow-lg transition">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <Lottie animationData={item.animation} loop={true} autoplay={true} className="w-10 h-10" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-gray-600 text-sm">{item.description}</p>
+                </div>
+            ))}
+            </div>
+        </div>
+        </section>
+    )
+    }

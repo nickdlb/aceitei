@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Input } from "@/components/common/ui/input";
-import { Button } from "@/components/common/ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 
@@ -51,7 +51,7 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
     }
   };
 
-  const handleHttpsInput = (url: string): string  => {
+  const handleHttpsInput = (url: string): string => {
     if (!url) return '';
     const trimmed = url.trim();
     if (/^https?:\/\//i.test(trimmed)) {

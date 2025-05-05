@@ -2,7 +2,7 @@
 
 import BotaoPopupUpload from './BotaoPopupUpload';
 import UserProfile from '../sidebar/UserProfile';
-import { ToggleDarkModeAnimation } from '../../common/ui/toggleDarkmode';
+import { ToggleDarkModeAnimation } from '../../ui/toggleDarkmode';
 import NotificationsBell from '@/components/dashboard/header/NotificationsBell';
 import { useDashboardContext } from '@/contexts/DashboardContext';
 

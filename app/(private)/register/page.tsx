@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { Toggle } from '@/components/common/ui/toggleDarkmode';
+import { Toggle } from '@/components/ui/toggleDarkmode';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -3,8 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/common/auth/AuthProvider';
-import { Input } from '@/components/common/ui/input';
-import { Button } from '@/components/common/ui/button';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export interface UserInfoProps {
   userData: {

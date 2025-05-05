@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, } from "@/components/common/ui/dialog"
-import { Label } from "@/components/common/ui/label"
-import { Input } from "@/components/common/ui/input"
-import { Button } from "@/components/common/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 export interface AuthPopupProps {
     isOpen: boolean;
@@ -26,25 +26,26 @@ const AuthPopup = ({ isOpen, onClose, onSubmit }: AuthPopupProps) => {
                         precisamos saber quem você é.
                     </DialogDescription>
                 </DialogHeader>
-                <form className="grid gap-4 py-4" onSubmit={async (e: React.FormEvent) => {e.preventDefault(); setLoading(true);setError('');
+                <form className="grid gap-4 py-4" onSubmit={async (e: React.FormEvent) => {
+                    e.preventDefault(); setLoading(true); setError('');
                     try {
                         await onSubmit(name, email);
                         onClose();
-                    }   
+                    }
                     catch (error: any) {
                         setError(error.message || 'Erro ao salvar suas informações. Tente novamente.');
-                    }   
+                    }
                     finally {
                         setLoading(false);
-                        }   
-                    }}>
+                    }
+                }}>
                     <div className="grid gap-2">
                         <Label htmlFor="name">Nome completo</Label>
-                        <Input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={30}/>
+                        <Input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={30} />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="email">E-mail</Label>
-                        <Input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                        <Input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     </div>
                     {error && (
                         <div className="text-sm text-red-600">

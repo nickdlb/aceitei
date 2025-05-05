@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export const UserProfile = () => {
   const { session } = useAuth();

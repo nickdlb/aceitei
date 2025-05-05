@@ -1,5 +1,5 @@
 import { UploadZone } from '@/components/dashboard/header/UploadZone';
-import { Card, CardContent } from "@/components/common/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import SiteUpload from "@/components/dashboard/header/SiteUpload"
 
 interface PopupUploadProps {

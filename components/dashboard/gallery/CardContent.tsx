@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Edit, MessageSquare, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/common/ui/button';
-import { Input } from '@/components/common/ui/input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useCardContext } from '@/contexts/CardContext';
 import { createSupabaseClient } from '@/utils/supabaseClient';
 

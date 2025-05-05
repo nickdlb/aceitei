@@ -49,7 +49,7 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
       const fullUrl = path.startsWith('//') ? `https:${path}` : path
       return `${attr}="/api/proxy-resource?url=${encodeURIComponent(fullUrl)}"`
     } else if (/^(#|mailto:|javascript:)/i.test(path)) {
-      return match
+      return match // não mexe
     } else {
       const absoluteUrl = new URL(path, base).toString()
       return `${attr}="/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}"`
@@ -66,6 +66,14 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
       return `/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)} ${descriptor || ''}`.trim()
     })
     return `srcset="${entries.join(', ')}"`
+  })
+
+  // Adicional: Corrige @import url(...) inline (em <style>)
+  html = html.replace(/@import\s+url\(["']?([^)"']+)["']?\)/gi, (match, urlPath) => {
+    const absoluteUrl = urlPath.startsWith('http') || urlPath.startsWith('//')
+      ? urlPath.startsWith('//') ? `https:${urlPath}` : urlPath
+      : new URL(urlPath, base).toString()
+    return `@import url("/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}")`
   })
 
   return html

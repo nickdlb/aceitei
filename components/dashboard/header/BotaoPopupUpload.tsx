@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Plus } from 'lucide-react';
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/common/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
 import PopupUpload from '@/components/dashboard/header/PopupUpload';
 import { useDashboardContext } from '@/contexts/DashboardContext';
 
