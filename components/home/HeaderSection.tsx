@@ -1,3 +1,5 @@
+import { Toggle } from "../ui/toggleDarkmode"
+
 export default function HeaderSection() {
     return (
         <header className="flex items-center justify-center">

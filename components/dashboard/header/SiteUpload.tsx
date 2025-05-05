@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 
 export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (page: any) => void }) {
@@ -12,7 +12,7 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
     if (!session?.user?.id) return;
     url = handleHttpsInput(url);
     try {
-      const { data: document, error: documentError } = await createSupabaseClient
+      const { data: document, error: documentError } = await supabase
         .from('documents')
         .insert({
           url,
@@ -28,7 +28,7 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
         return;
       }
 
-      const { data: page, error: pageError } = await createSupabaseClient
+      const { data: page, error: pageError } = await supabase
         .from('pages')
         .insert({
           document_id: document.id,

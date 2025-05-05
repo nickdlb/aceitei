@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 
 interface ImagesContextType {
@@ -27,7 +27,7 @@ export function ImagesProvider({ children }: { children: React.ReactNode }) {
 
         try {
             setLoading(true);
-            const { data, error } = await createSupabaseClient
+            const { data, error } = await supabase
                 .from('documents')
                 .select(`
                     id,

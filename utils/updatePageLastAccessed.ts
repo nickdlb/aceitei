@@ -1,4 +1,4 @@
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 
 export const updatePageLastAccessed = async (pageId: string, session: any): Promise<boolean> => {
 
@@ -8,7 +8,7 @@ export const updatePageLastAccessed = async (pageId: string, session: any): Prom
 
     try {
 
-        const { data: pageData, error: pageError } = await createSupabaseClient
+        const { data: pageData, error: pageError } = await supabase
             .from('pages')
             .select('user_id')
             .eq('id', pageId)
@@ -23,7 +23,7 @@ export const updatePageLastAccessed = async (pageId: string, session: any): Prom
             return false;
         }
 
-        const { error } = await createSupabaseClient
+        const { error } = await supabase
             .from('pages')
             .update({
                 last_accessed_at: new Date().toISOString()

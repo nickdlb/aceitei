@@ -1,5 +1,5 @@
 import { PinProps } from '@/types';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { formatISO } from 'date-fns';
 
 export const createComment = async (
@@ -28,7 +28,7 @@ export const createComment = async (
             return;
         }
 
-        const { data: pageExists, error: pageError } = await createSupabaseClient
+        const { data: pageExists, error: pageError } = await supabase
             .from('pages')
             .select('id')
             .eq('id', pageId)
@@ -39,7 +39,7 @@ export const createComment = async (
             return;
         }
 
-        const { data: existingComments, error: fetchError } = await createSupabaseClient
+        const { data: existingComments, error: fetchError } = await supabase
             .from('comments')
             .select('pin_number')
             .eq('page_id', pageId)
@@ -55,7 +55,7 @@ export const createComment = async (
         // Increment the maximum value by 1
         const pin_Number = maxPinNumber + 1;
 
-        const { data: newPinData, error } = await createSupabaseClient
+        const { data: newPinData, error } = await supabase
             .from('comments')
             .insert([
                 {
@@ -121,7 +121,7 @@ export const checkCommentPermissions = async (pin: PinProps, session: any): Prom
     }
 
     try {
-        const { data: pageData, error: pageError } = await createSupabaseClient
+        const { data: pageData, error: pageError } = await supabase
             .from('pages')
             .select('user_id')
             .eq('id', pin.page_id)
@@ -138,7 +138,7 @@ export const checkCommentPermissions = async (pin: PinProps, session: any): Prom
             return isDocumentOwner;
         }
 
-        const { data: commentData, error: commentError } = await createSupabaseClient
+        const { data: commentData, error: commentError } = await supabase
             .from('comments')
             .select('user_id')
             .eq('id', pin.id)
@@ -196,7 +196,7 @@ export const changeCommentStatus = async (
         const newStatus = pin.status === 'ativo' ? 'resolvido' : 'ativo';
         const updateData: any = { status: newStatus };
 
-        const { error } = await createSupabaseClient
+        const { error } = await supabase
             .from('comments')
             .update(updateData)
             .eq('id', pinId);
@@ -244,7 +244,7 @@ export const saveComment = async (
         const comment = comments[pinId];
         if (!comment) return;
 
-        const { error } = await createSupabaseClient
+        const { error } = await supabase
             .from('comments')
             .update({ content: comment })
             .eq('id', pinId);
@@ -291,7 +291,7 @@ export const deleteComment = async (
             return;
         }
 
-        const { error: reactionsError } = await createSupabaseClient
+        const { error: reactionsError } = await supabase
             .from('comment_reactions')
             .delete()
             .eq('comment_id', pinId);
@@ -301,7 +301,7 @@ export const deleteComment = async (
             return;
         }
 
-        const { error } = await createSupabaseClient
+        const { error } = await supabase
             .from('comments')
             .delete()
             .eq('id', pinId);

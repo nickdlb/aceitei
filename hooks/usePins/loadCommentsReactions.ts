@@ -1,8 +1,8 @@
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 
 export const loadCommentsReactions = async (commentIds: string[]) => {
     try {
-        const { data: reactionsData, error: reactionsError } = await createSupabaseClient
+        const { data: reactionsData, error: reactionsError } = await supabase
             .from('comment_reactions')
             .select('*')
             .in('comment_id', commentIds);

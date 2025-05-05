@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PinProps } from '@/types';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import { loadComments } from './usePins/loadComments';
@@ -44,7 +44,7 @@ export const usePins = (pageId: string, session: any) => {
             for (const pin of pins) {
                 if (!isMounted) break;
                 if (pin.user_id) {
-                    const { data } = await createSupabaseClient
+                    const { data } = await supabase
                         .from('anonymous_users')
                         .select('name')
                         .eq('auth_id', pin.user_id)

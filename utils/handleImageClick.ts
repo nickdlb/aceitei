@@ -1,4 +1,4 @@
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { createComment } from '@/utils/commentUtils';
 import { PinProps } from '@/types';
 
@@ -16,7 +16,7 @@ export const handleImageClick = async (
     setShowAuthPopup: (show: boolean) => void,
     editingPinId: string | null
 ) => {
-    const { data: { session } } = await createSupabaseClient.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
 
     if (!session?.user) {
         setPendingClick({ x: xPercent, y: yPercent });
@@ -28,7 +28,7 @@ export const handleImageClick = async (
     const emptyCommentPin = editingPin && (!editingPin.comment || editingPin.comment.trim() === '');
 
     const getDocumentId = async (pageId: string) => {
-        const { data, error } = await createSupabaseClient
+        const { data, error } = await supabase
             .from('pages')
             .select('document_id')
             .eq('id', pageId)
@@ -79,7 +79,7 @@ const updatePinPosition = async (
 ) => {
     try {
 
-        await createSupabaseClient
+        await supabase
             .from('comments')
             .update({ pos_x: xPercent, pos_y: yPercent })
             .eq('id', pinId);

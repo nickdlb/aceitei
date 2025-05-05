@@ -1,23 +1,14 @@
-import { Metadata } from 'next'
+'use client'
+
 import './globals.css'
-import { AuthProvider } from '@/components/common/auth/AuthProvider'
 import { ThemeProvider, ThemeInitScript } from '@/contexts/ThemeContext'
+import { AuthProvider } from '@/components/common/auth/AuthProvider'
 
-export const metadata: Metadata = {
-  title: 'Aceitei',
-  description: "Startup Ag DLB"
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-      </head>
-      <body className="vsc-initialized">
+    <html lang="pt-BR" suppressHydrationWarning>
+      <head />
+      <body>
         <ThemeInitScript />
         <ThemeProvider storageKey="aceitei-theme">
           <AuthProvider>

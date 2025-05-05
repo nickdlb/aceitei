@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
@@ -20,7 +20,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
     const fetchUserName = async () => {
       try {
         if (userId) {
-          const { data, error } = await createSupabaseClient
+          const { data, error } = await supabase
             .from('users')
             .select('nome')
             .eq('user_id', userId)
@@ -56,7 +56,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
     setUploading(true);
     try {
       const fileName = `profile-${Date.now()}-${file.name}`;
-      const { data: uploadData, error: uploadError } = await createSupabaseClient.storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('fotoperfil')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -70,11 +70,11 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
       if (photoURL && photoURL.includes('fotoperfil')) {
         const oldFileName = photoURL.split('/').pop();
         if (oldFileName) {
-          await createSupabaseClient.storage.from('fotoperfil').remove([oldFileName]);
+          await supabase.storage.from('fotoperfil').remove([oldFileName]);
         }
       }
 
-      const { error: updateError } = await createSupabaseClient
+      const { error: updateError } = await supabase
         .from('users')
         .update({ fotoperfil: url })
         .eq('user_id', userId);
@@ -96,11 +96,11 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
       if (photoURL && photoURL.includes('fotoperfil')) {
         const oldFileName = photoURL.split('/').pop();
         if (oldFileName) {
-          await createSupabaseClient.storage.from('fotoperfil').remove([oldFileName]);
+          await supabase.storage.from('fotoperfil').remove([oldFileName]);
         }
       }
 
-      const { error } = await createSupabaseClient
+      const { error } = await supabase
         .from('users')
         .update({ fotoperfil: null })
         .eq('user_id', userId);

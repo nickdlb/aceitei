@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { checkIsAnonymous } from '@/utils/checkIsAnonymous';
 import ProfilePhoto from './ProfilePhoto';
 import UserInfo from './UserInfo';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StripePlans } from '../pagamentos/StripePlans';
+import { CustomerPortalButton } from '@/components/pagamentos/CustomerPortalButton'
 
 const AccountContainer = () => {
   const [photoURL, setPhotoURL] = useState('');
@@ -22,7 +24,7 @@ const AccountContainer = () => {
     const fetchUserProfile = async () => {
       try {
         if (session?.user?.id) {
-          const { data, error } = await createSupabaseClient
+          const { data, error } = await supabase
             .from('users')
             .select('fotoperfil, nome')
             .eq('user_id', session.user.id)
@@ -68,25 +70,30 @@ const AccountContainer = () => {
     );
   }
   return (
-    <Card className="flex-1 border-none">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-acpreto text-2xl font-bold">Minha Conta</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="bg-acbgbranco rounded-lg shadow p-6">
-          <ProfilePhoto
-            photoURL={photoURL}
-            onUpdatePhoto={handleUpdatePhoto}
-            userId={session?.user?.id || null}
-          />
-          <UserInfo
-            userData={userData}
-            onUpdateName={handleUpdateName}
-            userId={session?.user?.id || null}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <div className='w-[800px]'>
+      <Card className="flex-1 border-none">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-acpreto text-2xl font-bold">Minha Conta</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="bg-acbgbranco rounded-lg shadow p-6">
+            <ProfilePhoto
+              photoURL={photoURL}
+              onUpdatePhoto={handleUpdatePhoto}
+              userId={session?.user?.id || null}
+            />
+            <UserInfo
+              userData={userData}
+              onUpdateName={handleUpdateName}
+              userId={session?.user?.id || null}
+            />
+          </div>
+        </CardContent>
+      </Card>
+      <StripePlans />
+      <CustomerPortalButton />
+    </div>
+
   );
 };
 
