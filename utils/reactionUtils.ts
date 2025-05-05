@@ -1,4 +1,4 @@
-import { createSupabaseClient } from './supabaseClient';
+import { supabase } from './supabaseClient';
 import { Session } from '@supabase/supabase-js';
 
 export const checkReactionPermissions = async (
@@ -12,7 +12,7 @@ export const checkReactionPermissions = async (
 
     try {
 
-        const { data: reactionData, error: reactionError } = await createSupabaseClient
+        const { data: reactionData, error: reactionError } = await supabase
             .from('comment_reactions')
             .select('user_id, comment_id')
             .eq('id', reactionId)
@@ -66,7 +66,7 @@ export const deleteReaction = async (
             return;
         }
 
-        const { error } = await createSupabaseClient
+        const { error } = await supabase
             .from('comment_reactions')
             .delete()
             .eq('id', reactionId);

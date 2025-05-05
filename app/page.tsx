@@ -15,7 +15,7 @@ import LaptopSection from '@/components/home/LaptopSection';
 
 const HomePage = () => {
   return (
-    <div className='flex items-center justify-center w-full'>
+    <div className='flex items-center justify-center w-full bg-acbranco'>
       <div className="text-gray-800 font-sans w-full max-w-full">
         <HeaderSection/>
         <HeroSection/>

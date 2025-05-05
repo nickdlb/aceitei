@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/components/common/auth/AuthProvider';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -12,7 +12,7 @@ export const UserProfile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (session?.user?.id) {
-        const { data, error } = await createSupabaseClient
+        const { data, error } = await supabase
           .from('users')
           .select('nome, fotoperfil')
           .eq('user_id', session.user.id)

@@ -7,7 +7,7 @@ import { Edit, MessageSquare, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCardContext } from '@/contexts/CardContext';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 
 export const CardContent = () => {
   const { pageData, documentData } = useCardContext();
@@ -18,7 +18,7 @@ export const CardContent = () => {
     const finalTitle = title.trim() === '' ? 'Sem título' : title;
 
     try {
-      const { error } = await createSupabaseClient
+      const { error } = await supabase
         .from('documents')
         .update({ title: finalTitle })
         .eq('id', documentData.id);

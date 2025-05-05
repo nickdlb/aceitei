@@ -4,7 +4,7 @@ import { uploadImage } from '@/utils/uploadImage';
 import { useAuth } from '../../common/auth/AuthProvider';
 import { UploadCloud } from 'lucide-react';
 import MultipleUploadModal from './MultipleUploadModal';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 
 export interface UploadZoneProps {
   onUploadSuccess: (data: any) => void;
@@ -20,7 +20,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
     try {
       if (combine) {
-        const { data: document, error: documentError } = await createSupabaseClient
+        const { data: document, error: documentError } = await supabase
           .from('documents')
           .insert({ title: 'Documento Combinado', user_id: session.user.id })
           .select()
@@ -33,7 +33,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           const fileExt = file.name.split('.').pop();
           const fileName = `${Math.random()}.${fileExt}`;
 
-          const { error: storageError } = await createSupabaseClient.storage
+          const { error: storageError } = await supabase.storage
             .from('images')
             .upload(fileName, file);
 
@@ -42,7 +42,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
             continue;
           }
 
-          const { error: pageError } = await createSupabaseClient
+          const { error: pageError } = await supabase
             .from('pages')
             .insert({
               image_url: fileName,
@@ -54,11 +54,11 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
           if (pageError) {
             console.error('Erro ao criar página:', pageError);
-            await createSupabaseClient.storage.from('images').remove([fileName]);
+            await supabase.storage.from('images').remove([fileName]);
           }
         }
 
-        const { data: firstPage } = await createSupabaseClient
+        const { data: firstPage } = await supabase
           .from('pages')
           .select('*')
           .eq('document_id', document.id)

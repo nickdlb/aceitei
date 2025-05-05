@@ -7,7 +7,7 @@ import { usePins } from '@/hooks/usePins';
 import { getPageDataSupabase } from '@/hooks/getDataSupabaseCommentPage';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useRealtimeComments } from '@/hooks/useRealtimeComments';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/utils/commentUtils';
@@ -19,7 +19,7 @@ import { PageProvider } from '@/contexts/PageContext';
 import type { DocumentPage } from '@/types';
 
 
-export default function Page() { 
+export default function Page() {
     const params = useParams();
     const documentId = params ? (params.id as string) : "";
     const { session } = useAuth();
@@ -30,7 +30,7 @@ export default function Page() {
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
     const [currentTitle, setCurrentTitle] = useState(pageData?.documents?.title ?? '');
-    const [currentPageData, setCurrentPageData] = useState<DocumentPage | null>(null);      
+    const [currentPageData, setCurrentPageData] = useState<DocumentPage | null>(null);
 
     useEffect(() => {
         if (pageData?.imageTitle) {
@@ -39,10 +39,10 @@ export default function Page() {
     }, [pageData]);
 
     useEffect(() => {
-        if (!pageData?.id) return; 
+        if (!pageData?.id) return;
         const updateDocumentLastAccessed = async () => {
             try {
-                const { data: page, error: pageError } = await createSupabaseClient
+                const { data: page, error: pageError } = await supabase
                     .from('pages')
                     .select('document_id')
                     .eq('id', pageData?.id ?? '')
@@ -59,7 +59,7 @@ export default function Page() {
                 }
 
                 const documentId = page.document_id;
-                const { error: documentError } = await createSupabaseClient
+                const { error: documentError } = await supabase
                     .from('documents')
                     .update({ last_acessed_at: new Date().toISOString() })
                     .eq('id', documentId);
@@ -78,8 +78,8 @@ export default function Page() {
     useEffect(() => {
         console.log('✅ pageData:', pageData);
         console.log('✅ pages:', pages);
-      }, [pageData?.id ?? '', pageData, pages]);
-      
+    }, [pageData?.id ?? '', pageData, pages]);
+
 
     const {
         pins,
@@ -170,9 +170,9 @@ export default function Page() {
 
     const handlePageChange = async (newPageId: string) => {
         try {
-          const { data: newPageData, error } = await createSupabaseClient
-            .from('pages')
-            .select(`
+            const { data: newPageData, error } = await supabase
+                .from('pages')
+                .select(`
               *,
               documents:documents!pages_document_id_fkey (
                 id,
@@ -184,52 +184,52 @@ export default function Page() {
                 url
               )
             `)
-            .eq('id', newPageId)
-            .single();
-      
-          if (error) {
-            console.error('Erro ao buscar nova página:', error.message);
-            return;
-          }
-      
-          if (!newPageData) {
-            console.warn('Nenhuma página encontrada com o ID fornecido.');
-            return;
-          }
-      
-          setPageData(newPageData);
-        } catch (error) {
-          console.error('Erro inesperado ao carregar nova página:', error);
-        }
-      };      
+                .eq('id', newPageId)
+                .single();
 
-      const handleTitleUpdate = async (newTitle: string) => {
-        try {
-          const { error } = await createSupabaseClient
-            .from('documents')
-            .update({ title: newTitle })
-            .eq('id', pageData?.documents?.id ?? '');
-      
-          if (error) {
-            console.error('Erro ao atualizar o título do documento:', error);
-            return;
-          }
-      
-          // Atualiza o título no estado local
-          setCurrentTitle(newTitle);
-      
-          // Atualiza também a referência interna em pageData.documentData
-          setPageData((prev: any) => ({
-            ...prev,
-            documents: {
-              ...prev.documents,
-              title: newTitle
+            if (error) {
+                console.error('Erro ao buscar nova página:', error.message);
+                return;
             }
-          }));
-        } catch (err) {
-          console.error('Erro inesperado ao atualizar o título:', err);
+
+            if (!newPageData) {
+                console.warn('Nenhuma página encontrada com o ID fornecido.');
+                return;
+            }
+
+            setPageData(newPageData);
+        } catch (error) {
+            console.error('Erro inesperado ao carregar nova página:', error);
         }
-      };
+    };
+
+    const handleTitleUpdate = async (newTitle: string) => {
+        try {
+            const { error } = await supabase
+                .from('documents')
+                .update({ title: newTitle })
+                .eq('id', pageData?.documents?.id ?? '');
+
+            if (error) {
+                console.error('Erro ao atualizar o título do documento:', error);
+                return;
+            }
+
+            // Atualiza o título no estado local
+            setCurrentTitle(newTitle);
+
+            // Atualiza também a referência interna em pageData.documentData
+            setPageData((prev: any) => ({
+                ...prev,
+                documents: {
+                    ...prev.documents,
+                    title: newTitle
+                }
+            }));
+        } catch (err) {
+            console.error('Erro inesperado ao atualizar o título:', err);
+        }
+    };
 
     if (loading || !pageData) {
         return (
@@ -289,16 +289,18 @@ export default function Page() {
     };
 
     return (
-        <PageProvider value={{pageId: pageData?.id ?? '',pageData,pages,currentTitle, handleTitleUpdate,  documentData: {
-            id: pageData?.documents?.id ?? '',
-            title: pageData?.documents?.title ?? '',
-            created_at: pageData?.documents?.created_at ?? '',
-            user_id: pageData?.documents?.user_id ?? '',
-            last_acessed_at: pageData?.documents?.last_acessed_at ?? '',
-            status: pageData?.documents?.status ?? '',
-            type: pageData?.documents?.type ?? '',
-            url: pageData?.documents?.url ?? '',
-          }}}>
+        <PageProvider value={{
+            pageId: pageData?.id ?? '', pageData, pages, currentTitle, handleTitleUpdate, documentData: {
+                id: pageData?.documents?.id ?? '',
+                title: pageData?.documents?.title ?? '',
+                created_at: pageData?.documents?.created_at ?? '',
+                user_id: pageData?.documents?.user_id ?? '',
+                last_acessed_at: pageData?.documents?.last_acessed_at ?? '',
+                status: pageData?.documents?.status ?? '',
+                type: pageData?.documents?.type ?? '',
+                url: pageData?.documents?.url ?? '',
+            }
+        }}>
             <PageLayout
                 commentBarProps={commentBarProps}
                 imageAreaProps={imageAreaProps}

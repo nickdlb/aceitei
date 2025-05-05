@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { DocumentPage } from '@/types';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +13,7 @@ export function getPageDataSupabase(documentId: string) {
         const loadPage = async () => {
             if (!documentId) return;
             try {
-                const { data: allPages } = await createSupabaseClient
+                const { data: allPages } = await supabase
                     .from('pages')
                     .select(`
                         *,

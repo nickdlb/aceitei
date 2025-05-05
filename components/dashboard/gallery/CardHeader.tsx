@@ -28,7 +28,7 @@ export const CardHeader = () => {
       window.location.href = `/site/${pageData.document_id}`;
     }
     else {
-      window.location.href = `/${pageData.document_id}`;
+      window.location.href = `/document/${pageData.document_id}`;
     }
   };
 

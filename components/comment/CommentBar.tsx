@@ -1,6 +1,6 @@
 
 import UserProfileSidebar from '@/components/dashboard/sidebar/UserProfile';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect, useRef } from 'react';
 import { saveComment as saveComment } from '@/utils/commentUtils';
 import { deleteComment, changeCommentStatus, editComment, checkCommentPermissions } from '@/utils/commentUtils';
@@ -13,17 +13,17 @@ import { Session } from '@supabase/supabase-js';
 import { PinProps } from '@/types';
 
 interface CommentBarProps {
-    pins: PinProps[];
-    statusFilter: 'ativo' | 'resolvido' | null;
-    setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => void;
-    editingPinId: string | null;
-    comments: { [key: string]: string };
-    setEditingPinId: (pinId: string | null) => void;
-    userNames: { [key: string]: string };
-    session: Session | null;
-    loadComments: () => Promise<void>;
-    loadRepliesForPin?: (pinId: string) => Promise<void>;
-    setShowAuthPopup: (show: boolean) => void;
+  pins: PinProps[];
+  statusFilter: 'ativo' | 'resolvido' | null;
+  setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => void;
+  editingPinId: string | null;
+  comments: { [key: string]: string };
+  setEditingPinId: (pinId: string | null) => void;
+  userNames: { [key: string]: string };
+  session: Session | null;
+  loadComments: () => Promise<void>;
+  loadRepliesForPin?: (pinId: string) => Promise<void>;
+  setShowAuthPopup: (show: boolean) => void;
 }
 
 const CommentBar = ({
@@ -159,7 +159,7 @@ const CommentBar = ({
 
         try {
 
-          const { data: userData, error: userError } = await createSupabaseClient
+          const { data: userData, error: userError } = await supabase
             .from('users')
             .select('nome')
             .eq('user_id', userId)

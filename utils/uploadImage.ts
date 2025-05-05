@@ -1,9 +1,9 @@
-import { createSupabaseClient } from './supabaseClient';
+import { supabase } from './supabaseClient';
 
 export const uploadImage = async (file: File, userId: string, title: string) => {
     try {
 
-        const { data: documentData, error: documentError } = await createSupabaseClient
+        const { data: documentData, error: documentError } = await supabase
             .from('documents')
             .insert([
                 {
@@ -22,17 +22,17 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
 
-        const { error: storageError } = await createSupabaseClient.storage
+        const { error: storageError } = await supabase.storage
             .from('images')
             .upload(fileName, file);
 
         if (storageError) {
             console.error('Error uploading file:', storageError);
-            await createSupabaseClient.from('documents').delete().eq('id', documentData.id);
+            await supabase.from('documents').delete().eq('id', documentData.id);
             return null;
         }
 
-        const { data: pageData, error: pageError } = await createSupabaseClient
+        const { data: pageData, error: pageError } = await supabase
             .from('pages')
             .insert([
                 {
@@ -48,12 +48,12 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
 
         if (pageError) {
             console.error('Error creating page:', pageError);
-            await createSupabaseClient.from('documents').delete().eq('id', documentData.id);
-            await createSupabaseClient.storage.from('images').remove([fileName]);
+            await supabase.from('documents').delete().eq('id', documentData.id);
+            await supabase.storage.from('images').remove([fileName]);
             return null;
         }
 
-        const { data: documentWithPage, error: documentFetchError } = await createSupabaseClient
+        const { data: documentWithPage, error: documentFetchError } = await supabase
             .from('documents')
             .select('id, title, created_at, user_id')
             .eq('id', documentData.id)

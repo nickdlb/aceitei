@@ -1,7 +1,7 @@
 import React from 'react';
 import SidebarMenuItem from './SidebarMenuItem';
 import { Home, User, LogOut } from 'lucide-react';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 import { useState, useEffect } from 'react';
@@ -15,7 +15,7 @@ const SidebarNav = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (session?.user?.id) {
-        const { data, error } = await createSupabaseClient
+        const { data, error } = await supabase
           .from('users')
           .select('fotoperfil, nome')
           .eq('user_id', session.user.id)
@@ -37,7 +37,7 @@ const SidebarNav = () => {
 
   const handleSupabaseSignOut = async () => {
     try {
-      await createSupabaseClient.auth.signOut();
+      await supabase.auth.signOut();
       router.push('/login');
     } catch (error) {
       console.error('Error signing out:', error);

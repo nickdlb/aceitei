@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/components/common/auth/AuthProvider';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -12,7 +12,7 @@ const SidebarHeader = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (session?.user?.id) {
-        const { data, error } = await createSupabaseClient
+        const { data, error } = await supabase
           .from('users')
           .select('fotoperfil, nome')
           .eq('user_id', session.user.id)

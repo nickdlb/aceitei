@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { useImageCard } from '@/hooks/useImageCard';
 import { CardHeader } from './CardHeader';
 import { CardContent } from './CardContent';
@@ -20,7 +20,7 @@ export interface ImageProps {
   resolved_comments: number;
   notifications: number;
   type: 'imagem' | 'site';
-} 
+}
 
 export interface ImageCardProps {
   image: ImageProps;
@@ -40,7 +40,7 @@ export default function Card({ image }: ImageCardProps) {
 
   useEffect(() => {
     const fetchFirstPageId = async () => {
-      const { data } = await createSupabaseClient
+      const { data } = await supabase
         .from('pages')
         .select('id')
         .eq('document_id', image.document_id)
@@ -78,8 +78,8 @@ export default function Card({ image }: ImageCardProps) {
       }}
     >
       <div className="bg-acbgbranco rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full relative">
-        <CardHeader/>
-        <CardContent/>
+        <CardHeader />
+        <CardContent />
         {showShareLink && (
           <div className="absolute bottom-0 left-0 right-0 bg-acbgbranco p-2 text-xs text-center">
             Link copiado!

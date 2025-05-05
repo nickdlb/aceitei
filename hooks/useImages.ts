@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/components/common/auth/AuthProvider';
-import { createSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 
 interface ProcessedDocument {
     id: string;
@@ -27,7 +27,7 @@ export const useImages = (sortOrder: string) => {
 
     const getNewCommentCount = useCallback(async (documentId: string) => {
         try {
-            const { data: documentData, error: documentError } = await createSupabaseClient
+            const { data: documentData, error: documentError } = await supabase
                 .from('documents')
                 .select('last_acessed_at')
                 .eq('id', documentId)
@@ -45,7 +45,7 @@ export const useImages = (sortOrder: string) => {
 
             const lastAccessedAt = documentData.last_acessed_at || '1970-01-01T00:00:00Z';
 
-            const { data: commentsData, error: commentsError } = await createSupabaseClient
+            const { data: commentsData, error: commentsError } = await supabase
                 .from('comments')
                 .select('*', { count: 'exact' })
                 .eq('document_id', documentId)
@@ -71,7 +71,7 @@ export const useImages = (sortOrder: string) => {
 
         try {
             setLoading(true);
-            const { data: basicDocuments, error: documentsError } = await createSupabaseClient
+            const { data: basicDocuments, error: documentsError } = await supabase
                 .from('documents')
                 .select('id, title, created_at, user_id, type')
                 .eq('user_id', session.user.id)
@@ -91,7 +91,7 @@ export const useImages = (sortOrder: string) => {
             }
 
             const processedDocumentsPromises = basicDocuments.map(async (doc) => {
-                const { data: pageData, error: pageError } = await createSupabaseClient
+                const { data: pageData, error: pageError } = await supabase
                     .from('pages')
                     .select('id, image_url, imageTitle')
                     .eq('document_id', doc.id)
@@ -103,7 +103,7 @@ export const useImages = (sortOrder: string) => {
                     return null;
                 }
 
-                const { data: commentsData, error: commentsError, count: commentCount } = await createSupabaseClient
+                const { data: commentsData, error: commentsError, count: commentCount } = await supabase
                     .from('comments')
                     .select('status', { count: 'exact', head: true })
                     .eq('page_id', pageData.id);
@@ -111,20 +111,20 @@ export const useImages = (sortOrder: string) => {
                 let activeCount = 0;
                 let resolvedCount = 0;
                 if (!commentsError && commentCount !== null) {
-                     // Need separate queries for counts by status if head:true doesn't work as expected
-                     const { count: activeC, error: activeE } = await createSupabaseClient
+                    // Need separate queries for counts by status if head:true doesn't work as expected
+                    const { count: activeC, error: activeE } = await supabase
                         .from('comments')
                         .select('*', { count: 'exact', head: true })
                         .eq('page_id', pageData.id)
                         .eq('status', 'ativo');
-                     activeCount = activeE ? 0 : activeC ?? 0;
+                    activeCount = activeE ? 0 : activeC ?? 0;
 
-                     const { count: resolvedC, error: resolvedE } = await createSupabaseClient
+                    const { count: resolvedC, error: resolvedE } = await supabase
                         .from('comments')
                         .select('*', { count: 'exact', head: true })
                         .eq('page_id', pageData.id)
                         .eq('status', 'resolvido');
-                     resolvedCount = resolvedE ? 0 : resolvedC ?? 0;
+                    resolvedCount = resolvedE ? 0 : resolvedC ?? 0;
                 } else if (commentsError) {
                     console.warn(`Error fetching comment counts for page ${pageData.id}:`, commentsError);
                 }
