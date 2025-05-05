@@ -5,7 +5,7 @@ export function useIframePinInteraction({
   pins,
   handleImageClick
 }: {
-  iframeRef: React.RefObject<HTMLIFrameElement>
+  iframeRef: React.RefObject<HTMLIFrameElement | null>
   pins: { x: number; y: number; num?: number }[]
   handleImageClick: (x: number, y: number) => void
 }) {

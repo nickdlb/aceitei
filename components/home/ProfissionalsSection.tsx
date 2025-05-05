@@ -47,14 +47,14 @@ export default function ProfissionalsSection() {
             <p className="text-sm text-blue-600 font-medium uppercase tracking-wide mb-2">
             PINIFY É PARA VOCÊ? DESCUBRA AGORA!
             </p>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-12">
-            Profissionais que vão elevar sua produtividade com o <span className="text-blue-500">Pinify</span>
-            </h2>
-
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="flex items-center justify-center w-[80%]">
+            <h2 className="text-5xl font-extrabold text-gray-900 mb-12"> 
+              Profissionais que vão elevar sua produtividade com o <span className="text-blue-500">Pinify</span> </h2>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4 bg-gray-200 p-4 rounded-2xl">
             {professionals.map((item) => (
                 <div key={item.title} className="bg-white p-6 rounded-xl shadow-md text-left hover:shadow-lg transition">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
                     <Lottie animationData={item.animation} loop={true} autoplay={true} className="w-10 h-10" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
