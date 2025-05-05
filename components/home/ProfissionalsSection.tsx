@@ -47,8 +47,8 @@ export default function ProfissionalsSection() {
             <p className="text-sm text-blue-600 font-medium uppercase tracking-wide mb-2">
             PINIFY É PARA VOCÊ? DESCUBRA AGORA!
             </p>
-            <div className="flex items-center justify-center w-[80%]">
-            <h2 className="text-5xl font-extrabold text-gray-900 mb-12"> 
+            <div className="flex items-center justify-center">
+            <h2 className="text-5xl font-extrabold text-gray-900 mb-12 w-[70%]"> 
               Profissionais que vão elevar sua produtividade com o <span className="text-blue-500">Pinify</span> </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-4 bg-gray-200 p-4 rounded-2xl">
