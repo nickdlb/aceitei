@@ -1,19 +1,34 @@
 export default function BenefitsSection() {
     return(
-        <section className="bg-blue-50 py-16 px-6">
-            <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8 text-center">
-            <div>
-                <h3 className="text-xl font-semibold">Centralize Feedbacks</h3>
-                <p className="mt-2 text-gray-600">Tenha todos os comentários em um só lugar.</p>
-            </div>
-            <div>
-                <h3 className="text-xl font-semibold">Reduza Retrabalho</h3>
-                <p className="mt-2 text-gray-600">Evite confusão com revisões dispersas.</p>
-            </div>
-            <div>
-                <h3 className="text-xl font-semibold">Colabore com Facilidade</h3>
-                <p className="mt-2 text-gray-600">Trabalhe com times e clientes com clareza.</p>
-            </div>
+        <section className="bg-acazul w-full py-4 pb-20 px-16">
+            <div className="mx-auto max-w-[1400px] grid grid-cols-3 gap-10 text-center *:flex *:flex-col *:border-l-2 *:pl-4 *:border-gray-300 *:border-opacity-40">
+                <div className="flex justify-start">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-gray-300 rounded-full">
+                            <img src="/alvo.png"></img>
+                        </div>
+                        <h3 className="text-xl font-semibold text-acbranco text-left">Centralize Feedbacks</h3>
+                    </div>
+                    <p className="mt-2 text-acbranco text-justify">Tenha todos os comentários organizados diretamente sobre a arte ou postagem, sem perder nada pelo caminho.</p>
+                </div>
+                <div className="flex justify-start">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-gray-300 rounded-full">
+                            <img src="/foguete.png"></img>
+                        </div>
+                        <h3 className="text-xl font-semibold text-acbranco text-left">Reduza Retrabalho</h3>
+                    </div>
+                    <p className="mt-2 text-acbranco text-justify">Evite refazer tarefas desnecessárias e acelere aprovações com um sistema de revisão mais ágil.</p>
+                </div>
+                <div className="flex justify-start">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-gray-300 rounded-full">
+                            <img src="/aviao-papel.png"></img>
+                        </div>
+                        <h3 className="text-xl font-semibold text-acbranco text-left">Colabore com Facilidade</h3>
+                    </div>
+                    <p className="mt-2 text-acbranco text-justify">Envie rapidamente para clientes e equipe, tornando a colaboração mais fluida e eficiente.</p>
+                </div>
             </div>
         </section>
     )

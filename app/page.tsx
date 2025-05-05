@@ -15,17 +15,19 @@ import LaptopSection from '@/components/home/LaptopSection';
 
 const HomePage = () => {
   return (
-    <div  className="text-gray-800 font-sans">
-      <HeaderSection/>
-      <HeroSection/>
-      <LaptopSection/>
-      <BenefitsSection/>
-      <ProfissionalsSection/>
-      <EfficiencySection/>
-      <RevisionSection/>
-      <FaqSection/>
-      <CtaSection/>
-      <FooterSection/>
+    <div className='flex items-center justify-center w-full'>
+      <div className="text-gray-800 font-sans w-full max-w-full">
+        <HeaderSection/>
+        <HeroSection/>
+        <LaptopSection/>
+        <BenefitsSection/>
+        <ProfissionalsSection/>
+        <EfficiencySection/>
+        <RevisionSection/>
+        <FaqSection/>
+        <CtaSection/>
+        <FooterSection/>
+      </div>
     </div>
   );
 };
