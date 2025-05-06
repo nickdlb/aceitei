@@ -1,13 +1,19 @@
-import React from 'react';
-import { useAuth } from '@/components/common/auth/AuthProvider';
-import { supabase } from '@/utils/supabaseClient';
-import { useState, useEffect } from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import { useAuth } from '@/components/common/auth/AuthProvider'
+import { supabase } from '@/utils/supabaseClient'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+
+const getInitial = (name?: string | null) =>
+  typeof name === 'string' && name.length > 0
+    ? name.charAt(0).toUpperCase()
+    : 'U'
 
 export const UserProfile = () => {
-  const { session } = useAuth();
-  const [userName, setUserName] = useState('Usuário Anônimo');
-  const [userPhoto, setUserPhoto] = useState('');
+  const { session } = useAuth()
+  const [userName, setUserName] = useState('Usuário Anônimo')
+  const [userPhoto, setUserPhoto] = useState('')
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -16,47 +22,39 @@ export const UserProfile = () => {
           .from('users')
           .select('nome, fotoperfil')
           .eq('user_id', session.user.id)
-          .single();
+          .single()
 
         if (error) {
-          console.error('Error fetching user profile:', error);
-          return;
+          console.error('Error fetching user profile:', error)
+          return
         }
 
         if (data) {
-          setUserName(data.nome);
-          setUserPhoto(data.fotoperfil || '');
+          setUserName(data.nome)
+          setUserPhoto(data.fotoperfil || '')
         }
       }
-    };
+    }
 
-    fetchUserProfile();
-  }, [session]);
+    fetchUserProfile()
+  }, [session])
 
   return (
     <div className="p-4">
       <div className="flex items-center gap-2">
-        {userPhoto ? (
-          <Avatar className="w-8 h-8">
+        <Avatar className="w-8 h-8">
+          {userPhoto ? (
             <AvatarImage src={userPhoto} alt="Foto do Usuário" />
-            <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-        ) : (
-          <Avatar className="w-8 h-8">
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-        )}
+          ) : null}
+          <AvatarFallback>{getInitial(userName)}</AvatarFallback>
+        </Avatar>
         <div className="flex flex-col">
-          <span className="text-actextocinza font-medium">
-            {userName}
-          </span>
-          <span className='text-xs'>
-            Seja Bem Vindo ao Aceitei
-          </span>
+          <span className="text-actextocinza font-medium">{userName}</span>
+          <span className="text-xs">Seja Bem Vindo ao Aceitei</span>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserProfile;
+export default UserProfile
