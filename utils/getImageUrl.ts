@@ -12,7 +12,7 @@ export const getImageUrl = (imagePath: string): string => {
   
       const cleanedPath = imagePath.replace(/^\/+/, '').replace(/\/+/g, '/');
   
-      return `${baseUrl}/storage/v1/object/public/images/${cleanedPath}`;
+      return `${baseUrl}/storage/v1/object/public/files/${cleanedPath}`;
     } catch (err) {
       console.error('Erro ao gerar URL da imagem:', err);
       return '';

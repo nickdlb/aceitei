@@ -23,7 +23,7 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
         const fileName = `${Math.random()}.${fileExt}`;
 
         const { error: storageError } = await supabase.storage
-            .from('images')
+            .from('files')
             .upload(fileName, file);
 
         if (storageError) {
@@ -49,7 +49,7 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
         if (pageError) {
             console.error('Error creating page:', pageError);
             await supabase.from('documents').delete().eq('id', documentData.id);
-            await supabase.storage.from('images').remove([fileName]);
+            await supabase.storage.from('files').remove([fileName]);
             return null;
         }
 

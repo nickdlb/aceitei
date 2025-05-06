@@ -34,7 +34,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           const fileName = `${Math.random()}.${fileExt}`;
 
           const { error: storageError } = await supabase.storage
-            .from('images')
+            .from('files')
             .upload(fileName, file);
 
           if (storageError) {
@@ -54,7 +54,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
           if (pageError) {
             console.error('Erro ao criar página:', pageError);
-            await supabase.storage.from('images').remove([fileName]);
+            await supabase.storage.from('files').remove([fileName]);
           }
         }
 

@@ -55,7 +55,7 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
       if (imagePath) {
         const { error: storageError } = await supabase
           .storage
-          .from('images')
+          .from('files')
           .remove([imagePath]);
         if (storageError) {
           console.warn('⚠️ Erro ao excluir imagem do storage:', storageError);

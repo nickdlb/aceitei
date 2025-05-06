@@ -3,7 +3,6 @@ export default function HeroSection() {
         <section className="bg-acbranco relative px-6 py-20 overflow-hidden">
             <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-between relative z-10 min-h-[60vh]">
                 <div className="max-w-xl text-center lg:text-left">
-                    <img src="/logo-feedybacky.png" alt="Feedybacky" className="mb-8 h-8 lg:hidden mx-auto" />
                     <h1 className="text-4xl md:text-5xl font-extrabold text-acpreto leading-tight">
                         Transforme feedbacks <br /> caóticos em processos <br /> eficientes com o <span className="text-acazul">Feedybacky</span>
                     </h1>
