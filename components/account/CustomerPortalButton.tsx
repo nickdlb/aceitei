@@ -37,10 +37,7 @@ export const CustomerPortalButton: React.FC = () => {
   }
 
   return (
-    <button
-      onClick={handleOpenPortal}
-      className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
-    >
+    <button onClick={handleOpenPortal} className="bg-acazul hover:bg-acpreto hover:text-acbranco text-white px-4 py-2 rounded-xl h-min w-fit" >
       Gerenciar assinatura
     </button>
   )

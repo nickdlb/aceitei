@@ -6,12 +6,9 @@ import { checkIsAnonymous } from '@/utils/checkIsAnonymous';
 import ProfilePhoto from './ProfilePhoto';
 import UserInfo from './UserInfo';
 import { useAuth } from '@/components/common/auth/AuthProvider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { StripePlans } from '../pagamentos/StripePlans';
-import { CustomerPortalButton } from '@/components/pagamentos/CustomerPortalButton'
-import { SubscriptionInfo } from '../pagamentos/SubscriptionInfo';
-import DebugUserId from '../DebugUserId';
+import { CustomerPortalButton } from '@/components/account/CustomerPortalButton'
+import { SubscriptionInfo } from './SubscriptionInfo';
 
 const AccountContainer = () => {
   const [photoURL, setPhotoURL] = useState('');
@@ -72,32 +69,14 @@ const AccountContainer = () => {
     );
   }
   return (
-    <div className='w-[800px]'>
-      <Card className="flex-1 border-none">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-acpreto text-2xl font-bold">Minha Conta</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="bg-acbgbranco rounded-lg shadow p-6">
-            <ProfilePhoto
-              photoURL={photoURL}
-              onUpdatePhoto={handleUpdatePhoto}
-              userId={session?.user?.id || null}
-            />
-            <UserInfo
-              userData={userData}
-              onUpdateName={handleUpdateName}
-              userId={session?.user?.id || null}
-            />
-          </div>
-        </CardContent>
-      </Card>
-      <StripePlans />
-      <CustomerPortalButton />
-      <SubscriptionInfo/>
-      <DebugUserId/>
+    <div className='space-y-4 pl-6 pt-12'>
+      <h2 className="text-acpreto text-2xl font-bold">Minha Conta</h2>
+      <div className="bg-acbgbranco rounded-lg shadow p-6">
+        <ProfilePhoto photoURL={photoURL} onUpdatePhoto={handleUpdatePhoto} userId={session?.user?.id || null} />
+        <UserInfo userData={userData} onUpdateName={handleUpdateName} userId={session?.user?.id || null} />
+      </div>
+        <SubscriptionInfo />
     </div>
-
   );
 };
 

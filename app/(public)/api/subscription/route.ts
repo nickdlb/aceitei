@@ -4,7 +4,7 @@ import Stripe from 'stripe'
 import { createServerClient } from '@/utils/createServerClient'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-04-30.basil',
 })
 
 export async function GET(req: NextRequest) {
@@ -41,26 +41,45 @@ export async function GET(req: NextRequest) {
   const subscriptions = await stripe.subscriptions.list({
     customer: customerData.stripe_customer_id,
     status: 'all',
-    expand: ['data.items.data.price'], // ✅ Correção aqui
+    expand: ['data.items.data.price']
   })
 
   const subscription = subscriptions.data[0]
-
   if (!subscription) {
-    console.log('[API] Nenhuma assinatura ativa encontrada.')
     return NextResponse.json({ subscription: null })
   }
 
   const price = subscription.items.data[0]?.price
+
+  // Buscar últimas 5 faturas
+  const invoices = await stripe.invoices.list({
+    customer: customerData.stripe_customer_id,
+    limit: 5,
+  })
+
+  const formattedInvoices = invoices.data.map((invoice) => ({
+    id: invoice.id,
+    status: invoice.status,
+    amount: invoice.amount_paid || invoice.amount_due,
+    currency: invoice.currency,
+    date: invoice.created,
+    hosted_invoice_url: invoice.hosted_invoice_url,
+    invoice_pdf: invoice.invoice_pdf,
+  }))
 
   return NextResponse.json({
     subscription: {
       id: subscription.id,
       status: subscription.status,
       current_period_end: subscription.current_period_end,
+      start_date: subscription.start_date,
+      cancel_at_period_end: subscription.cancel_at_period_end,
+      trial_end: subscription.trial_end,
       plan_name: price?.nickname || 'Plano sem nome',
       amount: price?.unit_amount,
       currency: price?.currency,
-    },
+      interval: price?.recurring?.interval,
+      invoices: formattedInvoices,
+    }
   })
 }

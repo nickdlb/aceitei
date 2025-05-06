@@ -58,7 +58,7 @@ export const StripePlans = () => {
   if (loading) return <p>Carregando planos...</p>
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pl-6">
+    <div className="flex gap-6">
       {plans.map((plan) => (
         <div
           key={plan.id}
