@@ -5,7 +5,7 @@ export default function RevisionSection() {
                 {/* Texto à esquerda */}
                 <div className="w-full lg:w-1/2">
                     <p className="text-sm text-acroxo font-medium uppercase mb-2">
-                        POR QUE ESCOLHER O PINIFY?
+                        POR QUE ESCOLHER O Feedybacky?
                     </p>
                     <h2 className="text-3xl md:text-4xl font-extrabold text-acpreto mb-6">
                         Deixe a bagunça no passado e descubra um fluxo de revisão perfeito!

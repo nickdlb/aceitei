@@ -5,6 +5,7 @@ import equipesLottie from "@/components/lotties/equipes-lottie.json";
 import cameraLottie from "@/components/lotties/camera-lottie.json";
 import agenciasLottie from "@/components/lotties/agencias-lottie.json";
 import empreendedoresLottie from "@/components/lotties/empreendedores-lottie.json";
+import { StripePlans } from "../account/StripePlans";
 
 export default function ProfissionalsSection() {
 
@@ -45,10 +46,10 @@ export default function ProfissionalsSection() {
     <section className="bg-acbranco flex items-center justify-center py-20 px-6">
       <div className="max-w-[1400px] flex flex-col items-center justify-center text-center">
         <div className="max-w-[80%] flex flex-col items-center justify-center">
-          <p className="text-sm text-acazul font-medium uppercase tracking-wide mb-2"> PINIFY É PARA VOCÊ? DESCUBRA AGORA </p>
+          <p className="text-sm text-acazul font-medium uppercase tracking-wide mb-2"> Feedybacky É PARA VOCÊ? DESCUBRA AGORA </p>
           <h2 className="text-5xl font-extrabold text-acpreto mb-12 w-[70%]">Profissionais que vão elevar sua produtividade com o <span className="text-acazul">Feedybacky</span> </h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-4 bg-acbg p-4 rounded-2xl">
+        <div className=" mb-8 grid md:grid-cols-3 gap-4 bg-acbg p-4 rounded-2xl">
           {professionals.map((item) => (
             <div key={item.title} className="bg-acbranco p-6 rounded-xl shadow-md text-left hover:shadow-lg transition">
               <div className="w-16 h-16 bg-acazul rounded-full flex items-center justify-center mb-4">
@@ -59,6 +60,7 @@ export default function ProfissionalsSection() {
             </div>
           ))}
         </div>
+        <StripePlans/>
       </div>
     </section>
   )
