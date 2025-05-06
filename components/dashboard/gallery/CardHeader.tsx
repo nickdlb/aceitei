@@ -35,7 +35,15 @@ export const CardHeader = () => {
   return (
     <div className="relative h-40 cursor-pointer group" onClick={openCommentPage}>
       <Image src={imageUrl} alt={pageData.imageTitle || 'Imagem'} fill className="object-cover"
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" unoptimized />
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" unoptimized
+      />
+      <a
+        href={documentData.type == 'site' ? `/site/${pageData.document_id}` : `/document/${pageData.document_id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute inset-0 z-10"
+        style={{ backgroundColor: 'transparent' }}
+      ></a>
       <div className="absolute inset-y-0 right-0 flex flex-col items-center justify-center mr-2 space-y-2 transition-opacity duration-300">
         {pageData.notifications > 0 && (
           <div className="!opacity-100 flex items-center justify-center">
