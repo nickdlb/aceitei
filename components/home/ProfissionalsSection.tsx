@@ -6,8 +6,11 @@ import cameraLottie from "@/components/lotties/camera-lottie.json";
 import agenciasLottie from "@/components/lotties/agencias-lottie.json";
 import empreendedoresLottie from "@/components/lotties/empreendedores-lottie.json";
 import { StripePlans } from "../account/StripePlans";
+import { useAuthChecker } from "@/utils/useAuthChecker";
 
 export default function ProfissionalsSection() {
+
+  const { isAuthenticated } = useAuthChecker();
 
   const professionals = [
     {
@@ -60,7 +63,7 @@ export default function ProfissionalsSection() {
             </div>
           ))}
         </div>
-        <StripePlans/>
+        {isAuthenticated && <StripePlans />}
       </div>
     </section>
   )

@@ -8,7 +8,15 @@ import { GoogleTagManager } from '@next/third-parties/google'
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <head />
+      <head> 
+        <link rel="icon" href="/favicon.png" sizes="any"/>
+        <title>Feedybacky</title>
+        <meta
+          name="Feedybacky"
+          content="Colete Feedback dos seus projetos de maneira fácil e rápida."
+          key="desc"
+        />
+      </head>
       <body>
       <GoogleTagManager gtmId="GTM-KJKW6KNQ" />
         <ThemeInitScript />
