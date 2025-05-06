@@ -1,4 +1,3 @@
-// app/(public)/api/subscription/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createServerClient } from '@/utils/createServerClient'
@@ -45,6 +44,7 @@ export async function GET(req: NextRequest) {
   })
 
   const subscription = subscriptions.data[0]
+  
   if (!subscription) {
     return NextResponse.json({ subscription: null })
   }
@@ -67,17 +67,20 @@ export async function GET(req: NextRequest) {
     invoice_pdf: invoice.invoice_pdf,
   }))
 
+  // Primeiro item da assinatura para obter informações específicas
+  const subscriptionItem = subscription.items.data[0];
+
   return NextResponse.json({
     subscription: {
       id: subscription.id,
       status: subscription.status,
-      current_period_end: subscription.current_period_end,
+      current_period_end: subscriptionItem?.current_period_end || null,
       start_date: subscription.start_date,
       cancel_at_period_end: subscription.cancel_at_period_end,
       trial_end: subscription.trial_end,
       plan_name: price?.nickname || 'Plano sem nome',
       amount: price?.unit_amount,
-      currency: price?.currency,
+      currency: subscription.currency,
       interval: price?.recurring?.interval,
       invoices: formattedInvoices,
     }
