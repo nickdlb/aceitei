@@ -9,7 +9,7 @@ export default function BenefitsSection() {
                         </div>
                         <h3 className="text-xl font-semibold text-acbranco text-left">Centralize Feedbacks</h3>
                     </div>
-                    <p className="mt-2 text-acbranco text-justify">Tenha todos os comentários organizados diretamente sobre a arte ou postagem, sem perder nada pelo caminho.</p>
+<p className="mt-2 text-acbranco text-justify">Tenha todos os comentários organizados diretamente sobre a arte ou postagem, sem perder nada.</p>
                 </div>
                 <div className="flex justify-start">
                     <div className="flex items-center gap-4">
@@ -18,7 +18,7 @@ export default function BenefitsSection() {
                         </div>
                         <h3 className="text-xl font-semibold text-acbranco text-left">Reduza Retrabalho</h3>
                     </div>
-                    <p className="mt-2 text-acbranco text-justify">Evite refazer tarefas desnecessárias e acelere aprovações com um sistema de revisão mais ágil.</p>
+                    <p className="mt-2 text-acbranco text-justify">Evite refazer tarefas desnecessárias e acelere as aprovações com um sistema de revisão mais ágil.</p>
                 </div>
                 <div className="flex justify-start">
                     <div className="flex items-center gap-4">

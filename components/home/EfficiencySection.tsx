@@ -9,7 +9,7 @@ export default function EfficiencySection() {
                         FEEDBACKS DESORGANIZADOS? PROJETOS ATRASADOS?
                     </p>
                     <h2 className="text-3xl md:text-4xl font-extrabold text-acpreto mb-6 leading-tight">
-                        <span className="text-acazul">Feedybacky</span> é a maneira mais eficiente de gerenciar feedbacks visuais
+                        <span className="text-acazul">Feedybacky</span> é a maneira mais eficiente de gerenciar os feedbacks visuais
                     </h2>
                     <p className="text-accinza text-base mb-6">
                         Se você já perdeu tempo buscando sugestões espalhadas em e-mails, mensagens e comentários soltos,
@@ -22,7 +22,7 @@ export default function EfficiencySection() {
                         {[
                             "Comentários direto na arte",
                             "Compartilhamento fácil",
-                            "Rastreio de alterações",
+                            "Rastreamento de alterações",
                             "Acesso de qualquer lugar",
                             "Aprovações rápidas",
                             "Histórico completo"
@@ -41,7 +41,7 @@ export default function EfficiencySection() {
                         href="#inscricao"
                         className="inline-flex items-center border border-acroxo text-acroxo px-6 py-3 rounded-full font-medium hover:bg-acbg transition"
                     >
-                        Inscrevesse <span className="ml-2">→</span>
+                        Inscreva-se <span className="ml-2">→</span>
                     </a>
                 </div>
 

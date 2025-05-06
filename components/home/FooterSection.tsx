@@ -25,8 +25,8 @@ export default function FooterSection() {
             <h4 className="text-black text-xl font-semibold mb-4">Suporte</h4>
             <ul className="space-y-2">
               <li>FAQ</li>
-              <li>Central de ajuda</li>
-              <li>Políticas de privacidade</li>
+              <li>Central de Ajuda</li>
+              <li>Políticas de Privacidade</li>
             </ul>
           </div>
           <div>

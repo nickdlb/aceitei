@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 const Sidebar = () => {
   return (
-    <div className="w-64 h-screen bg-acbgbranco flex flex-col">
+    <div className="w-80 h-screen bg-acbgbranco flex flex-col">
       <div className="py-2 px-6 h-20 flex items-center justify-between">
         <Link href="/dashboard" className="font-semibold text-acpreto hover:text-acazul">
           Feedybacky

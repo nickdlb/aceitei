@@ -7,7 +7,7 @@ export default function CtaSection() {
                     <input className="px-4 py-2 rounded text-acpreto" placeholder="Nome" />
                     <input className="px-4 py-2 rounded text-acpreto" placeholder="Email" />
                     <input className="px-4 py-2 rounded text-acpreto" placeholder="Profissão" />
-                    <button className="bg-acbranco text-acazul px-4 py-2 rounded hover:bg-acbg">Inscrever</button>
+                    <button className="bg-acbranco text-acazul px-4 py-2 rounded hover:bg-acbg">Inscrever-se</button>
                 </form>
             </div>
         </section>

@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head> 
-        <link rel="icon" href="/favicon.png" sizes="any"/>
+        <link rel="icon" href="/favfeedybacky.ico" sizes="any"/>
         <title>Feedybacky</title>
         <meta
           name="Feedybacky"

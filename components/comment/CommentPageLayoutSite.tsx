@@ -5,9 +5,9 @@ import ImageSidebar from '@/components/comment/ImageSidebar';
 import AuthPopup from '@/components/common/auth/AuthPopup';
 import { usePageContext } from '@/contexts/PageContext';
 
-interface PageLayoutProps {
+interface PageLayoutSiteProps {
   commentBarProps: any;
-  imageAreaProps: any;
+  SiteAreaProps: any;
   isPagesOpen: boolean;
   showAuthPopup: boolean;
   setShowAuthPopup: (show: boolean) => void;
@@ -15,9 +15,9 @@ interface PageLayoutProps {
   handlePageChange: (newPageId: string) => Promise<void>;
 }
 
-const PageLayoutSite: React.FC<PageLayoutProps> = ({
+const PageLayoutSite: React.FC<PageLayoutSiteProps> = ({
   commentBarProps,
-  imageAreaProps,
+  SiteAreaProps,
   isPagesOpen,
   showAuthPopup,
   setShowAuthPopup,
@@ -26,18 +26,18 @@ const PageLayoutSite: React.FC<PageLayoutProps> = ({
 }) => {
   const { pages, pageId } = usePageContext();
 
-  const enhancedImageAreaProps = {
-    ...imageAreaProps,
+  const enhancedSiteAreaProps = {
+    ...SiteAreaProps,
     pagesCount: pages.length,
   };
 
   return (
     <div className="w-full h-screen flex">
-      <div className="w-96 flex-shrink-0 !border-0">
+      <div className="w-70 flex-shrink-0 !border-0">
         <CommentBar {...commentBarProps} />
       </div>
       <div className="flex-1 flex">
-        <SiteArea {...enhancedImageAreaProps} />
+        <SiteArea {...enhancedSiteAreaProps} />
         {pages.length > 1 && isPagesOpen && (
           <ImageSidebar
             pages={pages}

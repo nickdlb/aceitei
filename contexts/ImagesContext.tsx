@@ -47,14 +47,16 @@ export function ImagesProvider({ children }: { children: React.ReactNode }) {
 
             if (error) throw error;
 
-            const processedData = data?.map(doc => ({
-                id: doc.id,
-                document_id: doc.id,
-                image_url: doc.pages[0].image_url,
-                imageTitle: doc.pages[0].imageTitle,
-                created_at: doc.created_at,
-                page_id: doc.pages[0].id
-            })) || [];
+            const processedData = (data ?? [])
+                .filter(doc => doc.pages && doc.pages.length > 0)
+                .map(doc => ({
+                    id: doc.id,
+                    document_id: doc.id,
+                    image_url: doc.pages[0].image_url,
+                    imageTitle: doc.pages[0].imageTitle,
+                    created_at: doc.created_at,
+                    page_id: doc.pages[0].id
+                }));
 
             setImages(processedData);
         } catch (error: any) {

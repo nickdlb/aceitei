@@ -1,11 +1,10 @@
 import React, { useState, useRef, useCallback } from 'react'
-import ImageAreaHeader from './ImageAreaHeader'
-import ImagePinSite from './ImagePinSite'
-import { ImageAreaProps } from '@/types'
+import SiteAreaHeader from './SiteAreaHeader'
+import { SiteAreaProps } from '@/types'
 import { usePageContext } from '@/contexts/PageContext'
-import { useIframePinInteraction } from '@/hooks/usePinIframe' // ⬅️ novo hook modularizado
+import { useIframePinInteraction } from '@/hooks/usePinIframe'
 
-interface Props extends ImageAreaProps {
+interface Props extends SiteAreaProps {
   onTogglePages: () => void
 }
 
@@ -91,7 +90,7 @@ const SiteArea: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col min-h-screen flex-1">
-      <ImageAreaHeader
+      <SiteAreaHeader
         exibirImagem={exibirImagem}
         zoomLevel={zoomLevel}
         onTogglePages={onTogglePages}

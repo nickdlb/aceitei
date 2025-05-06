@@ -14,7 +14,7 @@ import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
-import PageLayout from '@/components/comment/CommentPageLayout';
+import PageLayoutSite from '@/components/comment/CommentPageLayoutSite';
 import { PageProvider } from '@/contexts/PageContext';
 import type { DocumentPage } from '@/types';
 
@@ -215,10 +215,7 @@ export default function Page() {
                 return;
             }
 
-            // Atualiza o título no estado local
             setCurrentTitle(newTitle);
-
-            // Atualiza também a referência interna em pageData.documentData
             setPageData((prev: any) => ({
                 ...prev,
                 documents: {
@@ -267,7 +264,7 @@ export default function Page() {
         setShowAuthPopup
     };
 
-    const imageAreaProps = {
+    const SiteAreaProps = {
         exibirImagem: imageUrl,
         imageTitle: currentTitle || 'Sem título',
         imageId: pageData?.id ?? '',
@@ -301,9 +298,9 @@ export default function Page() {
                 url: pageData?.documents?.url ?? '',
             }
         }}>
-            <PageLayout
+            <PageLayoutSite
                 commentBarProps={commentBarProps}
-                imageAreaProps={imageAreaProps}
+                SiteAreaProps={SiteAreaProps}
                 isPagesOpen={isPagesOpen}
                 showAuthPopup={showAuthPopup}
                 setShowAuthPopup={setShowAuthPopup}

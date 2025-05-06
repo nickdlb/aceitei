@@ -18,15 +18,17 @@ export function useIframePinInteraction({
 
     const renderPinsInIframe = () => {
       if (!iframeDoc || !body) return
-
+    
       const existing = iframeDoc.querySelectorAll('.pin-custom')
       existing.forEach(el => el.remove())
-
+    
+      if (!Array.isArray(pins)) return
+    
       pins.forEach((pin) => {
         const el = iframeDoc.createElement('div')
         el.className = 'pin-custom'
         el.innerText = `${pin.num || ''}`
-
+    
         Object.assign(el.style, {
           position: 'absolute',
           left: `${pin.x}%`,
@@ -44,10 +46,11 @@ export function useIframePinInteraction({
           transform: 'translate(-50%, -50%)',
           zIndex: '9999',
         })
-
+    
         body.appendChild(el)
       })
     }
+    
 
     const onClick = async (e: MouseEvent) => {
       const rect = body.getBoundingClientRect()

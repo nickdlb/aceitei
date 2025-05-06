@@ -110,8 +110,7 @@ const AppContent = () => {
                 filteredImages,
                 isLoading: isLoading || imagesLoading,
                 totalNotifications,
-            }}
-        >
+            }}>
             <div className="flex h-screen bg-acbg overflow-hidden">
                 <Sidebar />
                 <div className="flex-1 flex flex-col">

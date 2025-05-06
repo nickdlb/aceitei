@@ -41,7 +41,7 @@ export default function FaqSection() {
                 O que é o Feedybacky?
               </AccordionTrigger>
               <AccordionContent className="bg-acbranco px-6 py-4 text-sm text-accinza">
-                O Feedybacky é uma plataforma para gerenciar feedbacks visuais de maneira organizada, permitindo comentários diretos sobre artes e postagens.
+                O Feedybacky é uma plataforma para gerenciar os feedbacks visuais de maneira organizada, permitindo comentários diretos sobre artes e postagens.
               </AccordionContent>
             </AccordionItem>
 
@@ -94,7 +94,7 @@ export default function FaqSection() {
             </AccordionItem>
 
             {[
-              "É possível rastrear mudanças?",
+              "É possível rastrear as mudanças?",
               "Posso compartilhar feedbacks com qualquer pessoa?",
               "O Feedybacky permite aprovações finais?",
               "Meus arquivos estão seguros no Feedybacky?",
