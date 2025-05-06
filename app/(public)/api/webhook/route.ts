@@ -5,16 +5,15 @@ import { createClient } from '@supabase/supabase-js'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {})
 
-// Supabase admin client (server role key necessária!)
+// Supabase admin client (service role key)
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // <- cuidado com segurança em produção
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-// Lê o corpo cru (requisito do Stripe)
 async function readRawBody(readable: ReadableStream<Uint8Array>): Promise<Buffer> {
   const reader = readable.getReader()
-  const chunks = []
+  const chunks: Uint8Array[] = []
 
   while (true) {
     const { done, value } = await reader.read()
@@ -38,7 +37,7 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     )
   } catch (err: any) {
-    console.error('Erro ao validar webhook:', err.message)
+    console.error('❌ Erro ao validar webhook:', err.message)
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
   }
 
@@ -47,20 +46,27 @@ export async function POST(req: Request) {
     const userId = session.metadata?.userId
     const customerId = session.customer as string
     const subscriptionId = session.subscription as string
-  
+
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
       limit: 1
     })
     const priceId = lineItems.data?.[0]?.price?.id ?? 'unknown'
-  
+
     console.log('🔁 Webhook recebido - userId:', userId)
-  
+
     if (!userId || !customerId || !subscriptionId) {
-      console.error('Dados ausentes na sessão Stripe')
+      console.error('❌ Dados ausentes na sessão Stripe')
       return new NextResponse('Dados incompletos', { status: 400 })
     }
-  
-    const { error } = await supabase
+
+    // Buscar dados da assinatura para popular stripe_customers
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+
+    const currentPeriodEnd = subscription.current_period_end 
+    const planActive = subscription.status === 'active'
+
+    // Atualizar tabela `users`
+    const { error: userError } = await supabase
       .from('users')
       .upsert({
         user_id: userId,
@@ -69,13 +75,31 @@ export async function POST(req: Request) {
         stripe_price_id: priceId,
         is_premium: true,
       })
-  
-    if (error) {
-      console.error('Erro ao salvar usuário no Supabase:', error)
+
+    if (userError) {
+      console.error('❌ Erro ao salvar na tabela users:', userError)
       return new NextResponse('Erro ao salvar usuário', { status: 500 })
     }
-  
-    console.log('✅ Usuário atualizado com sucesso!')
+
+    // Atualizar tabela `stripe_customers`
+    const { error: customerError } = await supabase
+      .from('stripe_customers')
+      .upsert({
+        user_id: userId,
+        stripe_customer_id: customerId,
+        subscription_id: subscriptionId,
+        plan_active: planActive,
+        plan_expires: currentPeriodEnd
+      }, {
+        onConflict: 'user_id'
+      })
+
+    if (customerError) {
+      console.error('❌ Erro ao salvar na tabela stripe_customers:', customerError)
+      return new NextResponse('Erro ao salvar stripe_customers', { status: 500 })
+    }
+
+    console.log('✅ Dados salvos com sucesso!')
   }
 
   return NextResponse.json({ received: true })

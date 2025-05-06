@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StripePlans } from '../pagamentos/StripePlans';
 import { CustomerPortalButton } from '@/components/pagamentos/CustomerPortalButton'
+import { SubscriptionInfo } from '../pagamentos/SubscriptionInfo';
+import DebugUserId from '../DebugUserId';
 
 const AccountContainer = () => {
   const [photoURL, setPhotoURL] = useState('');
@@ -92,6 +94,8 @@ const AccountContainer = () => {
       </Card>
       <StripePlans />
       <CustomerPortalButton />
+      <SubscriptionInfo/>
+      <DebugUserId/>
     </div>
 
   );
