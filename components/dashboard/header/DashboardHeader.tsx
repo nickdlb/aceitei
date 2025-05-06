@@ -2,7 +2,7 @@
 
 import BotaoPopupUpload from './BotaoPopupUpload';
 import UserProfile from '../sidebar/UserProfile';
-import { ToggleDarkModeAnimation } from '../../ui/toggleDarkmode';
+import { ToggleDarkModeAnimated } from '../../ui/toggleDarkmode';
 import NotificationsBell from '@/components/dashboard/header/NotificationsBell';
 import { useDashboardContext } from '@/contexts/DashboardContext';
 
@@ -15,7 +15,7 @@ const Header: React.FC = () => {
       <div className='flex items-center gap-4'>
         <NotificationsBell />
         <BotaoPopupUpload />
-        <ToggleDarkModeAnimation />
+        <ToggleDarkModeAnimated />
         <div className="border-l-[1.5px] border-acbg">
           <UserProfile />
         </div>

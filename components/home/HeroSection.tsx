@@ -1,11 +1,7 @@
 export default function HeroSection() {
     return (
-        <section className="bg-gradient-to-b from-acbranco to-acazul/10 relative px-6 py-20 overflow-hidden">
-            {/* Fundo com padrão pontilhado opcional */}
-            <div className="absolute inset-0 bg-[url('/dot-grid.svg')] bg-repeat opacity-10 pointer-events-none"></div>
+        <section className="bg-acbranco relative px-6 py-20 overflow-hidden">
             <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between relative z-10">
-
-                {/* Texto à esquerda */}
                 <div className="max-w-xl text-center lg:text-left">
                     <img src="/logo-feedybacky.png" alt="Feedybacky" className="mb-8 h-8 lg:hidden mx-auto" />
                     <h1 className="text-4xl md:text-5xl font-extrabold text-acpreto leading-tight">

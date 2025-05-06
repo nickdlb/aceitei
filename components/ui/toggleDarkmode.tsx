@@ -86,12 +86,12 @@ function Toggle({
   )
 }
 
-const ToggleDarkModeAnimation = () => {
+const ToggleDarkModeAnimated = () => {
   return (
-      <div className='hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'>
-        <Toggle />
-      </div>
+    <div className='hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'>
+      <Toggle />
+    </div>
   );
 };
 
-export { Toggle, toggleVariants, ToggleDarkModeAnimation }
+export { Toggle, toggleVariants, ToggleDarkModeAnimated }
