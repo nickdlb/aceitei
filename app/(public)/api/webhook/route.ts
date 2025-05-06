@@ -60,9 +60,10 @@ export async function POST(req: Request) {
     }
 
     // Buscar dados da assinatura para popular stripe_customers
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-
-    const currentPeriodEnd = subscription.current_period_end 
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription
+    const subscriptionItem = subscription.items.data[0]
+    
+    const currentPeriodEnd = subscriptionItem?.current_period_end || null
     const planActive = subscription.status === 'active'
 
     // Atualizar tabela `users`
