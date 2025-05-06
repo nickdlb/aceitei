@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
       <GoogleTagManager gtmId="GTM-KJKW6KNQ" />
         <ThemeInitScript />
-        <ThemeProvider storageKey="aceitei-theme">
+        <ThemeProvider storageKey="feedybacky-theme">
           <AuthProvider>
             {children}
           </AuthProvider>

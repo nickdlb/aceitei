@@ -52,8 +52,8 @@ const RegisterPage = () => {
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-acazul rounded"></div>
             <div className="flex items-center justify-between flex-1">
-              <Link href="/" className="font-medium hover:text-acazul">
-                Aceitei
+              <Link href="/dashboard" className="font-medium hover:text-acazul">
+                Feedybacky
               </Link>
             </div>
           </div>
@@ -106,7 +106,7 @@ const RegisterPage = () => {
       </div>
       <div className="flex-1 flex items-center justify-center">
         <div className="bg-acbgbranco p-16 rounded-lg shadow-lg">
-          <h1 className="text-4xl font-bold mb-4">Bem-vindo ao Aceitei</h1>
+          <h1 className="text-4xl font-bold mb-4">Bem-vindo ao Feedybacky</h1>
           <p className="text-actextocinza text-lg">
             Gerencie seus projetos e feedbacks com facilidade.
           </p>

@@ -28,7 +28,7 @@ const useAuthLogin = () => {
       if (error) {
         setError(error.message);
       } else {
-        router.push('/');
+        router.push('/dashboard');
       }
     } catch (error: any) {
       setError('Login failed. Please check your credentials.');
@@ -47,7 +47,7 @@ const useAuthLogin = () => {
       if (error) {
         setError(error.message);
       } else {
-        router.push('/');
+        router.push('/dashboard');
       }
     } catch (error) {
       setError('Google login failed. Please try again.');

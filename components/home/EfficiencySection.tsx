@@ -1,7 +1,7 @@
 export default function EfficiencySection() {
     return (
         <section className="bg-acbg py-20 px-6">
-            <div className="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row items-center gap-12">
+            <div className="max-w-[1400px] mx-auto flex flex-col-reverse lg:flex-row items-center gap-12">
 
                 {/* Texto à esquerda */}
                 <div className="w-full lg:w-1/2">

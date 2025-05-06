@@ -14,7 +14,7 @@ export default function FaqSection() {
 
   return (
     <section className="bg-acbg py-20 px-6">
-      <div className="max-w-6xl mx-auto text-center">
+      <div className="max-w-[1400px] mx-auto text-center">
         <p className="text-sm text-acroxo font-medium uppercase mb-2">
           PERGUNTAS FREQUENTES
         </p>

@@ -50,7 +50,7 @@ export const UserProfile = () => {
         </Avatar>
         <div className="flex flex-col">
           <span className="text-actextocinza font-medium">{userName}</span>
-          <span className="text-xs">Seja Bem Vindo ao Aceitei</span>
+          <span className="text-xs">Seja Bem Vindo ao Feedybacky</span>
         </div>
       </div>
     </div>

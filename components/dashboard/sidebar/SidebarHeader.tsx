@@ -35,8 +35,8 @@ const SidebarHeader = () => {
   return (
     <div className="p-4 h-20 flex items-center">
       <div className="flex items-center justify-between">
-        <Link href="/" className="font-semibold text-acpreto hover:text-acazul">
-          Aceitei
+        <Link href="/dashboard" className="font-semibold text-acpreto hover:text-acazul">
+          Feedybacky
         </Link>
       </div>
     </div>
