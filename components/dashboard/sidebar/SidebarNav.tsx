@@ -47,7 +47,7 @@ const SidebarNav = () => {
   return (
     <nav className="flex flex-col h-full relative">
       <ul className="space-y-2 p-4">
-        <SidebarMenuItem href="/" icon={Home} label="Dashboard" />
+        <SidebarMenuItem href="/dashboard" icon={Home} label="Dashboard" />
         <SidebarMenuItem href="/account" icon={User} label="Minha Conta" />
         <SidebarMenuItem onClick={handleSupabaseSignOut} icon={LogOut} label="Sair" />
       </ul>
