@@ -6,6 +6,19 @@ import { Metadata } from 'next'
 import fs from 'fs'
 import path from 'path'
 
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  const postsDirectory = path.join(process.cwd(), 'content', 'posts')
+  const filenames = fs.readdirSync(postsDirectory)
+
+  return filenames.map((filename) => {
+    return {
+      slug: filename.replace(/\.md$/, ''),
+    }
+  })
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -19,8 +32,8 @@ export async function generateMetadata({
     openGraph: {
       title: metadata.title,
       description: metadata.summary,
-      type: 'article',
       url: `https://feedybacky.com.br/blog/${params.slug}`,
+      type: 'article',
       images: metadata.coverImage
         ? [{ url: `https://feedybacky.com.br${metadata.coverImage}` }]
         : undefined,
@@ -36,25 +49,14 @@ export async function generateMetadata({
   }
 }
 
-const postsDirectory = path.join(process.cwd(), 'content', 'posts')
-
-export async function generateStaticParams() {
-  const filenames = fs.readdirSync(postsDirectory)
-  return filenames.map((filename) => {
-    const slug = filename.replace(/\.md$/, '')
-    return { slug } // ✅ estrutura correta para [slug] no App Router
-  })
-}
-
-export default async function BlogPost({
+export default async function Page({
   params,
 }: {
   params: { slug: string }
 }) {
-  const { slug } = params
-  const { content, metadata } = getPostBySlug(slug)
-  const processedContent = await remark().use(html).process(content)
-  const contentHtml = processedContent.toString()
+  const post = getPostBySlug(params.slug)
+  const processed = await remark().use(html).process(post.content)
+  const contentHtml = processed.toString()
 
   return (
     <main className="w-full max-w-[1400px] mx-auto py-12 px-4">
@@ -64,39 +66,39 @@ export default async function BlogPost({
         itemType="http://schema.org/Article"
       >
         <header className="mb-10">
-          {metadata.coverImage && (
+          {post.metadata.coverImage && (
             <img
-              src={metadata.coverImage}
-              alt={`Imagem de capa: ${metadata.title}`}
+              src={post.metadata.coverImage}
+              alt={`Imagem de capa: ${post.metadata.title}`}
               className="w-full h-auto rounded-lg shadow mb-6"
               itemProp="image"
             />
           )}
           <h1 className="text-4xl font-bold" itemProp="headline">
-            {metadata.title}
+            {post.metadata.title}
           </h1>
           <div className="mt-2 text-sm text-gray-500">
-            <time dateTime={metadata.date} itemProp="datePublished">
-              {new Date(metadata.date).toLocaleDateString('pt-BR', {
+            <time dateTime={post.metadata.date} itemProp="datePublished">
+              {new Date(post.metadata.date).toLocaleDateString('pt-BR', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
               })}
             </time>
-            {metadata.author && (
+            {post.metadata.author && (
               <span className="ml-2" itemProp="author">
-                {metadata.author}
+                {post.metadata.author}
               </span>
             )}
           </div>
-          {metadata.category && (
+          {post.metadata.category && (
             <div className="mt-2 text-xs font-semibold uppercase text-acazul">
-              {metadata.category}
+              {post.metadata.category}
             </div>
           )}
-          {metadata.tags && (
+          {post.metadata.tags && (
             <ul className="mt-2 flex flex-wrap gap-2 text-xs text-gray-600">
-              {metadata.tags.map((tag: string) => (
+              {post.metadata.tags.map((tag: string) => (
                 <li key={tag} className="bg-gray-100 px-2 py-1 rounded">
                   {tag}
                 </li>
@@ -110,26 +112,25 @@ export default async function BlogPost({
           itemProp="articleBody"
         />
 
-        {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Article',
-              headline: metadata.title,
-              description: metadata.summary,
-              image: metadata.coverImage
-                ? `https://feedybacky.com.br${metadata.coverImage}`
+              headline: post.metadata.title,
+              description: post.metadata.summary,
+              image: post.metadata.coverImage
+                ? `https://feedybacky.com.br${post.metadata.coverImage}`
                 : undefined,
               author: {
                 '@type': 'Person',
-                name: metadata.author || 'Feedybacky',
+                name: post.metadata.author || 'Feedybacky',
               },
-              datePublished: metadata.date,
+              datePublished: post.metadata.date,
               mainEntityOfPage: {
                 '@type': 'WebPage',
-                '@id': `https://feedybacky.com.br/blog/${slug}`,
+                '@id': `https://feedybacky.com.br/blog/${params.slug}`,
               },
             }),
           }}
