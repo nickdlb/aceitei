@@ -33,7 +33,7 @@ const LoginPage = () => {
   if (isAuthenticated || shouldRedirect) return <div>Redirecting...</div>;
 
   return (
-    <div className="flex h-screen bg-acbg">
+    <div className="flex h-screen w-full bg-acbg">
       <div className="w-1/2 bg-cover bg-[url(/noite-estrelada-comentada.jpg)]"></div>
       <div className='w-1/2 bg-acbg p-40 flex justify-center items-center'>
         <div className="bg-acbgbranco p-10 w-[500px] h-min rounded-xl flex flex-col">

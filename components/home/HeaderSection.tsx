@@ -1,4 +1,6 @@
-import { Toggle, ToggleDarkModeAnimated } from "../ui/toggleDarkmode"
+'use client'
+
+import { ToggleDarkModeAnimated } from "../ui/toggleDarkmode"
 import Link from "next/link"
 
 export default function HeaderSection() {
