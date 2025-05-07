@@ -6,13 +6,11 @@ import { Metadata } from 'next'
 import fs from 'fs'
 import path from 'path'
 
-interface BlogPostParams {
-  params: { slug: string };
-}
-
 export async function generateMetadata({
   params,
-}: BlogPostParams): Promise<Metadata> {
+}: {
+  params: { slug: string }
+}): Promise<Metadata> {
   const { metadata } = getPostBySlug(params.slug)
 
   return {
@@ -44,11 +42,15 @@ export async function generateStaticParams() {
   const filenames = fs.readdirSync(postsDirectory)
   return filenames.map((filename) => {
     const slug = filename.replace(/\.md$/, '')
-    return { slug }
+    return { slug } // ✅ estrutura correta para [slug] no App Router
   })
 }
 
-export default async function BlogPost({ params }: BlogPostParams) {
+export default async function BlogPost({
+  params,
+}: {
+  params: { slug: string }
+}) {
   const { slug } = params
   const { content, metadata } = getPostBySlug(slug)
   const processedContent = await remark().use(html).process(content)
