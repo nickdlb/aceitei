@@ -4,11 +4,7 @@ import { remark } from 'remark'
 import html from 'remark-html'
 import { Metadata } from 'next'
 
-interface Props {
-  params: { slug: string }
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const { metadata } = getPostBySlug(params.slug)
 
   return {
@@ -32,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function BlogPost({ params }: Props) {
+export default async function BlogPost({ params }: { params: { slug: string } }) {
   const { content, metadata } = getPostBySlug(params.slug)
   const processedContent = await remark().use(html).process(content)
   const contentHtml = processedContent.toString()
