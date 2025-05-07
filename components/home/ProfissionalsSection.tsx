@@ -42,16 +42,16 @@ export default function ProfissionalsSection() {
   ];
 
   return (
-    <section className="bg-acbranco py-20 px-6">
-      <div className="max-w-6xl mx-auto text-center">
+    <section className="bg-[linear-gradient(180deg,_#FFFFFF_0%,_#FFFFFF96_94%),url('/img_pattern_pinify.png')] py-20 px-6">
+      <div className="max-w-[1280px] mx-auto text-center">
         <p className="text-sm text-acazul font-medium uppercase tracking-wide mb-2">
-          PINIFY É PARA VOCÊ? DESCUBRA AGORA!
+          FEEDYBACKY É PARA VOCÊ? DESCUBRA AGORA!
         </p>
         <div className="flex items-center justify-center">
           <h2 className="text-5xl font-extrabold text-acpreto mb-12 w-[70%]">
             Profissionais que vão elevar sua produtividade com o <span className="text-acazul">Feedybacky</span> </h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-4 bg-acbg p-4 rounded-2xl">
+        <div className="grid md:grid-cols-3 gap-4 bg-[#4C50641A] p-4 rounded-2xl">
           {professionals.map((item) => (
             <div key={item.title} className="bg-acbranco p-6 rounded-xl shadow-md text-left hover:shadow-lg transition">
               <div className="w-16 h-16 bg-acazul rounded-full flex items-center justify-center mb-4">
