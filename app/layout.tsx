@@ -10,12 +10,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" suppressHydrationWarning>
       <head> 
         <link rel="icon" href="/favfeedybacky.ico" sizes="any"/>
-        <title>Feedybacky</title>
-        <meta
-          name="Feedybacky"
-          content="Colete Feedback dos seus projetos de maneira fácil e rápida."
-          key="desc"
-        />
+        <title>Feedybacky | Colete Feedback de Projetos Facilmente</title>
+        <meta name="description" content="Colete e gerencie feedback dos seus projetos de design, desenvolvimento e conteúdo de forma fácil e eficiente Feedybacky." key="desc"/>      
+        <meta name="robots" content="index, follow" />
       </head>
       <body>
       <GoogleTagManager gtmId="GTM-KJKW6KNQ" />

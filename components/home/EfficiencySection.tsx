@@ -2,8 +2,6 @@ export default function EfficiencySection() {
     return (
         <section className="bg-acbg py-20 px-6">
             <div className="max-w-[1400px] mx-auto flex flex-col-reverse lg:flex-row items-center gap-12">
-
-                {/* Texto à esquerda */}
                 <div className="w-full lg:w-1/2">
                     <p className="text-sm text-acazul font-medium uppercase mb-2">
                         FEEDBACKS DESORGANIZADOS? PROJETOS ATRASADOS?
@@ -16,8 +14,6 @@ export default function EfficiencySection() {
                         sabe como isso atrasa seu fluxo de trabalho e gera retrabalho desnecessário. Com o Feedybacky,
                         você transforma o caos da revisão em um processo simples, eficiente e visual!
                     </p>
-
-                    {/* Lista de benefícios em formato de "pills" */}
                     <div className="flex flex-wrap gap-3 mb-6">
                         {[
                             "Comentários direto na arte",
@@ -27,31 +23,17 @@ export default function EfficiencySection() {
                             "Aprovações rápidas",
                             "Histórico completo"
                         ].map((item) => (
-                            <span
-                                key={item}
-                                className="bg-acbgbranco text-sm text-acpreto font-medium px-4 py-2 rounded-full"
-                            >
+                            <span key={item} className="bg-acbgbranco text-sm text-acpreto font-medium px-4 py-2 rounded-full" >
                                 {item}
                             </span>
                         ))}
                     </div>
-
-                    {/* Botão de inscrição */}
-                    <a
-                        href="#inscricao"
-                        className="inline-flex items-center border border-acroxo text-acroxo px-6 py-3 rounded-full font-medium hover:bg-acbg transition"
-                    >
+                    <a href="#inscricao" className="inline-flex items-center border border-acroxo text-acroxo px-6 py-3 rounded- font-medium hover:bg-acbg transition">
                         Inscreva-se <span className="ml-2">→</span>
                     </a>
                 </div>
-
-                {/* Imagem de demonstração do app */}
                 <div className="w-full lg:w-1/2">
-                    <img
-                        src="/gestao-preview.png"
-                        alt="Dashboard do Feedybacky"
-                        className="w-full rounded-xl shadow-xl"
-                    />
+                    <img src="/gestao-preview.png" alt="Dashboard do Feedybacky" className="w-full rounded-xl shadow-xl" />
                 </div>
             </div>
         </section>
