@@ -3,6 +3,8 @@ import { getPostBySlug } from '@/utils/posts'
 import { remark } from 'remark'
 import html from 'remark-html'
 import { Metadata } from 'next'
+import fs from 'fs'
+import path from 'path'
 
 interface BlogPostParams {
   params: { slug: string };
@@ -34,6 +36,16 @@ export async function generateMetadata({
         : [],
     },
   }
+}
+
+const postsDirectory = path.join(process.cwd(), 'content', 'posts')
+
+export async function generateStaticParams() {
+  const filenames = fs.readdirSync(postsDirectory)
+  return filenames.map((filename) => {
+    const slug = filename.replace(/\.md$/, '')
+    return { params: { slug } }
+  })
 }
 
 export default async function BlogPost({ params }: BlogPostParams) {
