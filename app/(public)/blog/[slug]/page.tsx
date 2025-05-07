@@ -4,17 +4,13 @@ import { remark } from 'remark'
 import html from 'remark-html'
 import { Metadata } from 'next'
 
-// For App Router pages in Next.js
-interface PageProps {
-  params: Promise<{ slug: string }>;
-  searchParams?: Record<string, string | string[] | undefined>;
+interface BlogPostParams {
+  params: { slug: string };
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+}: BlogPostParams): Promise<Metadata> {
   const { metadata } = getPostBySlug(params.slug)
 
   return {
@@ -40,9 +36,8 @@ export async function generateMetadata({
   }
 }
 
-// Use the default export without type constraints
-export default async function BlogPost(props: any) {
-  const { slug } = props.params
+export default async function BlogPost({ params }: BlogPostParams) {
+  const { slug } = params
   const { content, metadata } = getPostBySlug(slug)
   const processedContent = await remark().use(html).process(content)
   const contentHtml = processedContent.toString()
