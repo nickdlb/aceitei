@@ -4,6 +4,7 @@ import { remark } from 'remark'
 import html from 'remark-html'
 import { Metadata } from 'next'
 
+// Define the correct params type for generateMetadata
 export async function generateMetadata({
   params,
 }: {
@@ -34,11 +35,15 @@ export async function generateMetadata({
   }
 }
 
+// Fix the page component type definition
+interface PageProps {
+  params: { slug: string };
+  searchParams: Record<string, string | string[] | undefined>;
+}
+
 export default async function BlogPost({
   params,
-}: {
-  params: { slug: string }
-}) {
+}: PageProps) {
   const { content, metadata } = getPostBySlug(params.slug)
   const processedContent = await remark().use(html).process(content)
   const contentHtml = processedContent.toString()
