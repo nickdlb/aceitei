@@ -44,7 +44,7 @@ export async function generateStaticParams() {
   const filenames = fs.readdirSync(postsDirectory)
   return filenames.map((filename) => {
     const slug = filename.replace(/\.md$/, '')
-    return { params: { slug } }
+    return { slug }
   })
 }
 
