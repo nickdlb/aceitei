@@ -14,7 +14,7 @@ import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
-import PageLayoutSite from '@/components/comment/CommentPageLayoutSite';
+import PageLayout from '@/components/comment/CommentPageLayout';
 import { PageProvider } from '@/contexts/PageContext';
 import type { DocumentPage } from '@/types';
 
@@ -298,9 +298,9 @@ export default function Page() {
                 url: pageData?.documents?.url ?? '',
             }
         }}>
-            <PageLayoutSite
+            <PageLayout
                 commentBarProps={commentBarProps}
-                SiteAreaProps={SiteAreaProps}
+                imageAreaProps={SiteAreaProps}
                 isPagesOpen={isPagesOpen}
                 showAuthPopup={showAuthPopup}
                 setShowAuthPopup={setShowAuthPopup}

@@ -298,7 +298,7 @@ export default function Page() {
         }}>
             <PageLayoutSite
                 commentBarProps={commentBarProps}
-                imageAreaProps={imageAreaProps}
+                SiteAreaProps={imageAreaProps}
                 isPagesOpen={isPagesOpen}
                 showAuthPopup={showAuthPopup}
                 setShowAuthPopup={setShowAuthPopup}

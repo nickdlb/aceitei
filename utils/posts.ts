@@ -7,6 +7,9 @@ export interface PostMetadata {
   summary: string
   date: string
   coverImage?: string
+  author?: string
+  category?: string
+  tags?: string[]
 }
 
 export interface Post {
