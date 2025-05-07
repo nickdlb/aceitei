@@ -1,10 +1,14 @@
-// app/blog/[slug]/page.tsx
+// app/(public)/blog/[slug]/page.tsx
 import { getPostBySlug } from '@/utils/posts'
 import { remark } from 'remark'
 import html from 'remark-html'
 import { Metadata } from 'next'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}): Promise<Metadata> {
   const { metadata } = getPostBySlug(params.slug)
 
   return {
@@ -17,25 +21,35 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       url: `https://feedybacky.com.br/blog/${params.slug}`,
       images: metadata.coverImage
         ? [{ url: `https://feedybacky.com.br${metadata.coverImage}` }]
-        : undefined
+        : undefined,
     },
     twitter: {
       card: 'summary_large_image',
       title: metadata.title,
       description: metadata.summary,
-      images: metadata.coverImage ? [`https://feedybacky.com.br${metadata.coverImage}`] : []
-    }
+      images: metadata.coverImage
+        ? [`https://feedybacky.com.br${metadata.coverImage}`]
+        : [],
+    },
   }
 }
 
-export default async function BlogPost({ params }: { params: { slug: string } }) {
+export default async function BlogPost({
+  params,
+}: {
+  params: { slug: string }
+}) {
   const { content, metadata } = getPostBySlug(params.slug)
   const processedContent = await remark().use(html).process(content)
   const contentHtml = processedContent.toString()
 
   return (
     <main className="w-full max-w-[1400px] mx-auto py-12 px-4">
-      <article className="prose prose-lg lg:prose-xl" itemScope itemType="http://schema.org/Article">
+      <article
+        className="prose prose-lg lg:prose-xl"
+        itemScope
+        itemType="http://schema.org/Article"
+      >
         <header className="mb-10">
           {metadata.coverImage && (
             <img
@@ -45,17 +59,21 @@ export default async function BlogPost({ params }: { params: { slug: string } })
               itemProp="image"
             />
           )}
-          <h1 className="text-4xl font-bold" itemProp="headline">{metadata.title}</h1>
+          <h1 className="text-4xl font-bold" itemProp="headline">
+            {metadata.title}
+          </h1>
           <div className="mt-2 text-sm text-gray-500">
             <time dateTime={metadata.date} itemProp="datePublished">
               {new Date(metadata.date).toLocaleDateString('pt-BR', {
                 day: 'numeric',
                 month: 'long',
-                year: 'numeric'
+                year: 'numeric',
               })}
             </time>
             {metadata.author && (
-              <span className="ml-2" itemProp="author">{metadata.author}</span>
+              <span className="ml-2" itemProp="author">
+                {metadata.author}
+              </span>
             )}
           </div>
           {metadata.category && (
@@ -66,7 +84,9 @@ export default async function BlogPost({ params }: { params: { slug: string } })
           {metadata.tags && (
             <ul className="mt-2 flex flex-wrap gap-2 text-xs text-gray-600">
               {metadata.tags.map((tag: string) => (
-                <li key={tag} className="bg-gray-100 px-2 py-1 rounded">{tag}</li>
+                <li key={tag} className="bg-gray-100 px-2 py-1 rounded">
+                  {tag}
+                </li>
               ))}
             </ul>
           )}
@@ -86,17 +106,19 @@ export default async function BlogPost({ params }: { params: { slug: string } })
               '@type': 'Article',
               headline: metadata.title,
               description: metadata.summary,
-              image: metadata.coverImage ? `https://feedybacky.com.br${metadata.coverImage}` : undefined,
+              image: metadata.coverImage
+                ? `https://feedybacky.com.br${metadata.coverImage}`
+                : undefined,
               author: {
                 '@type': 'Person',
-                name: metadata.author || 'Feedybacky'
+                name: metadata.author || 'Feedybacky',
               },
               datePublished: metadata.date,
               mainEntityOfPage: {
                 '@type': 'WebPage',
-                '@id': `https://feedybacky.com.br/blog/${params.slug}`
-              }
-            })
+                '@id': `https://feedybacky.com.br/blog/${params.slug}`,
+              },
+            }),
           }}
         />
       </article>
