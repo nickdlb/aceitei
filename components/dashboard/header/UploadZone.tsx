@@ -1,9 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { uploadImage } from '@/utils/uploadImage';
 import { useAuth } from '../../common/auth/AuthProvider';
 import { UploadCloud } from 'lucide-react';
-import MultipleUploadModal from './MultipleUploadModal';
 import { supabase } from '@/utils/supabaseClient';
 
 export interface UploadZoneProps {
@@ -12,65 +11,51 @@ export interface UploadZoneProps {
 
 export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
   const { session } = useAuth();
-  const [showModal, setShowModal] = useState(false);
-  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
-  const handleUpload = async (files: File[], combine: boolean = false) => {
+  const handleUpload = async (files: File[]) => {
     if (!session?.user?.id) return;
 
     try {
-      if (combine) {
-        const { data: document, error: documentError } = await supabase
-          .from('documents')
-          .insert({ title: 'Documento Combinado', user_id: session.user.id })
-          .select()
-          .single();
+      for (const file of files) {
+        if (file.type === 'application/pdf') {
+          // 1. Create a new document in the documents table
+          const { data: document, error: documentError } = await supabase
+            .from('documents')
+            .insert({ title: file.name, user_id: session.user.id })
+            .select()
+            .single();
 
-        if (documentError) throw documentError;
+          if (documentError) throw documentError;
 
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
+          // 2. Upload the PDF to the files bucket
           const fileExt = file.name.split('.').pop();
-          const fileName = `${Math.random()}.${fileExt}`;
-
-          const { error: storageError } = await supabase.storage
+          const fileName = `${document.id}.${fileExt}`; // Use documentId as filename
+          const { data: storageData, error: storageError } = await supabase.storage
             .from('files')
-            .upload(fileName, file);
-
-          if (storageError) {
-            console.error('Erro no upload da imagem:', storageError);
-            continue;
-          }
-
-          const { error: pageError } = await supabase
-            .from('pages')
-            .insert({
-              image_url: fileName,
-              imageTitle: file.name,
-              document_id: document.id,
-              page_number: i + 1,
-              user_id: session.user.id,
+            .upload(fileName, file, {
+              contentType: 'application/pdf',
             });
 
-          if (pageError) {
-            console.error('Erro ao criar página:', pageError);
-            await supabase.storage.from('files').remove([fileName]);
+          if (storageError) throw storageError;
+
+          const pdfUrl = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/files/${fileName}`;
+
+          // 3. Send a POST request to /api/pdfconverter
+          const response = await fetch(`/api/pdfconverter?user_id=${session.user.id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pdfUrl: pdfUrl, documentId: document.id }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to call /api/pdfconverter: ${response.status} ${response.statusText}`);
           }
-        }
 
-        const { data: firstPage } = await supabase
-          .from('pages')
-          .select('*')
-          .eq('document_id', document.id)
-          .order('page_number')
-          .limit(1)
-          .single();
-
-        if (firstPage) {
-          onUploadSuccess(firstPage);
-        }
-      } else {
-        for (const file of files) {
+          const responseData = await response.json();
+          onUploadSuccess(responseData);
+        } else {
           const data = await uploadImage(file, session.user.id, file.name);
           if (data) {
             onUploadSuccess(data);
@@ -83,21 +68,15 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
     }
   };
 
-  const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
-      if (acceptedFiles.length > 1) {
-        setPendingFiles(acceptedFiles);
-        setShowModal(true);
-      } else {
-        handleUpload(acceptedFiles);
-      }
-    },
-    [session?.user?.id]
-  );
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { 'image/*': ['.png', '.jpg', '.jpeg'] },
+    onDrop: (acceptedFiles: File[]) => {
+       handleUpload(acceptedFiles);
+    },
+    accept: {
+      'image/*': ['.png', '.jpg', '.jpeg'],
+      'application/pdf': ['.pdf'],
+    },
+    multiple: false, // Disable multiple file uploads
   });
 
   return (
@@ -118,24 +97,9 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
         >
           <UploadCloud className="w-10 h-10 mb-3 text-acbrancohover" />
           <p className="text-sm font-medium text-acbrancohover">Solte para fazer upload</p>
-          <p className="text-xs text-acbranco mt-1">ou arraste e solte aqui</p>
+          <p className="text-xs text-acazul mt-1">ou arraste e solte aqui</p>
         </div>
       </div>
-      <MultipleUploadModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onSeparate={async () => {
-          await handleUpload(pendingFiles, false);
-          setShowModal(false);
-          setPendingFiles([]);
-        }}
-        onCombine={async () => {
-          await handleUpload(pendingFiles, true);
-          setShowModal(false);
-          setPendingFiles([]);
-        }}
-        filesCount={pendingFiles.length}
-      />
     </>
   );
 };

@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/
 import PopupUpload from '@/components/dashboard/header/PopupUpload';
 import { useDashboardContext } from '@/contexts/DashboardContext';
 
-const BotaoPopupUpload = () => {
+const BotaoPopupUploadMobile = () => {
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const { refreshImages } = useDashboardContext();
   const handleUploadComplete = useCallback(async (data: any) => {
@@ -21,7 +21,7 @@ const BotaoPopupUpload = () => {
   return (
     <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
       <DialogTrigger asChild>
-        <button className="hidden md:flex items-center px-2 py-1 text-sm bg-acazul rounded-2xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
+        <button className="md:hidden flex absolute bottom-20 left-[30vw] items-center px-2 py-1 text-sm bg-acazul rounded-2xl text-acbrancohover hover:bg-acbrancohover hover:text-acazul">
           <Plus className="size-5" /> Adicionar Card
         </button>
       </DialogTrigger>
@@ -33,4 +33,4 @@ const BotaoPopupUpload = () => {
   );
 };
 
-export default BotaoPopupUpload;
+export default BotaoPopupUploadMobile;

@@ -7,7 +7,7 @@ const Sidebar = () => {
   const { theme } = useTheme()
 
   return (
-    <div className="w-80 h-screen bg-acbgbranco flex flex-col">
+    <div className="hidden md:flex w-80 h-screen bg-acbgbranco flex-col ">
       <div className="py-2 px-6 h-20 flex items-center justify-between">
       <Link title="dashboard" href="/dashboard"><img src={theme === 'dark' ? '/logo-feedybacky-white.png' : '/logo-feedybacky-dark.png'} alt="Feedybacky" className="h-8" />
       </Link>

@@ -10,7 +10,7 @@ import { useAuthChecker } from '@/utils/useAuthChecker';
 import { useRouter } from 'next/navigation';
 import CardGallery from '@/components/dashboard/gallery/CardGallery';
 import { DashboardProvider } from '@/contexts/DashboardContext';
-
+import MobileMenu from '@/components/dashboard/sidebar/MobileMenu';
 
 const AppContent = () => {
 
@@ -94,8 +94,7 @@ const AppContent = () => {
 
     console.log('[app/page.tsx] Rendering main content');
     return (
-        <DashboardProvider
-            value={{
+        <DashboardProvider value={{
                 sortOrder,
                 setSortOrder,
                 searchTerm,
@@ -112,7 +111,7 @@ const AppContent = () => {
                 totalNotifications,
             }}>
             <div className="flex h-screen bg-acbg overflow-hidden">
-                <Sidebar />
+                <Sidebar /> 
                 <div className="flex-1 flex flex-col">
                     <Header />
                     <main className=" bg-acbgbranco flex flex-col overflow-y-auto">
@@ -120,6 +119,7 @@ const AppContent = () => {
                         <CardGallery />
                     </main>
                 </div>
+                <MobileMenu />
             </div>
         </DashboardProvider>
     );

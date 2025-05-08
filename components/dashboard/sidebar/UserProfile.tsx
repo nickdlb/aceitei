@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useAuth } from '@/components/common/auth/AuthProvider'
 import { supabase } from '@/utils/supabaseClient'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import Link from 'next/link'
 
 const getInitial = (name?: string | null) =>
   typeof name === 'string' && name.length > 0
@@ -41,6 +42,7 @@ export const UserProfile = () => {
 
   return (
     <div className="p-4">
+      <Link href="/account">
       <div className="flex items-center gap-2">
         <Avatar className="w-8 h-8">
           {userPhoto ? (
@@ -50,9 +52,10 @@ export const UserProfile = () => {
         </Avatar>
         <div className="flex flex-col">
           <span className="text-actextocinza font-medium">{userName}</span>
-          <span className="text-xs">Seja Bem Vindo ao Feedybacky</span>
+          <span className="hidden md:block text-xs">Seja Bem Vindo ao Feedybacky</span>
         </div>
       </div>
+      </Link>
     </div>
   )
 }

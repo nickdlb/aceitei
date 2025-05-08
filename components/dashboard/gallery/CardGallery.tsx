@@ -19,7 +19,7 @@ const CardGallery: React.FC = () => {
   }
 
   return (
-    <div className={`bg-blue-700 py-2 px-4 space-y-4`}>
+    <div className={`bg-acbg py-2 px-4 space-y-4`}>
       <div className="grid grid-cols-5 gap-4">
         {filteredImages.map((image) => (
           <Card key={image.id} image={image} />
