@@ -39,41 +39,50 @@ export default function Page() {
     }, [pageData]);
 
     useEffect(() => {
-        if (!pageData?.id) return;
-        const updateDocumentLastAccessed = async () => {
-            try {
-                const { data: page, error: pageError } = await supabase
-                    .from('pages')
-                    .select('document_id')
-                    .eq('id', pageData?.id ?? '')
-                    .single();
+    if (!pageData?.id) return;
 
-                if (pageError) {
-                    console.error('Error fetching page data:', pageError);
-                    return;
-                }
+    let documentId: string | null = null;
 
-                if (!page) {
-                    console.error('Page not found');
-                    return;
-                }
+    const fetchDocumentIdAndBindEvents = async () => {
+        const { data, error } = await supabase
+            .from('pages')
+            .select('document_id')
+            .eq('id', pageData.id)
+            .single();
 
-                const documentId = page.document_id;
-                const { error: documentError } = await supabase
-                    .from('documents')
-                    .update({ last_acessed_at: new Date().toISOString() })
-                    .eq('id', documentId);
+        if (error || !data) {
+            console.error('❌ Erro ao obter document_id:', error);
+            return;
+        }
 
-                if (documentError) {
-                    console.error('Error updating document last_accessed_at:', documentError);
-                }
-            } catch (error) {
-                console.error('Unexpected error:', error);
-            }
+        documentId = data.document_id;
+
+        const sendExitBeacon = () => {
+            if (!documentId) return;
+            const payload = JSON.stringify({
+                documentId,
+                timestamp: new Date().toISOString(),
+            });
+            const blob = new Blob([payload], { type: 'application/json' });
+            const success = navigator.sendBeacon('/api/track-exit', blob);
+            console.log('📡 Beacon enviado:', success, documentId);
         };
 
-        updateDocumentLastAccessed();
-    }, [pageData?.id ?? '']);
+        window.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') sendExitBeacon();
+        });
+
+        window.addEventListener('pagehide', sendExitBeacon); // <- NOVO
+
+        // Remoção
+        return () => {
+            window.removeEventListener('visibilitychange', sendExitBeacon);
+            window.removeEventListener('pagehide', sendExitBeacon);
+        };
+    };
+
+    fetchDocumentIdAndBindEvents();
+}, [pageData?.id]);
 
     useEffect(() => {
         console.log('✅ pageData:', pageData);
