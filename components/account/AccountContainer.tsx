@@ -9,6 +9,7 @@ import { useAuth } from '@/components/common/auth/AuthProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CustomerPortalButton } from '@/components/account/CustomerPortalButton'
 import { SubscriptionInfo } from './SubscriptionInfo';
+import { StripePlans } from './StripePlans';
 
 const AccountContainer = () => {
   const [photoURL, setPhotoURL] = useState('');

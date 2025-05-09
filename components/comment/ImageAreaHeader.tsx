@@ -2,6 +2,7 @@ import React from 'react'
 import { Download, Pencil, LayoutList } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { usePageContext } from '@/contexts/PageContext'
 
 interface ImageAreaHeaderProps {
   exibirImagem: string
@@ -14,7 +15,6 @@ interface ImageAreaHeaderProps {
   handleZoomChange: (value: string) => void
   onTogglePages: () => void
   handleTitleEdit: () => Promise<void>
-  getFileFormat: (url: string | undefined) => string
   toggleEditTitle: () => void
   setNewTitle: (title: string) => void
   handleDownload: () => void
@@ -30,12 +30,13 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   isEditingTitle,
   newTitle,
   handleTitleEdit,
-  getFileFormat,
   toggleEditTitle,
   setNewTitle,
   handleDownload,
   pagesCount
 }) => {
+  const { documentData } = usePageContext();
+
   return (
     <div className="h-16 bg-acbgbranco flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
@@ -63,7 +64,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
           <Pencil className="size-4" />
         </Button>
         <p className="min-w-fit text-xs text-actextocinza">
-          Formato: {getFileFormat(exibirImagem)}
+          Formato: {documentData.type}
         </p>
       </div>
       <div className="flex items-center gap-4">

@@ -19,7 +19,7 @@ export interface ImageProps {
   active_comments: number;
   resolved_comments: number;
   notifications: number;
-  type: 'imagem' | 'site';
+  type: 'imagem' | 'site' | 'pdf' ;
 }
 
 export interface ImageCardProps {

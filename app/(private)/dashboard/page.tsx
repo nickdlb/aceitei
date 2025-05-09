@@ -13,13 +13,12 @@ import { DashboardProvider } from '@/contexts/DashboardContext';
 import MobileMenu from '@/components/dashboard/sidebar/MobileMenu';
 
 const AppContent = () => {
-
     const { isLoading: authIsLoading, isAuthenticated, shouldRedirect } = useAuthChecker();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [sortOrder, setSortOrder] = useState('date');
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeFilter, setActiveFilter] = useState<string>('todos'); // <-- Add state here
+    const [activeFilter, setActiveFilter] = useState<string>('todos');
     const [showSearchForm, setShowSearchForm] = useState(false);
     const [initialWidthSet, setInitialWidthSet] = useState(false);
     const [draggedOverSidebar, setDraggedOverSidebar] = useState(false);
@@ -30,7 +29,8 @@ const AppContent = () => {
         const matchesSearchTerm = image.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = activeFilter === 'todos' ||
             (activeFilter === 'imagens' && image.type === 'imagem') ||
-            (activeFilter === 'sites' && image.type === 'site');
+            (activeFilter === 'sites' && image.type === 'site') ||
+            (activeFilter === 'pdf' && image.type === 'pdf');
         return matchesSearchTerm && matchesFilter;
     });
 

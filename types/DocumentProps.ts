@@ -14,7 +14,7 @@ export interface DocumentProps {
     title: any;
     created_at: any;
     user_id: any;
-    type: 'imagem' | 'site';
+    type: 'imagem' | 'site' | 'pdf'; 
     last_acessed_at: string;
     status: string;
     url: string;

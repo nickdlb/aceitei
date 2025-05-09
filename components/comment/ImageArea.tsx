@@ -102,7 +102,6 @@ const ImageArea: React.FC<Props> = ({
         zoomLevel={zoomLevel}
         isPagesOpen={isPagesOpen || false}
         handleTitleEdit={handleTitleEdit}
-        getFileFormat={getFileFormat}
         handleDownload={handleDownload}
         handleZoomChange={handleZoomChange}
         onTogglePages={onTogglePages || (() => { })}
@@ -122,12 +121,7 @@ const ImageArea: React.FC<Props> = ({
           className="relative transition-transform duration-300 ease-in-out pt-4"
         >
           <div className="relative">
-            <img
-              ref={imageRef}
-              src={exibirImagem}
-              alt={imageTitle || "Imagem para comentários"}
-              className="max-h-[calc(100vh-5rem)] w-auto object-contain"
-              onClick={(e) => {
+            <img ref={imageRef} src={exibirImagem} alt={imageTitle || "Imagem para comentários"} className="max-h-[calc(100vh-5rem)] w-auto object-contain" onClick={(e) => {
                 if (zoomLevel === '100' && !isDragging && !draggingPin) {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = ((e.clientX - rect.left) / rect.width) * 100;

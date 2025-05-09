@@ -73,10 +73,10 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
        handleUpload(acceptedFiles);
     },
     accept: {
-      'image/*': ['.png', '.jpg', '.jpeg'],
+      'image/*': ['.png', '.jpg', '.jpeg' , '.webp'],
       'application/pdf': ['.pdf'],
     },
-    multiple: false, // Disable multiple file uploads
+    multiple: false,
   });
 
   return (

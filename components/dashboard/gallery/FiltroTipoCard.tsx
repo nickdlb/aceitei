@@ -1,6 +1,6 @@
 'use client';
 
-import { List, Image, Globe } from 'lucide-react';
+import { List, Image, Globe, File } from 'lucide-react';
 import { useDashboardContext } from '@/contexts/DashboardContext';
 
 const FiltroTipoCard: React.FC = () => {
@@ -23,6 +23,10 @@ const FiltroTipoCard: React.FC = () => {
       <button onClick={() => handleFilterClick('sites')} className={`flex items-center gap-1 px-3 py-1 rounded-xl text-sm font-medium ${activeFilter === 'sites' ? 'bg-acazul text-acbrancohover' : 'bg-acbg text-actext'}`} >
         <Globe className="h-4 w-4" />
         Sites
+      </button>
+      <button onClick={() => handleFilterClick('pdf')} className={`flex items-center gap-1 px-3 py-1 rounded-xl text-sm font-medium ${activeFilter === 'pdf' ? 'bg-acazul text-acbrancohover' : 'bg-acbg text-actext'}`} >
+        <File className="h-4 w-4" />
+        PDFs
       </button>
     </div>
   );

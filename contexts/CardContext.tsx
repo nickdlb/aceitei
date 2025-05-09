@@ -9,7 +9,7 @@ interface DocumentData {
   user_id: string;
   last_acessed_at?: string;
   status?: string;
-  type: 'imagem' | 'site';
+  type: 'imagem' | 'site' | 'pdf';
   url?: string;
 }
 
