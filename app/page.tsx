@@ -12,7 +12,6 @@ import RevisionSection from '@/components/home/RevisionSection';
 import EfficiencySection from '@/components/home/EfficiencySection';
 import LaptopSection from '@/components/home/LaptopSection';
 
-
 const HomePage = () => {
   return (
     <div className='flex items-center justify-center w-full bg-acbranco'>
