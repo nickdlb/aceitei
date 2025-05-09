@@ -83,22 +83,13 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
 
   return (
     <div className="mt-4">
-      <div className="flex items-center gap-2">
+      <div className="text-acpreto flex items-center gap-2">
+          <strong>Nome:</strong>
         {editingName ? (
-          <Input
-            ref={nameInputRef}
-            type="text"
-            value={tempName}
-            onChange={handleNameChange}
-            onKeyPress={handleKeyPress}
-            className="w-auto"
-            onBlur={handleBlur}
-          />
-        ) : (
-          <p className='text-acpreto'>
-            <strong>Nome:</strong> {userData.nome}
-          </p>
-        )}
+          <Input ref={nameInputRef} type="text" value={tempName} onChange={handleNameChange} onKeyPress={handleKeyPress} className=" !text-base !min-w-0 !pl-0 border-none !ring-0"
+            onBlur={handleBlur}/>
+        ) 
+        : (<>{userData.nome}</>)}
         {!editingName && (
           <Button className='text-acpreto bg-acbgbranco' onClick={handleEditName} variant="outline" size="sm">
             Editar

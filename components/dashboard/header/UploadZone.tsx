@@ -21,7 +21,7 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           // 1. Create a new document in the documents table
           const { data: document, error: documentError } = await supabase
             .from('documents')
-            .insert({ title: file.name, user_id: session.user.id })
+            .insert({ title: file.name, user_id: session.user.id, type: 'pdf' })
             .select()
             .single();
 
