@@ -15,11 +15,19 @@ export default function HeaderSection() {
                 <Link title="home" href="/"><img src={theme === 'dark' ? '/logo-feedybacky-white.png' : '/logo-feedybacky-dark.png'} alt="Feedybacky" className="h-8" />
                 </Link>
                 <ToggleDarkModeAnimated />
-                <nav className="flex gap-10 items-center">
-                    <a title="login" href="/login" className={`${isAuthenticated === true ? 'hidden' : 'block'} bg-acpreto text-acbranco px-4 py-2 rounded-xl text-sm`}> Login </a>
-                    <a title="dashboard" href="/dashboard" className={`${isAuthenticated === true ? 'block' : 'hidden'} text-sm font-medium text-acpreto rounded-xl`}> Dashboard </a>
-                    <button className="bg-acazul text-acbranco px-4 py-2 rounded-xl text-sm">Inscreva-se</button>
-                </nav>
+                {!isLoading && typeof isAuthenticated === 'boolean' && (
+                    <div>
+                        {!isAuthenticated && (
+                            <div className="flex gap-8">
+                                <a title="login" href="/login" className="bg-acpreto text-acbranco px-4 py-2 rounded-xl text-sm">Login</a>
+                                <button className="bg-acazul text-acbranco px-4 py-2 rounded-xl text-sm">Inscreva-se</button>
+                            </div>
+                        )}
+                        {isAuthenticated && (
+                        <a title="dashboard" href="/dashboard" className="text-sm font-medium text-acpreto rounded-xl">Dashboard</a>
+                        )}
+                    </div>
+                    )}
             </div>
 
         </header>
