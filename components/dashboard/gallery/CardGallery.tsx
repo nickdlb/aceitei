@@ -11,7 +11,7 @@ const CardGallery: React.FC = () => {
   } = useDashboardContext();
 
   if (isLoading) {
-    return <p>Carregando Cards...</p>;
+    return <p className='pl-6 bg-acbg'>Carregando Cards...</p>;
   }
 
   if (!filteredImages || filteredImages.length === 0) {

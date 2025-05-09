@@ -65,12 +65,6 @@ const SiteArea: React.FC<Props> = ({
     if (!isEditingTitle) setNewTitle(documentData.title)
   }
 
-  const getFileFormat = (url: string | undefined) => {
-    if (!url) return ''
-    const ext = url.split('.').pop()?.toLowerCase() || ''
-    return ext === 'jpg' ? 'JPEG' : ext.toUpperCase()
-  }
-
   const handleDownload = async () => {
     try {
       const response = await fetch(exibirImagem)
@@ -78,7 +72,6 @@ const SiteArea: React.FC<Props> = ({
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${documentData.title || 'imagem'}.${getFileFormat(exibirImagem).toLowerCase()}`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
@@ -102,7 +95,6 @@ const SiteArea: React.FC<Props> = ({
         toggleEditTitle={toggleEditTitle}
         setNewTitle={setNewTitle}
         handleTitleEdit={handleTitleEdit}
-        getFileFormat={getFileFormat}
         handleDownload={handleDownload}
         pagesCount={pages.length}
       />

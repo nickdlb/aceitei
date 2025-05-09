@@ -14,7 +14,6 @@ interface SiteAreaHeaderProps {
   handleZoomChange: (value: string) => void
   onTogglePages: () => void
   handleTitleEdit: () => Promise<void>
-  getFileFormat: (url: string | undefined) => string
   toggleEditTitle: () => void
   setNewTitle: (title: string) => void
   handleDownload: () => void
@@ -30,7 +29,6 @@ const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
   isEditingTitle,
   newTitle,
   handleTitleEdit,
-  getFileFormat,
   toggleEditTitle,
   setNewTitle,
   handleDownload,
@@ -63,7 +61,6 @@ const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
           <Pencil className="size-4" />
         </Button>
         <p className="min-w-fit text-xs text-actextocinza">
-          Formato: {getFileFormat(exibirImagem)}
         </p>
       </div>
       <div className="flex items-center gap-4">
