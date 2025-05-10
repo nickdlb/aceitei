@@ -10,6 +10,7 @@ import {
   uploadPhotoToStorage,
   deletePhotoFromStorage,
 } from '@/utils/profileUtils'
+import { toast } from 'sonner'
 
 interface ProfilePhotoProps {
   photoURL: string
@@ -50,12 +51,12 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
     const maxSizeMB = 5
 
     if (!validTypes.includes(file.type)) {
-      alert('Formato inválido. Envie JPEG, PNG ou WEBP.')
+      toast.error('Formato inválido. Envie JPEG, PNG ou WEBP.')
       return
     }
 
     if (file.size > maxSizeMB * 1024 * 1024) {
-      alert(`Arquivo muito grande. Máximo permitido: ${maxSizeMB}MB`)
+      toast.error(`Arquivo muito grande. Máximo permitido: ${maxSizeMB}MB`)
       return
     }
 
@@ -72,9 +73,10 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
       await updateProfilePhoto(userId, url)
       onUpdatePhoto(url)
       localStorage.setItem('profilePhoto', url)
-    } catch (err) {
+      toast.success('Foto de perfil atualizada com sucesso!')
+    } catch (err: any) {
       console.error('Erro ao enviar foto', err)
-      alert('Erro ao enviar foto. Tente novamente.')
+      toast.error('Erro ao enviar foto. Tente novamente.')
     } finally {
       setUploading(false)
       setNewPhoto(null)
@@ -88,8 +90,10 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
         await removeProfilePhoto(userId)
         onUpdatePhoto('')
         localStorage.removeItem('profilePhoto')
-      } catch (err) {
+        toast.success('Foto de perfil removida com sucesso!')
+      } catch (err: any) {
         console.error('Erro ao remover foto', err)
+        toast.error('Erro ao remover foto. Tente novamente.')
       }
     }
   }

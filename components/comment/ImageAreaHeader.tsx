@@ -1,41 +1,100 @@
-import React from 'react'
-import { Download, Pencil, LayoutList } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { usePageContext } from '@/contexts/PageContext'
+'use client';
+
+import React, { useState, useCallback } from 'react';
+import { Download, Pencil, LayoutList } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from 'sonner';
+import { usePageContext } from '@/contexts/PageContext';
+import { useEffect } from 'react';
 
 interface ImageAreaHeaderProps {
-  exibirImagem: string
-  isEditingTitle: boolean
-  imageTitle: string
-  newTitle: string
-  zoomLevel: string
-  isPagesOpen: boolean
-  pagesCount?: number
-  handleZoomChange: (value: string) => void
-  onTogglePages: () => void
-  handleTitleEdit: () => Promise<void>
-  toggleEditTitle: () => void
-  setNewTitle: (title: string) => void
-  handleDownload: () => void
+  exibirImagem: string;
+  onTitleUpdate: (newTitle: string) => Promise<void | undefined>;
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>; // ← aqui está o ajuste
+  onTogglePages: () => void;
+  isPagesOpen: boolean;
+  pagesCount?: number;
 }
 
 const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
   exibirImagem,
-  zoomLevel,
-  handleZoomChange,
+  onTitleUpdate,
+  scrollContainerRef,
   onTogglePages,
   isPagesOpen,
-  imageTitle,
-  isEditingTitle,
-  newTitle,
-  handleTitleEdit,
-  toggleEditTitle,
-  setNewTitle,
-  handleDownload,
-  pagesCount
+  pagesCount,
 }) => {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState('100');
   const { documentData } = usePageContext();
+  const [newTitle, setNewTitle] = useState(documentData.title);
+
+  const toggleEditTitle = () => {
+    setIsEditingTitle((prev) => !prev);
+  };
+
+  const handleTitleEdit = useCallback(async () => {
+    if (isEditingTitle) {
+      if (newTitle.trim()) {
+        try {
+          await onTitleUpdate(newTitle);
+          toast.success('Título atualizado com sucesso');
+          setIsEditingTitle(false);
+        } catch (error: any) {
+          toast.error('Erro ao atualizar título: ' + (error?.message || 'Erro desconhecido'));
+        }
+      } else {
+        toast.error('O título não pode ser vazio.');
+        setNewTitle(documentData.title);
+        setIsEditingTitle(false);
+      }
+    } else {
+      setNewTitle(documentData.title);
+      setIsEditingTitle(true);
+    }
+  }, [isEditingTitle, newTitle, documentData.title, onTitleUpdate]);
+
+  const getFileFormat = (url: string | undefined) => {
+    if (!url) return '';
+    const extension = url.split('.').pop()?.toLowerCase() || '';
+    return extension === 'jpg' ? 'JPEG' : extension.toUpperCase();
+  };
+
+  const handleDownload = useCallback(async () => {
+    try {
+      const response = await fetch(exibirImagem);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${documentData.title || 'imagem'}.${getFileFormat(exibirImagem).toLowerCase()}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      toast.error('Erro ao baixar imagem.');
+      console.error('Erro ao baixar imagem:', error);
+    }
+  }, [exibirImagem, documentData.title]);
+
+  const handleZoomChange = useCallback((value: string) => {
+    setZoomLevel(value);
+    const scale = parseInt(value) / 100;
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.style.transform = `scale(${scale})`;
+      scrollContainerRef.current.style.transformOrigin = 'top center';
+    }
+  }, [scrollContainerRef]);
+
+  useEffect(() => {
+  setZoomLevel('100');
+  if (scrollContainerRef.current) {
+    scrollContainerRef.current.style.transform = 'scale(1)';
+    scrollContainerRef.current.style.transformOrigin = 'top center';
+  }
+}, [exibirImagem]);
 
   return (
     <div className="h-16 bg-acbgbranco flex items-center justify-between px-4">
@@ -49,11 +108,11 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
             autoFocus
             maxLength={50}
             onKeyPress={(e) => {
-              if (e.key === 'Enter') handleTitleEdit()
+              if (e.key === 'Enter') handleTitleEdit();
             }}
           />
         ) : (
-          <h2 className="text-sm font-medium text-actextocinza">{imageTitle}</h2>
+          <h2 className="text-sm font-medium text-actextocinza">{documentData.title}</h2>
         )}
         <Button
           variant="ghost"
@@ -64,7 +123,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
           <Pencil className="size-4" />
         </Button>
         <p className="min-w-fit text-xs text-actextocinza">
-          Formato: {documentData.type}
+          Formato: {getFileFormat(exibirImagem)}
         </p>
       </div>
       <div className="flex items-center gap-4">
@@ -97,7 +156,7 @@ const ImageAreaHeader: React.FC<ImageAreaHeaderProps> = ({
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ImageAreaHeader
+export default ImageAreaHeader;

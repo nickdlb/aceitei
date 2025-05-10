@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { supabase } from '@/utils/supabaseClient'
+import { toast } from 'sonner'
 
 export const CustomerPortalButton: React.FC = () => {
   const handleOpenPortal = async () => {
@@ -10,7 +11,7 @@ export const CustomerPortalButton: React.FC = () => {
     } = await supabase.auth.getSession()
 
     if (!session?.access_token) {
-      alert('Você precisa estar logado para gerenciar sua assinatura.')
+      toast.error('Você precisa estar logado para gerenciar sua assinatura.')
       return
     }
 

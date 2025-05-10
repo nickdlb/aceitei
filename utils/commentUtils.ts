@@ -1,6 +1,6 @@
 import { PinProps } from '@/types';
 import { supabase } from '@/utils/supabaseClient';
-import { formatISO } from 'date-fns';
+import { toast } from 'sonner'
 
 export const createComment = async (
     xPercent: number,
@@ -185,11 +185,11 @@ export const changeCommentStatus = async (
 
         if (typeof permissions === 'object' && !Array.isArray(permissions)) {
             if (!permissions.canChangeStatus) {
-                alert('Você não tem permissão para alterar o status deste comentário.');
+                toast.error('Você não tem permissão para alterar o status deste comentário.');
                 return;
             }
         } else if (!permissions) {
-            alert('Você não tem permissão para alterar o status deste comentário.');
+            toast.error('Você não tem permissão para alterar o status deste comentário.');
             return;
         }
 
@@ -211,7 +211,7 @@ export const changeCommentStatus = async (
 
     } catch (error: any) {
         console.error("Erro ao atualizar status:", error.message);
-        alert(error.message || 'Erro ao atualizar status do comentário');
+        toast.error(error.message || 'Erro ao atualizar status do comentário');
     }
 };
 
@@ -233,11 +233,11 @@ export const saveComment = async (
 
         if (typeof permissions === 'object' && !Array.isArray(permissions)) {
             if (!permissions.canEdit) {
-                alert('Você não tem permissão para editar este comentário. Apenas o autor do comentário pode editá-lo.');
+                toast.error('Você não tem permissão para editar este comentário. Apenas o autor do comentário pode editá-lo.');
                 return;
             }
         } else if (!permissions) {
-            alert('Você não tem permissão para editar este comentário.');
+            toast.error('Você não tem permissão para editar este comentário.');
             return;
         }
 
@@ -262,7 +262,7 @@ export const saveComment = async (
 
     } catch (error: any) {
         console.error("Erro ao salvar comentário:", error.message);
-        alert(error.message || 'Erro ao salvar comentário');
+        toast.error(error.message || 'Erro ao salvar comentário');
     }
 };
 
@@ -283,11 +283,11 @@ export const deleteComment = async (
 
         if (typeof permissions === 'object' && !Array.isArray(permissions)) {
             if (!permissions.canDelete) {
-                alert('Você não tem permissão para excluir este comentário.');
+                toast.error('Você não tem permissão para excluir este comentário.');
                 return;
             }
         } else if (!permissions) {
-            alert('Você não tem permissão para excluir este comentário.');
+            toast.error('Você não tem permissão para excluir este comentário.');
             return;
         }
 

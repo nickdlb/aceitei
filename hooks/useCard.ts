@@ -15,12 +15,9 @@ export const useCard = (pageData: PageData) => {
       const result = await deleteCard(pageData.document_id, pageData.image_url);
       if (result.success) {
         await refreshImages();
-      } else {
-        alert(`Falha ao excluir: ${result.message}`);
       }
     } catch (error) {
       console.error('Erro ao deletar documento:', error);
-      alert('Ocorreu um erro ao excluir o documento. Por favor, tente novamente.');
     } finally {
       setIsDeleting(false);
     }
@@ -31,4 +28,3 @@ export const useCard = (pageData: PageData) => {
     handleDeleteCard,
   };
 };
-

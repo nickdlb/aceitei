@@ -5,6 +5,7 @@ import { useAuth } from '@/components/common/auth/AuthProvider';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { updateUserName } from '@/utils/profileUtils';
+import { toast } from 'sonner';
 
 export interface UserInfoProps {
   userData: {
@@ -50,8 +51,10 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
       const newName = await updateUserName(userId, tempName.trim());
       onUpdateName(newName);
       setEditingName(false);
-    } catch (error) {
+      toast.success('Nome atualizado com sucesso!');
+    } catch (error: any) {
       console.error('Erro ao atualizar nome:', error);
+      toast.error('Erro ao atualizar nome. Tente novamente.');
     }
   };
 

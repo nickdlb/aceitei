@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider, ThemeInitScript } from '@/contexts/ThemeContext'
 import { AuthProvider } from '@/components/common/auth/AuthProvider'
 import { GoogleTagManager } from '@next/third-parties/google'
+import { Toaster } from 'sonner';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider storageKey="feedybacky-theme">
           <AuthProvider>
             {children}
+            <Toaster/>
           </AuthProvider>
         </ThemeProvider>
       </body>

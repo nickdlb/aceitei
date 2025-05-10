@@ -1,5 +1,6 @@
 import { Session } from '@supabase/supabase-js';
 import { supabase } from './supabaseClient';
+import { toast } from 'sonner';
 
 export const createReply = async (
     pinId: string,
@@ -36,8 +37,7 @@ export const createReply = async (
         await loadComments();
 
     } catch (error: any) {
-        console.error('Error adding reply:', error);
-        alert(`Error adding reply: ${error.message || 'Unknown error'}`);
+        toast.error(`Error adding reply: ${error.message || 'Unknown error'}`);
     }
 };
 

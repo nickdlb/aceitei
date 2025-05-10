@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { toast } from 'sonner';
 
 export const deleteCard = async (documentId: string, imageUrl?: string) => {
 
@@ -62,10 +63,12 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
       }
     }
 
+    toast.success('Documento excluído com sucesso');
     return { success: true, message: 'Documento excluído com sucesso' };
 
   } catch (error: any) {
     console.error('❌ Erro ao excluir documento:', error);
+    toast.error(error?.message || 'Erro desconhecido ao excluir documento');
     return {
       success: false,
       message: error?.message || 'Erro desconhecido ao excluir documento'

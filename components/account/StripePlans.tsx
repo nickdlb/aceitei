@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '@/components/common/auth/AuthProvider' // use aqui seu próprio hook
+import { useAuth } from '@/components/common/auth/AuthProvider'
+import { toast } from 'sonner'
 
 interface StripeProduct {
   id: string
@@ -38,7 +39,7 @@ export const StripePlans = () => {
 
   const handleSubscribe = async (priceId: string) => {
     if (!session?.user) {
-      alert('Você precisa estar logado para assinar um plano.')
+      toast.error('Você precisa estar logado para assinar um plano.')
       return
     }
 

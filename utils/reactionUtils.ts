@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { supabase } from './supabaseClient';
 import { Session } from '@supabase/supabase-js';
 
@@ -79,6 +80,6 @@ export const deleteReaction = async (
         await loadComments();
     } catch (error: any) {
         console.error('Erro ao excluir resposta:', error);
-        alert(`Erro ao excluir resposta: ${error.message || 'Erro desconhecido'}`);
+        toast.error(`Erro ao excluir resposta: ${error.message || 'Erro desconhecido'}`);
     }
 };

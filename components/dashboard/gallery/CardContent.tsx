@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCardContext } from '@/contexts/CardContext';
 import { supabase } from '@/utils/supabaseClient';
+import { toast } from 'sonner';
 
 export const CardContent = () => {
   const { pageData, documentData } = useCardContext();
@@ -24,10 +25,10 @@ export const CardContent = () => {
         .eq('id', documentData.id);
 
       if (error) throw error;
-
       setIsEditing(false);
+      toast.success('Título editado com sucesso')
     } catch (error) {
-      console.error('Erro ao atualizar título:', error);
+      toast.error('Houve um erro ao editar o título');
     }
   };
 
