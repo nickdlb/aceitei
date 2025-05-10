@@ -3,13 +3,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/common/auth/AuthProvider';
+import { Loader2 } from 'lucide-react';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 
 export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (page: any) => void }) {
   const { session } = useAuth();
   const [link, setLink] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { refreshImages } = useDashboardContext();
 
   const handleLinkUpload = async (url: string) => {
     if (!session?.user?.id) return;
+    setIsLoading(true);
     url = handleHttpsInput(url);
     try {
       const { data: document, error: documentError } = await supabase
@@ -45,9 +50,12 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
       }
 
       if (onUploadSuccess) onUploadSuccess(page);
+      await refreshImages();
     } catch (err) {
       const error = err as Error;
       console.error('Erro ao fazer upload do link:', error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,9 +86,9 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
       <Button
         className="!text-xs h-8 px-4 bg-acazul opacity-100 disabled:bg-acazul text-acbrancohover"
         onClick={handleUploadSite}
-        disabled={!link.trim()}
+        disabled={!link.trim() || isLoading}
       >
-        Enviar
+        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Enviar'}
       </Button>
     </div>
   );
