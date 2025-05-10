@@ -160,7 +160,7 @@ const CommentBar = ({
         }
 
         try {
-          namesMap[userId] = await getUserProfile(userId)
+          namesMap[userId] = (await getUserProfile(userId)).nome
         } catch {
           namesMap[userId] = 'Usuário Anônimo'
         }

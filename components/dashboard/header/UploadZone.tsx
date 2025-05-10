@@ -1,7 +1,8 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { uploadImage } from '@/utils/uploadImage';
 import { useAuth } from '../../common/auth/AuthProvider';
+import MultipleUploadModal from './MultipleUploadModal';
 import { UploadCloud } from 'lucide-react';
 import { supabase } from '@/utils/supabaseClient';
 
@@ -11,6 +12,12 @@ export interface UploadZoneProps {
 
 export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
   const { session } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [acceptedFilesState, setAcceptedFilesState] = useState<File[]>([]);
+
+  const combineImages = (files: File[]) => {
+    console.log('Combining images:', files);
+  };
 
   const handleUpload = async (files: File[]) => {
     if (!session?.user?.id) return;
@@ -18,7 +25,6 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
     try {
       for (const file of files) {
         if (file.type === 'application/pdf') {
-          // 1. Create a new document in the documents table
           const { data: document, error: documentError } = await supabase
             .from('documents')
             .insert({ title: file.name, user_id: session.user.id, type: 'pdf' })
@@ -27,9 +33,8 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
           if (documentError) throw documentError;
 
-          // 2. Upload the PDF to the files bucket
           const fileExt = file.name.split('.').pop();
-          const fileName = `${document.id}.${fileExt}`; // Use documentId as filename
+          const fileName = `${document.id}.${fileExt}`;
           const { data: storageData, error: storageError } = await supabase.storage
             .from('files')
             .upload(fileName, file, {
@@ -40,7 +45,6 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
           const pdfUrl = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/files/${fileName}`;
 
-          // 3. Send a POST request to /api/pdfconverter
           const response = await fetch(`/api/pdfconverter?user_id=${session.user.id}`, {
             method: 'POST',
             headers: {
@@ -70,13 +74,18 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles: File[]) => {
-       handleUpload(acceptedFiles);
+      if (acceptedFiles.length > 1) {
+        setAcceptedFilesState(acceptedFiles);
+        setIsModalOpen(true);
+      } else {
+        handleUpload(acceptedFiles);
+      }
     },
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg' , '.webp'],
       'application/pdf': ['.pdf'],
     },
-    multiple: false,
+    multiple: true,
   });
 
   return (
@@ -100,6 +109,21 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
           <p className="text-xs text-acazul mt-1">ou arraste e solte aqui</p>
         </div>
       </div>
+      <MultipleUploadModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSeparate={() => {
+          console.log('Separate files');
+          acceptedFilesState.forEach((file) => handleUpload([file]));
+          setIsModalOpen(false);
+        }}
+        onCombine={() => {
+          console.log('Combine files');
+          combineImages(acceptedFilesState);
+          setIsModalOpen(false);
+        }}
+        filesCount={acceptedFilesState.length}
+      />
     </>
   );
 };

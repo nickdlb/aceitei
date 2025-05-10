@@ -12,7 +12,7 @@ export const uploadImage = async (file: File, userId: string, title: string) => 
                 }
             ])
             .select()
-            .single();
+            .single()
 
         if (documentError) {
             console.error('Error creating document:', documentError);
