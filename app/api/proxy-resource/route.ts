@@ -1,21 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server'
-import fetch from 'node-fetch'
-import { URL } from 'url'
+import { NextRequest, NextResponse } from 'next/server';
+import fetch from 'node-fetch';
+import { URL } from 'url';
 
-export async function handler(req: NextRequest, res: any) {
-  const targetUrl = req.nextUrl.searchParams.get('url');
+export const dynamic = 'force-dynamic';
 
-  if (!targetUrl || !targetUrl.startsWith('http')) {
+export async function GET(req: NextRequest) {
+  const targetUrlParam = req.nextUrl.searchParams.get('url');
+  const originalUrlParam = req.nextUrl.searchParams.get('originalUrl');
+
+  if (!targetUrlParam || !targetUrlParam.startsWith('http')) {
     return new NextResponse('URL inválida.', { status: 400 });
   }
+
+  const targetUrl: string = targetUrlParam;
+  const originalUrl: string = originalUrlParam || targetUrl;
 
   try {
     const response = await fetch(targetUrl, {
       headers: {
-        'User-Agent': req.headers.get('user-agent') || '',
-        'Referer': targetUrl,
+        'User-Agent': req.headers.get('user-agent') ?? '',
+        'Referer': originalUrl,
       }
-    })
+    });
 
     const contentType = response.headers.get('content-type') || 'application/octet-stream';
     const isText = contentType.includes('text/') || contentType.includes('application/javascript') || contentType.includes('application/json');
@@ -28,7 +34,6 @@ export async function handler(req: NextRequest, res: any) {
     headers.set('Content-Type', contentType);
     headers.set('Cache-Control', 'public, max-age=86400');
 
-    // Reescreve CSS para manter url(...) apontando para o proxy
     if (isCss) {
       const base = new URL(targetUrl);
       const rawCss = await response.text();
@@ -37,12 +42,11 @@ export async function handler(req: NextRequest, res: any) {
         .replace(/url\(["']?([^)"']+)["']?\)/gi, (match, urlPath) => {
           if (/^(https?:|\/\/|data:)/i.test(urlPath)) {
             const fullUrl = urlPath.startsWith('//') ? `https:${urlPath}` : urlPath;
-            return `url("/api/proxy-resource?url=${encodeURIComponent(fullUrl)}")`;
+            return `url("/api/proxy-resource?url=${encodeURIComponent(fullUrl)}&originalUrl=${encodeURIComponent(originalUrl)}")`;
           }
-
           try {
             const absoluteUrl = new URL(urlPath, base).toString();
-            return `url("/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}")`;
+            return `url("/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(originalUrl)}")`;
           } catch {
             return match;
           }
@@ -51,24 +55,17 @@ export async function handler(req: NextRequest, res: any) {
           const absoluteUrl = importUrl.startsWith('http') || importUrl.startsWith('//')
             ? importUrl.startsWith('//') ? `https:${importUrl}` : importUrl
             : new URL(importUrl, base).toString();
-          return `@import url("/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}")`;
+          return `@import url("/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(originalUrl)}")`;
         });
-
-      console.log('[✔️ CSS REWRITTEN]', {
-        url: targetUrl,
-        sample: rewrittenCss.slice(0, 200)
-      });
 
       return new NextResponse(rewrittenCss, { status: 200, headers });
     }
 
-    // Para outros conteúdos textuais
     if (isText) {
       const rawText = await response.text();
       return new NextResponse(rawText, { status: 200, headers });
     }
 
-    // Para arquivos binários: imagens, fontes, vídeos, etc
     const buffer = await response.arrayBuffer();
     return new NextResponse(Buffer.from(buffer), { status: 200, headers });
 
