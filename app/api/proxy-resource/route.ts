@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       headers: {
         'User-Agent': req.headers.get('user-agent') ?? '',
         'Referer': originalUrl,
-      }
+      },
     });
 
     const contentType = response.headers.get('content-type') || 'application/octet-stream';
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       const rawCss = await response.text();
 
       const rewrittenCss = rawCss
-        .replace(/url\(["']?([^)"']+)["']?\)/gi, (match, urlPath) => {
+        .replace(/url\(["']?([^)"']+)["']?\)/gi, (match: string, urlPath: string) => {
           if (/^(https?:|\/\/|data:)/i.test(urlPath)) {
             const fullUrl = urlPath.startsWith('//') ? `https:${urlPath}` : urlPath;
             return `url("/api/proxy-resource?url=${encodeURIComponent(fullUrl)}&originalUrl=${encodeURIComponent(originalUrl)}")`;
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
             return match;
           }
         })
-        .replace(/@import\s+url\(["']?([^)"']+)["']?\)/gi, (match, importUrl) => {
+        .replace(/@import\s+url\(["']?([^)"']+)["']?\)/gi, (match: string, importUrl: string) => {
           const absoluteUrl = importUrl.startsWith('http') || importUrl.startsWith('//')
             ? importUrl.startsWith('//') ? `https:${importUrl}` : importUrl
             : new URL(importUrl, base).toString();

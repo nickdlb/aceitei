@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       .replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi, '')
       .replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, '');
 
-    // Adiciona <base> e script interceptador de links
+    // Injeta <base> e <script> para interceptar cliques
     html = html.replace(/<head[^>]*>/i, (match) => `${match}
 <base href="${targetUrl}">
 <script>
@@ -47,7 +47,6 @@ export async function GET(req: NextRequest) {
   });
 </script>`);
 
-    // Corrige recursos no HTML
     html = fixRelativeUrlsWithProxy(html, targetUrl);
     html = fixInlineStyleUrls(html, targetUrl);
 
@@ -64,18 +63,33 @@ export async function GET(req: NextRequest) {
 function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
   const base = new URL(baseUrl);
 
-  html = html.replace(/(src|href)=["']([^"']+)["']/gi, (match: string, attr: string, path: string) => {
+  // Corrige src e href em tags que não sejam <a>
+  html = html.replace(/<(?!a\s)(\w+)[^>]+?(src|href)=["']([^"']+)["']/gi, (match: string, tag: string, attr: string, path: string) => {
     if (/^(https?:|\/\/)/i.test(path)) {
       const fullUrl = path.startsWith('//') ? `https:${path}` : path;
-      return `${attr}="/api/proxy-resource?url=${encodeURIComponent(fullUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`;
+      return match.replace(`${attr}="${path}"`, `${attr}="/api/proxy-resource?url=${encodeURIComponent(fullUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`);
     } else if (/^(#|mailto:|javascript:|tel:)/i.test(path)) {
       return match;
     } else {
       const absoluteUrl = new URL(path, base).toString();
-      return `${attr}="/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`;
+      return match.replace(`${attr}="${path}"`, `${attr}="/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`);
     }
   });
 
+  // Corrige apenas <a href="..."> para proxy principal
+  html = html.replace(/<a\s+[^>]*href=["']([^"']+)["']/gi, (match: string, path: string) => {
+    if (/^(https?:|\/\/)/i.test(path)) {
+      const fullUrl = path.startsWith('//') ? `https:${path}` : path;
+      return match.replace(`href="${path}"`, `href="/api/proxy?url=${encodeURIComponent(fullUrl)}"`);
+    } else if (/^(#|mailto:|javascript:|tel:)/i.test(path)) {
+      return match;
+    } else {
+      const absoluteUrl = new URL(path, base).toString();
+      return match.replace(`href="${path}"`, `href="/api/proxy?url=${encodeURIComponent(absoluteUrl)}"`);
+    }
+  });
+
+  // Corrige srcset
   html = html.replace(/srcset=["']([^"']+)["']/gi, (match: string, value: string) => {
     const entries = value.split(',').map((entry: string): string => {
       const [url, descriptor] = entry.trim().split(' ');
@@ -87,6 +101,7 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
     return `srcset="${entries.join(', ')}"`;
   });
 
+  // Corrige @import
   html = html.replace(/@import\s+url\(["']?([^)"']+)["']?\)/gi, (match: string, urlPath: string) => {
     const absoluteUrl = urlPath.startsWith('http') || urlPath.startsWith('//')
       ? urlPath.startsWith('//') ? `https:${urlPath}` : urlPath
