@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
-  getUserName,
+  getUserProfile,
   updateProfilePhoto,
   removeProfilePhoto,
   uploadPhotoToStorage,
@@ -33,8 +33,10 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
 
   useEffect(() => {
     if (userId && photoURL) {
-      getUserName(userId)
-        .then(setUserName)
+      getUserProfile(userId)
+        .then((user) => {
+          setUserName(user?.nome || 'Usuário')
+        })
         .catch(console.error)
     }
   }, [photoURL, userId])

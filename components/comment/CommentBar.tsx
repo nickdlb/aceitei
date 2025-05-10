@@ -12,7 +12,7 @@ import CommentListItem from './CommentBarListItem';
 import { usePageContext } from '@/contexts/PageContext';
 import { Session } from '@supabase/supabase-js';
 import { PinProps } from '@/types';
-import { getUserName } from '@/utils/profileUtils'
+import { getUserProfile } from '@/utils/profileUtils'
 
 interface CommentBarProps {
   pins: PinProps[];
@@ -158,9 +158,9 @@ const CommentBar = ({
           namesMap[userId] = initialUserNames[userId];
           continue;
         }
-        
+
         try {
-          namesMap[userId] = await getUserName(userId)
+          namesMap[userId] = await getUserProfile(userId)
         } catch {
           namesMap[userId] = 'Usuário Anônimo'
         }

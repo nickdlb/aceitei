@@ -2,15 +2,15 @@
 
 import { supabase } from '@/utils/supabaseClient'
 
-export async function getUserName(userId: string): Promise<string> {
+export async function getUserData(userId: string): Promise<any> {
   const { data, error } = await supabase
     .from('users')
-    .select('nome')
+    .select()
     .eq('user_id', userId)
     .single()
 
   if (error) throw error
-  return data?.nome || ''
+  return data || {}
 }
 
 export async function updateUserName(userId: string, newName: string): Promise<string> {
