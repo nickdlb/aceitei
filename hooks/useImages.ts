@@ -16,7 +16,7 @@ interface ProcessedDocument {
     title: string;
     user_id: string;
     notifications: number;
-    type: 'imagem' | 'site' | 'pdf';
+    type: 'imagem' | 'site'; // Add type property
 }
 
 export const useImages = (sortOrder: string) => {
@@ -45,25 +45,11 @@ export const useImages = (sortOrder: string) => {
 
             const lastAccessedAt = documentData.last_acessed_at || '1970-01-01T00:00:00Z';
 
-            const { data: documentDataOwner, error: documentOwnerError } = await supabase
-                .from('documents')
-                .select('user_id')
-                .eq('id', documentId)
-                .single();
-
-            if (documentOwnerError) {
-                console.error('Error fetching document owner:', documentOwnerError);
-                return 0;
-            }
-
-            const documentOwnerId = documentDataOwner?.user_id;
-
             const { data: commentsData, error: commentsError } = await supabase
                 .from('comments')
                 .select('*', { count: 'exact' })
                 .eq('document_id', documentId)
-                .gt('created_at', lastAccessedAt)
-                .neq('user_id', documentOwnerId);
+                .gt('created_at', lastAccessedAt);
 
             if (commentsError) {
                 console.error('Error fetching comments:', commentsError);

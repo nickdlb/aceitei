@@ -17,7 +17,7 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
         .insert({
           url,
           user_id: session.user.id,
-          title: 'Link enviado',
+          title: 'Site',
           type: 'site'
         })
         .select()

@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { getImageUrl } from '@/utils/getImageUrl';
 
 interface ImageSidebarProps {
     pages: Array<{
@@ -21,7 +20,7 @@ const ImageSidebar = ({ pages, currentPage, onPageChange }: ImageSidebarProps) =
             </div>
             <div className="pt-2 pr-2 pl-2 flex-1 overflow-y-auto space-y-2">
                 {pages.map((page) => {
-                    const imageUrl = getImageUrl(page.image_url);
+                    const imageUrl = `https://nokrffogsfxouxzrrkdp.supabase.co//storage/v1/object/public/files/${page.image_url}`;;
                     const isActive = page.id === currentPage;
                     return (
                         <div

@@ -1,3 +1,4 @@
+'use client'
 
 import UserProfileSidebar from '@/components/dashboard/sidebar/UserProfile';
 import { supabase } from '@/utils/supabaseClient';
@@ -11,6 +12,7 @@ import CommentListItem from './CommentBarListItem';
 import { usePageContext } from '@/contexts/PageContext';
 import { Session } from '@supabase/supabase-js';
 import { PinProps } from '@/types';
+import { getUserName } from '@/utils/profileUtils'
 
 interface CommentBarProps {
   pins: PinProps[];
@@ -156,23 +158,11 @@ const CommentBar = ({
           namesMap[userId] = initialUserNames[userId];
           continue;
         }
-
+        
         try {
-
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('nome')
-            .eq('user_id', userId)
-          if (userError || !userData || userData.length === 0) {
-
-            namesMap[userId] = 'Usuário Anônimo';
-          } else {
-
-            namesMap[userId] = userData[0]?.nome || 'Usuário Anônimo';
-          }
-        } catch (error) {
-
-          namesMap[userId] = 'Usuário Anônimo';
+          namesMap[userId] = await getUserName(userId)
+        } catch {
+          namesMap[userId] = 'Usuário Anônimo'
         }
       }
 

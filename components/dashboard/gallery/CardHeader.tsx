@@ -5,20 +5,25 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useCardContext } from '@/contexts/CardContext';
-import { useImageCard } from '@/hooks/useImageCard';
+import { useCard } from '@/hooks/useCard';
 
 export const CardHeader = () => {
   const { pageData } = useCardContext();
   const { documentData } = useCardContext()
   const {
     isDeleting,
-    showShareLink,
-    imageUrl,
-    handleShare,
-    handleDelete,
-  } = useImageCard(pageData);
-
+    handleDeleteCard,
+  } = useCard(pageData);
   const [isNavigating, setIsNavigating] = useState(false);
+  const imageUrl = pageData.image_url ? `https://nokrffogsfxouxzrrkdp.supabase.co//storage/v1/object/public/files/${pageData.image_url}` : '/noite-estrelada-comentada.jpg'
+
+  const shareLink = () => {
+    if (documentData.type === 'site') {
+      navigator.clipboard.writeText(`${window.location.origin}/site/${documentData.id}`)
+      return
+    }
+    navigator.clipboard.writeText(`${window.location.origin}/document/${documentData.id}`)
+  }
 
   const openCommentPage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -47,10 +52,10 @@ export const CardHeader = () => {
         <Button onClick={openCommentPage} variant="ghost" size="icon" className="p-2 bg-acbgbranco z-2 rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100">
           <Eye className="size-4" />
         </Button>
-        <Button onClick={(e) => { e.stopPropagation(); handleShare(); }} variant="ghost" size="icon" className="p-2 bg-acbgbranco z-20 rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100">
+        <Button onClick={(e) => { e.stopPropagation(); shareLink(); }} variant="ghost" size="icon" className="p-2 bg-acbgbranco z-2 rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100">
           <Share2 className="size-4" />
         </Button>
-        <Button onClick={(e) => { e.stopPropagation(); handleDelete() }} variant="ghost" size="icon" disabled={isDeleting} className={`p-2 bg-acbgbranco z-2 rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+        <Button onClick={(e) => { e.stopPropagation(); handleDeleteCard() }} variant="ghost" size="icon" disabled={isDeleting} className={`p-2 bg-acbgbranco z-2 rounded-full shadow-md hover:bg-acazul hover:text-acbrancohover w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
           <Trash2 className="size-4" />
         </Button>
       </div>

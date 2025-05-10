@@ -8,7 +8,6 @@ import { getPageDataSupabase } from '@/hooks/getDataSupabaseCommentPage';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { supabase } from '@/utils/supabaseClient';
-import { getImageUrl } from '@/utils/getImageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/utils/commentUtils';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
@@ -243,7 +242,7 @@ export default function Page() {
         );
     }
 
-    const imageUrl = getImageUrl(pageData.image_url);
+    const imageUrl = `https://nokrffogsfxouxzrrkdp.supabase.co//storage/v1/object/public/files/${pageData.image_url}`;
 
     if (!imageUrl) {
         return <PageImageNotFound />;

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { supabase } from '@/utils/supabaseClient';
 import { useAuth } from '@/components/common/auth/AuthProvider';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { updateUserName } from '@/utils/profileUtils';
 
 export interface UserInfoProps {
   userData: {
@@ -36,9 +36,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
 
   const handleEditName = () => {
     setEditingName(true);
-    if (nameInputRef.current) {
-      nameInputRef.current.focus();
-    }
+    setTimeout(() => nameInputRef.current?.focus(), 0);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,20 +44,14 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
   };
 
   const handleSaveName = async () => {
+    if (!userId || tempName.trim() === '') return;
+
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .update({ nome: tempName })
-        .eq('user_id', userId)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      onUpdateName(data.nome);
+      const newName = await updateUserName(userId, tempName.trim());
+      onUpdateName(newName);
       setEditingName(false);
     } catch (error) {
-      console.error('Error updating name:', error);
+      console.error('Erro ao atualizar nome:', error);
     }
   };
 
@@ -69,10 +61,8 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
   };
 
   const handleBlur = async () => {
-    if (editingName) {
-      await handleSaveName();
-    }
-  }
+    if (editingName) await handleSaveName();
+  };
 
   const handleKeyPress = async (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
@@ -84,24 +74,42 @@ const UserInfo: React.FC<UserInfoProps> = ({ userData, onUpdateName, userId }) =
   return (
     <div className="mt-4">
       <div className="text-acpreto flex items-center gap-2">
-          <strong>Nome:</strong>
+        <strong>Nome:</strong>
         {editingName ? (
-          <Input ref={nameInputRef} type="text" value={tempName} onChange={handleNameChange} onKeyPress={handleKeyPress} className=" !text-base !min-w-0 !pl-0 border-none !ring-0"
-            onBlur={handleBlur}/>
-        ) 
-        : (<>{userData.nome}</>)}
+          <Input
+            ref={nameInputRef}
+            type="text"
+            value={tempName}
+            onChange={handleNameChange}
+            onKeyPress={handleKeyPress}
+            onBlur={handleBlur}
+            className="!text-base !min-w-0 !pl-0 border-none !ring-0"
+          />
+        ) : (
+          <>{userData.nome}</>
+        )}
         {!editingName && (
-          <Button className='text-acpreto bg-acbgbranco' onClick={handleEditName} variant="outline" size="sm">
+          <Button
+            className="text-acpreto bg-acbgbranco"
+            onClick={handleEditName}
+            variant="outline"
+            size="sm"
+          >
             Editar
           </Button>
         )}
         {editingName && (
-          <Button className='text-acpreto bg-acbgbranco' onClick={handleCancelEdit} variant="ghost" size="sm">
+          <Button
+            className="text-acpreto bg-acbgbranco border"
+            onClick={handleCancelEdit}
+            variant="ghost"
+            size="sm"
+          >
             Cancelar
           </Button>
         )}
       </div>
-      <p className='text-acpreto'>
+      <p className="text-acpreto">
         <strong>Email:</strong> {email}
       </p>
     </div>

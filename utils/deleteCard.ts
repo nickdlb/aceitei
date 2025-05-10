@@ -49,7 +49,6 @@ export const deleteCard = async (documentId: string, imageUrl?: string) => {
       .eq('id', documentId);
     if (deleteDocumentError) throw deleteDocumentError;
 
-    // Excluir imagem do storage (se aplicável)
     if (imageUrl) {
       const imagePath = imageUrl.split('/').pop();
       if (imagePath) {

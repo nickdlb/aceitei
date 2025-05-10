@@ -1,9 +1,15 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { supabase } from '@/utils/supabaseClient'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import {
+  getUserName,
+  updateProfilePhoto,
+  removeProfilePhoto,
+  uploadPhotoToStorage,
+  deletePhotoFromStorage,
+} from '@/utils/profileUtils'
 
 interface ProfilePhotoProps {
   photoURL: string
@@ -16,80 +22,57 @@ const getInitial = (name?: string | null) =>
     ? name.charAt(0).toUpperCase()
     : 'U'
 
-const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, userId }) => {
+const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
+  photoURL,
+  onUpdatePhoto,
+  userId,
+}) => {
   const [newPhoto, setNewPhoto] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [userName, setUserName] = useState('')
 
   useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        if (userId) {
-          const { data, error } = await supabase
-            .from('users')
-            .select('nome')
-            .eq('user_id', userId)
-            .single()
-
-          if (error) {
-            console.error('Error fetching user name:', error)
-            return
-          }
-          if (data) {
-            setUserName(data.nome || '')
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching user profile:', error)
-      }
-    }
-
-    if (photoURL) {
-      fetchUserName()
+    if (userId && photoURL) {
+      getUserName(userId)
+        .then(setUserName)
+        .catch(console.error)
     }
   }, [photoURL, userId])
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
-      setNewPhoto(file)
-      await uploadPhoto(file)
+    const file = e.target.files?.[0]
+    if (!file || !userId) return
+
+    // Validações básicas no client
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
+    const maxSizeMB = 5
+
+    if (!validTypes.includes(file.type)) {
+      alert('Formato inválido. Envie JPEG, PNG ou WEBP.')
+      return
     }
-  }
 
-  const uploadPhoto = async (file: File) => {
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      alert(`Arquivo muito grande. Máximo permitido: ${maxSizeMB}MB`)
+      return
+    }
+
+    setNewPhoto(file)
     setUploading(true)
+
     try {
-      const fileName = `profile-${Date.now()}-${file.name}`
-      const { error: uploadError } = await supabase.storage
-        .from('fotoperfil')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false,
-        })
+      const { url } = await uploadPhotoToStorage(file)
 
-      if (uploadError) throw uploadError
-
-      const url = `https://nokrffogsfxouxzrrkdp.supabase.co/storage/v1/object/public/fotoperfil/${fileName}`
-
-      if (photoURL && photoURL.includes('fotoperfil')) {
-        const oldFileName = photoURL.split('/').pop()
-        if (oldFileName) {
-          await supabase.storage.from('fotoperfil').remove([oldFileName])
-        }
+      if (photoURL.includes('fotoperfil')) {
+        await deletePhotoFromStorage(photoURL)
       }
 
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ fotoperfil: url })
-        .eq('user_id', userId)
-
-      if (updateError) throw updateError
-
+      await updateProfilePhoto(userId, url)
       onUpdatePhoto(url)
       localStorage.setItem('profilePhoto', url)
-    } catch (error) {
-      console.error('Error uploading photo:', error)
+    } catch (err) {
+      console.error('Erro ao enviar foto', err)
+      alert('Erro ao enviar foto. Tente novamente.')
     } finally {
       setUploading(false)
       setNewPhoto(null)
@@ -97,34 +80,22 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
   }
 
   const handleRemovePhoto = async () => {
-    try {
-      if (photoURL && photoURL.includes('fotoperfil')) {
-        const oldFileName = photoURL.split('/').pop()
-        if (oldFileName) {
-          await supabase.storage.from('fotoperfil').remove([oldFileName])
-        }
+    if (userId && photoURL.includes('fotoperfil')) {
+      try {
+        await deletePhotoFromStorage(photoURL)
+        await removeProfilePhoto(userId)
+        onUpdatePhoto('')
+        localStorage.removeItem('profilePhoto')
+      } catch (err) {
+        console.error('Erro ao remover foto', err)
       }
-
-      const { error } = await supabase
-        .from('users')
-        .update({ fotoperfil: null })
-        .eq('user_id', userId)
-
-      if (error) throw error
-
-      onUpdatePhoto('')
-      localStorage.removeItem('profilePhoto')
-    } catch (error) {
-      console.error('Error removing photo:', error)
     }
   }
 
   return (
     <div className="flex items-center mb-4">
       <Avatar className="w-20 h-20 mr-4">
-        {photoURL ? (
-          <AvatarImage src={photoURL} alt="Foto do Usuário" />
-        ) : null}
+        {photoURL && <AvatarImage src={photoURL} alt="Foto do Usuário" />}
         <AvatarFallback>{getInitial(userName)}</AvatarFallback>
       </Avatar>
 
@@ -141,7 +112,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photoURL, onUpdatePhoto, us
           onChange={handlePhotoChange}
           className="hidden"
         />
-        {uploading && <p>Uploading...</p>}
+        {uploading && <p>Enviando...</p>}
         {photoURL && (
           <Button
             onClick={handleRemovePhoto}

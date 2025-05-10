@@ -8,7 +8,6 @@ import { getPageDataSupabase } from '@/hooks/getDataSupabaseCommentPage';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import { supabase } from '@/utils/supabaseClient';
-import { getImageUrl } from '@/utils/getImageUrl';
 import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageClick';
 import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/utils/commentUtils';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
@@ -236,8 +235,6 @@ export default function Page() {
         );
     }
 
-    const imageUrl = getImageUrl(pageData.image_url);
-
     const filteredPins = pins.filter(pin => pin.status === statusFilter);
 
     const commentBarProps = {
@@ -263,7 +260,6 @@ export default function Page() {
     };
 
     const imageAreaProps = {
-        exibirImagem: imageUrl,
         imageTitle: currentTitle || 'Sem título',
         imageId: pageData?.id ?? '',
         pins: filteredPins,

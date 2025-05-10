@@ -1,30 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { getImageUrl } from '@/utils/getImageUrl';
 import { useDashboardContext } from '@/contexts/DashboardContext';
 import { deleteCard } from '@/utils/deleteCard';
 import { PageData } from '@/contexts/CardContext';
 
-export const useImageCard = (pageData: PageData) => {
+export const useCard = (pageData: PageData) => {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const [showShareLink, setShowShareLink] = useState(false);
-  const imageUrl = pageData.image_url ? getImageUrl(pageData.image_url) : '/noite-estrelada-comentada.jpg';
   const { refreshImages } = useDashboardContext();
 
-  const handleShare = async () => {
-    const linkToShare = `${window.location.origin}/${pageData.document_id}`;
-    try {
-      await navigator.clipboard.writeText(linkToShare);
-      setShowShareLink(true);
-      setTimeout(() => setShowShareLink(false), 3000);
-    } catch (err) {
-      console.error('Erro ao copiar link:', err);
-    }
-  };
-
-  const handleDelete = async () => {
+  const handleDeleteCard = async () => {
     setIsDeleting(true);
     try {
       const result = await deleteCard(pageData.document_id, pageData.image_url);
@@ -43,11 +28,7 @@ export const useImageCard = (pageData: PageData) => {
 
   return {
     isDeleting,
-    imageError,
-    showShareLink,
-    imageUrl,
-    handleShare,
-    handleDelete,
+    handleDeleteCard,
   };
 };
 
