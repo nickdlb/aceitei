@@ -1,12 +1,15 @@
 import { UploadZone } from '@/components/dashboard/header/UploadZone';
 import { Card, CardContent } from "@/components/ui/card"
 import SiteUpload from "@/components/dashboard/header/SiteUpload"
+import { useDashboardContext } from '@/contexts/DashboardContext';
 
 interface PopupUploadProps {
     onUploadComplete: (data: any) => void;
 }
 
 const PopupUpload = ({ onUploadComplete }: PopupUploadProps) => {
+    const { refreshImages } = useDashboardContext();
+
     const handleUploadSuccess = async (data: any) => {
         console.log('Upload success:', data);
         if (data && onUploadComplete) {
@@ -25,7 +28,7 @@ const PopupUpload = ({ onUploadComplete }: PopupUploadProps) => {
                     <p className="text-sm font-medium text-actextocinza mb-2"> ou </p>
                     <div>
                         <p className="text-sm font-medium text-actextocinza mb-2">Adicionar Imagens</p>
-                        <UploadZone onUploadSuccess={handleUploadSuccess} />
+                        <UploadZone onUploadSuccess={handleUploadSuccess} refreshImages={refreshImages} />
                     </div>
                 </div>
             </CardContent>
