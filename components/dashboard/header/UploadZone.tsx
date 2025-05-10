@@ -15,13 +15,17 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [acceptedFilesState, setAcceptedFilesState] = useState<File[]>([]);
 
-  const combineImages = (files: File[]) => {
+  const combineImages = async (files: File[]) => {
     console.log('Combining images:', files);
+    if (!session?.user?.id) return;
+    const data = await uploadImage(files, session.user.id, files[0].name, true);
+    if (data) {
+      onUploadSuccess(data);
+    }
   };
 
   const handleUpload = async (files: File[]) => {
     if (!session?.user?.id) return;
-
     try {
       for (const file of files) {
         if (file.type === 'application/pdf') {
@@ -59,7 +63,8 @@ export const UploadZone = ({ onUploadSuccess }: UploadZoneProps) => {
 
           const responseData = await response.json();
           onUploadSuccess(responseData);
-        } else {
+        } 
+        else {
           const data = await uploadImage(file, session.user.id, file.name);
           if (data) {
             onUploadSuccess(data);

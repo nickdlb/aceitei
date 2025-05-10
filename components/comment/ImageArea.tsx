@@ -111,7 +111,7 @@ const ImageArea: React.FC<Props> = ({
 
       <div
         ref={containerRef}
-        className="flex-1 overflow-auto relative flex items-start justify-center bg-acbg"
+        className="flex-1 overflow-auto relative flex items-center justify-center bg-acbg"
         style={{
           height: 'calc(100vh - 3.5rem)'
         }}
