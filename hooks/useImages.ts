@@ -16,7 +16,7 @@ interface ProcessedDocument {
     title: string;
     user_id: string;
     notifications: number;
-    type: 'imagem' | 'site'; // Add type property
+    type: 'imagem' | 'site' | 'pdf'
 }
 
 export const useImages = (sortOrder: string) => {
