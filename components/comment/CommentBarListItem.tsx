@@ -132,7 +132,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
     <Card key={pin.id} className="pl-4 pr-4 pt-4 pb-3 bg-acbg !border-none shadow gap-1" id={`comment-list-item-${pin.id}`}>
       <div id={`comment-header-${pin.id}`} className="flex gap-4 items-center align-middle pr-2">
         <div className="flex items-center gap-2">
-          <span className="flex font-semibold text-xs text-acpreto">{pin.num}</span>
+          <span className="flex font-semibold text-xs text-acbranco bg-acazul h-6 w-6 items-center justify-center rounded-full">{pin.num}</span>
           <Badge
             variant={pin.status === 'ativo' ? "secondary" : "default"}
             className={pin.status === 'ativo' ? "bg-yellow-500 text-acbrancohover" : "bg-green-500 text-acbrancohover"}
