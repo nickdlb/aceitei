@@ -50,29 +50,26 @@ useEffect(() => {
   };
 }, [siteComentar]);
 
-/*
   const extrairUrlFinal = (proxiedUrl: string): string | null => {
   try {
     let atual = proxiedUrl;
-    for (let i = 0; i < 2; i++) {
-      const decoded = decodeURIComponent(decodeURIComponent(proxiedUrl.slice(proxiedUrl.lastIndexOf("http"))))
-      if (!decoded) return atual;
-      atual = decoded;
-    }
+    const decoded = decodeURIComponent(decodeURIComponent(proxiedUrl.slice(proxiedUrl.lastIndexOf("http"))))
+    if (!decoded) return atual;
+    atual = decoded;
     return atual;
   } catch {
     return null;
   }
 };
 
-const urlRealDoIframe = extrairUrlFinal(iframeUrl);
+const urlRealDoIframe = extrairUrlFinal(iframeUrl)?.slice(8);
+console.log('Essa é a url RealdOIframe', urlRealDoIframe)
 
 const pinsVisiveisNoIframe = pins.filter(pin => {
   return pin.url_comentario && urlRealDoIframe === pin.url_comentario;
 });
 
-*/
-  useIframePinInteraction({ iframeRef, pins, handleImageClick, iframeUrl, siteComentar})
+  useIframePinInteraction({ iframeRef, pins:pinsVisiveisNoIframe, handleImageClick, iframeUrl, siteComentar})
 
   const handleZoomChange = useCallback((value: string) => {
     setZoomLevel(value)
