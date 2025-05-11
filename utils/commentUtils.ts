@@ -52,9 +52,20 @@
 
             const maxPinNumber = existingComments.reduce((max, comment) => Math.max(max, comment.pin_number), 0);
 
+
+
             const pin_Number = maxPinNumber + 1;
-            const urlDecodificada = decodeURIComponent(decodeURIComponent(iframeUrl.slice(((iframeUrl.lastIndexOf("http"))))))
-            const novaUrl = urlDecodificada.slice(8)
+            let novaUrl: string | null = null;
+
+            try {
+            if (iframeUrl) {
+                const urlDecodificada = decodeURIComponent(decodeURIComponent(iframeUrl.slice(iframeUrl.lastIndexOf("http"))));
+                novaUrl = urlDecodificada.slice(8); // remove o "https://" ou "http://"
+            }
+            } catch {
+            novaUrl = null;
+            }
+
 
             const { data: newPinData, error } = await supabase
                 .from('comments')

@@ -5,11 +5,13 @@ export function useIframePinInteraction({
   pins,
   handleImageClick,
   iframeUrl,
+  siteComentar
 }: {
   iframeRef: React.RefObject<HTMLIFrameElement | null>
   pins: { x: number; y: number; num?: number }[]
   handleImageClick: (x: number, y: number, iframeUrl: string) => void
   iframeUrl: string | any
+  siteComentar: boolean
 }) {
   useEffect(() => {
   const iframe = iframeRef.current;
@@ -19,6 +21,9 @@ export function useIframePinInteraction({
   let body: HTMLElement;
 
   const onClick = async (e: MouseEvent) => {
+    
+    const statusSite= siteComentar
+    if (statusSite == false) return
     const rect = body.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -84,5 +89,5 @@ export function useIframePinInteraction({
     iframe.removeEventListener('load', setupIframe);
     iframe.contentDocument?.body?.removeEventListener('click', onClick);
   };
-}, [pins, handleImageClick, iframeUrl]);
+}, [pins, handleImageClick, iframeUrl, siteComentar]);
 }

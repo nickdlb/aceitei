@@ -24,7 +24,7 @@ const SiteArea: React.FC<Props> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const { documentData, handleTitleUpdate, pages } = usePageContext()
-  const [siteComentar, setSiteComentar] = useState('comentar');
+  const [siteComentar, setSiteComentar] = useState(false);
   const { iframeUrl, setIframeUrl } = usePageContext()
 
 useEffect(() => {
@@ -40,7 +40,6 @@ useEffect(() => {
       setIframeUrl('');
     }
 
-    // também reenviar o modo após carregamento
     iframe.contentWindow?.postMessage({ type: 'set-mode', mode: siteComentar }, '*');
   };
 
@@ -51,9 +50,7 @@ useEffect(() => {
   };
 }, [siteComentar]);
 
-
-  useIframePinInteraction({ iframeRef, pins, handleImageClick, iframeUrl  })
-
+  useIframePinInteraction({ iframeRef, pins, handleImageClick, iframeUrl, siteComentar})
 
   const handleZoomChange = useCallback((value: string) => {
     setZoomLevel(value)

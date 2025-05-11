@@ -2,7 +2,6 @@ import React from 'react'
 import { Download, Pencil, LayoutList } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useState } from 'react'
 
 interface SiteAreaHeaderProps {
   exibirImagem: string
@@ -18,8 +17,8 @@ interface SiteAreaHeaderProps {
   toggleEditTitle: () => void
   setNewTitle: (title: string) => void
   handleDownload: () => void
-  siteComentar: string
-  setSiteComentar: (value: string) => void
+  siteComentar: boolean
+  setSiteComentar: (value: boolean) => void
 }
 
 const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
@@ -65,8 +64,8 @@ const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
         </p>
       </div>
       <div className='flex gap-4'>
-        <Button onClick={() => setSiteComentar('comentar')} variant={'outline'} className={`${siteComentar === 'comentar' ? 'bg-blue-700 text-white' : ''}`}>Comentar</Button>
-        <Button onClick={() => setSiteComentar('navegar')} variant={'outline'} className={`${siteComentar === 'navegar' ? 'bg-blue-700 text-white' : ''}`}>Navegar</Button>
+        <Button onClick={() => setSiteComentar(true)} variant={'outline'} className={`${siteComentar === true ? 'bg-blue-700 text-white' : ''}`}>Comentar</Button>
+        <Button onClick={() => setSiteComentar(false)} variant={'outline'} className={`${siteComentar === false ? 'bg-blue-700 text-white' : ''}`}>Navegar</Button>
       </div>
       <div className="flex items-center gap-4">
         <select
