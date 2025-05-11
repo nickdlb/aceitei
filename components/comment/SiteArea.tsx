@@ -114,19 +114,35 @@ useEffect(() => {
   function handleMessage(event: MessageEvent) {
     if (event.data?.type === 'external-link') {
       const url = event.data.href;
-      toast.warning('Link fora do Feedybacky.', {
-        action: {
-          label: 'Abrir em outra janela',
-          onClick: () => window.open(url, '_blank')
+
+      try {
+        const parsed = new URL(url);
+        const isInternal = parsed.hostname === window.location.hostname;
+
+        if (isInternal) {
+          // Permite navegação interna via pushState
+          const iframe = iframeRef.current;
+          if (iframe) {
+            iframe.src = `/api/proxy?url=${encodeURIComponent(url)}`;
+          }
+        } else {
+          // Exibe aviso e bloqueia navegação
+          toast.warning('Link fora do Feedybacky.', {
+            action: {
+              label: 'Abrir em outra janela',
+              onClick: () => window.open(url, '_blank')
+            }
+          });
         }
-      });
+      } catch (err) {
+        console.error('URL inválida recebida:', url);
+      }
     }
   }
 
   window.addEventListener('message', handleMessage);
   return () => window.removeEventListener('message', handleMessage);
 }, []);
-
 
   return (
     <div className="flex flex-col min-h-screen flex-1">

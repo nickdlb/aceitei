@@ -12,71 +12,77 @@ export function useIframePinInteraction({
   iframeUrl: string | any
 }) {
   useEffect(() => {
-    const iframe = iframeRef.current
-    if (!iframe) return
+  const iframe = iframeRef.current;
+  if (!iframe) return;
 
-    let iframeDoc: Document
-    let body: HTMLElement
+  let iframeDoc: Document;
+  let body: HTMLElement;
 
-    const renderPinsInIframe = () => {
-      if (!iframeDoc || !body) return
-    
-      const existing = iframeDoc.querySelectorAll('.pin-custom')
-      existing.forEach(el => el.remove())
-    
-      if (!Array.isArray(pins)) return
-    
-      pins.forEach((pin) => {
-        const el = iframeDoc.createElement('div')
-        el.className = 'pin-custom'
-        el.innerText = `${pin.num || ''}`
-    
-        Object.assign(el.style, {
-          position: 'absolute',
-          left: `${pin.x}%`,
-          top: `${pin.y}%`,
-          width: '20px',
-          height: '20px',
-          borderRadius: '50%',
-          backgroundColor: '#2563eb',
-          border: '2px solid white',
-          color: 'white',
-          fontSize: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transform: 'translate(-50%, -50%)',
-          zIndex: '9999',
-        })
-    
-        body.appendChild(el)
-      })
-    }
-    
+  const onClick = async (e: MouseEvent) => {
+    const rect = body.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-    const onClick = async (e: MouseEvent) => {
-      const rect = body.getBoundingClientRect()
-      const x = ((e.clientX - rect.left) / rect.width) * 100
-      const y = ((e.clientY - rect.top) / rect.height) * 100
-      await handleImageClick(x, y, iframeUrl)
-    }
+    console.log('🟢 Clique detectado no iframe');
+    await handleImageClick(x, y, iframeUrl);
+  };
 
-    const onLoad = () => {
-      iframeDoc = iframe.contentDocument!
-      body = iframeDoc.body
+  const renderPinsInIframe = () => {
+    if (!iframeDoc || !body) return;
 
-      body.style.position = 'relative'
-      body.style.cursor = 'crosshair'
-      body.addEventListener('click', onClick)
+    const existing = iframeDoc.querySelectorAll('.pin-custom');
+    existing.forEach(el => el.remove());
 
-      renderPinsInIframe()
-    }
+    pins.forEach(pin => {
+      const el = iframeDoc.createElement('div');
+      el.className = 'pin-custom';
+      el.innerText = `${pin.num || ''}`;
 
-    iframe.addEventListener('load', onLoad)
+      Object.assign(el.style, {
+        position: 'absolute',
+        left: `${pin.x}%`,
+        top: `${pin.y}%`,
+        width: '20px',
+        height: '20px',
+        borderRadius: '50%',
+        backgroundColor: '#2563eb',
+        border: '2px solid white',
+        color: 'white',
+        fontSize: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transform: 'translate(-50%, -50%)',
+        zIndex: '9999',
+      });
 
-    return () => {
-      iframe.removeEventListener('load', onLoad)
-      iframe.contentDocument?.body?.removeEventListener('click', onClick)
-    }
-  }, [pins, handleImageClick])
+      body.appendChild(el);
+    });
+  };
+
+  const setupIframe = () => {
+    iframeDoc = iframe.contentDocument!;
+    body = iframeDoc.body;
+
+    body.style.position = 'relative';
+    body.style.cursor = 'crosshair';
+
+    body.removeEventListener('click', onClick);
+    body.addEventListener('click', onClick);
+
+    renderPinsInIframe();
+  };
+
+  // Se já carregado, configura direto
+  if (iframe.contentDocument?.readyState === 'complete') {
+    setupIframe();
+  } else {
+    iframe.addEventListener('load', setupIframe);
+  }
+
+  return () => {
+    iframe.removeEventListener('load', setupIframe);
+    iframe.contentDocument?.body?.removeEventListener('click', onClick);
+  };
+}, [pins, handleImageClick, iframeUrl]);
 }

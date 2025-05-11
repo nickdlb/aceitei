@@ -67,11 +67,15 @@ export async function GET(req: NextRequest) {
 
         // MODO NAVEGAR → permite links internos ao domínio original
         const fullUrl = new URL(anchor.href, window.location.href);
-        const baseDomain = new URL("${targetUrl}").hostname;
+        // Pega a URL original da query string (de /api/proxy?url=...)
+        const currentUrl = new URLSearchParams(window.location.search).get('url');
+        const baseDomain = currentUrl ? new URL(currentUrl).hostname : '';
+
+        // A URL que o link aponta
         const targetDomain = fullUrl.hostname;
 
-        // Se for domínio externo → bloqueia e envia para toast no app React
-        if (baseDomain !== targetDomain) {
+        // Se for domínio diferente → bloqueia
+        if (baseDomain && baseDomain !== targetDomain) {
           e.preventDefault();
           window.parent.postMessage({
             type: 'external-link',
@@ -79,6 +83,7 @@ export async function GET(req: NextRequest) {
           }, '*');
           return;
         }
+
 
         // Se já estiver proxificado → permite
         if (href.startsWith('/api/proxy?url=')) return;
