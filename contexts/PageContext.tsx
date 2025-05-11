@@ -9,6 +9,8 @@ interface PageContextProps {
   currentTitle: string;
   handleTitleUpdate: (title: string) => void;
   documentData: DocumentDataProps;
+  iframeUrl: string;
+  setIframeUrl: (iframeUrl: string) => void;
 }
 
 interface DocumentDataProps {

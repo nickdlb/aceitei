@@ -14,7 +14,8 @@ export const handleImageClick = async (
     setStatusFilter: (filter: 'ativo' | 'resolvido') => void,
     setPendingClick: (click: { x: number, y: number } | null) => void,
     setShowAuthPopup: (show: boolean) => void,
-    editingPinId: string | null
+    editingPinId: string | null,
+    iframeUrl: string | null | any,
 ) => {
     const { data: { session } } = await supabase.auth.getSession();
 
@@ -44,8 +45,8 @@ export const handleImageClick = async (
     if (emptyCommentPin) {
 
         await updatePinPosition(editingPin.id, xPercent, yPercent, pageId, pins, setPins);
-
         setEditingPinId(editingPin.id);
+        
     } else {
 
         const documentId = await getDocumentId(pageId);
@@ -61,7 +62,8 @@ export const handleImageClick = async (
                 setEditingPinId,
                 statusFilter,
                 setStatusFilter,
-                session
+                session,
+                iframeUrl
             );
         } else {
             console.error("Could not retrieve document ID for page:", pageId);

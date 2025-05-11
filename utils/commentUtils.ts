@@ -8,13 +8,13 @@ export const createComment = async (
     pageId: string,
     documentId: string,
     pins: PinProps[],
-    url_comentario: string,
     setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void,
     setEditingPinId: (id: string | null) => void,
     statusFilter: 'ativo' | 'resolvido',
     setStatusFilter: (filter: 'ativo' | 'resolvido') => void,
-    session: any
+    session: any,
+    iframeUrl: any | null
 ) => {
     if (!session?.user?.id || !pageId) return;
 
@@ -68,7 +68,7 @@ export const createComment = async (
                     content: '',
                     user_id: session.user.id,
                     status: 'ativo',
-                    url_comentario: 'url atual'
+                    url_comentario: iframeUrl
                 }
             ])
             .select();

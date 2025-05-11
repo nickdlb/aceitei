@@ -25,8 +25,35 @@ const SiteArea: React.FC<Props> = ({
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const { documentData, handleTitleUpdate, pages } = usePageContext()
   const [siteComentar, setSiteComentar] = useState('comentar');
+  const { iframeUrl, setIframeUrl } = usePageContext()
 
-  useIframePinInteraction({ iframeRef, pins, handleImageClick })
+useEffect(() => {
+  const iframe = iframeRef.current;
+  if (!iframe) return;
+
+  const onLoad = () => {
+    try {
+      const url = iframe.contentWindow?.location.href || '';
+      setIframeUrl(url);
+    } catch (error) {
+      console.warn('Não foi possível acessar a URL do iframe:', error);
+      setIframeUrl('');
+    }
+
+    // também reenviar o modo após carregamento
+    iframe.contentWindow?.postMessage({ type: 'set-mode', mode: siteComentar }, '*');
+  };
+
+  iframe.addEventListener('load', onLoad);
+
+  return () => {
+    iframe.removeEventListener('load', onLoad);
+  };
+}, [siteComentar]);
+
+
+  useIframePinInteraction({ iframeRef, pins, handleImageClick, iframeUrl  })
+
 
   const handleZoomChange = useCallback((value: string) => {
     setZoomLevel(value)

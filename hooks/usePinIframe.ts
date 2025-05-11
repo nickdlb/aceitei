@@ -3,11 +3,13 @@ import { useEffect } from 'react'
 export function useIframePinInteraction({
   iframeRef,
   pins,
-  handleImageClick
+  handleImageClick,
+  iframeUrl,
 }: {
   iframeRef: React.RefObject<HTMLIFrameElement | null>
   pins: { x: number; y: number; num?: number }[]
-  handleImageClick: (x: number, y: number) => void
+  handleImageClick: (x: number, y: number, iframeUrl: string) => void
+  iframeUrl: string | any
 }) {
   useEffect(() => {
     const iframe = iframeRef.current
@@ -56,7 +58,7 @@ export function useIframePinInteraction({
       const rect = body.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 100
       const y = ((e.clientY - rect.top) / rect.height) * 100
-      await handleImageClick(x, y)
+      await handleImageClick(x, y, iframeUrl)
     }
 
     const onLoad = () => {

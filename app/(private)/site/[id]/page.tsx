@@ -29,6 +29,7 @@ export default function Page() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [currentTitle, setCurrentTitle] = useState(pageData?.documents?.title ?? '');
     const [currentPageData, setCurrentPageData] = useState<DocumentPage | null>(null);
+    const [iframeUrl, setIframeUrl] = useState('');
 
     useEffect(() => {
         if (pageData?.imageTitle) {
@@ -135,7 +136,8 @@ export default function Page() {
             setStatusFilter,
             setPendingClick,
             setShowAuthPopup,
-            editingPinId
+            editingPinId,
+            iframeUrl
         );
     };
 
@@ -290,7 +292,8 @@ export default function Page() {
                 status: pageData?.documents?.status ?? '',
                 type: pageData?.documents?.type ?? '',
                 url: pageData?.documents?.url ?? '',
-            }
+            },
+            iframeUrl: iframeUrl, setIframeUrl:setIframeUrl
         }}>
             <PageLayoutSite
                 commentBarProps={commentBarProps}
