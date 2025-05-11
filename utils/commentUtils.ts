@@ -8,6 +8,7 @@ export const createComment = async (
     pageId: string,
     documentId: string,
     pins: PinProps[],
+    url_comentario: string,
     setPins: (pins: PinProps[] | ((prevPins: PinProps[]) => PinProps[])) => void,
     setComments: (comments: { [key: string]: string } | ((prev: { [key: string]: string }) => { [key: string]: string })) => void,
     setEditingPinId: (id: string | null) => void,
@@ -66,7 +67,8 @@ export const createComment = async (
                     pin_number: pin_Number,
                     content: '',
                     user_id: session.user.id,
-                    status: 'ativo'
+                    status: 'ativo',
+                    url_comentario: 'url atual'
                 }
             ])
             .select();

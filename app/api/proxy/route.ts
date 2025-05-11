@@ -29,35 +29,66 @@ export async function GET(req: NextRequest) {
     html = html.replace(/<head[^>]*>/i, (match) => `${match}
     <base href="${targetUrl}">
     <script>
-  document.addEventListener('click', function (e) {
-    const anchor = e.target.closest('a');
-    if (!anchor) return;
+      let mode = 'navegar';
 
-    const href = anchor.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || anchor.target === '_blank') return;
+      window.addEventListener('message', (e) => {
+        if (e.data?.type === 'set-mode') {
+          mode = e.data.mode;
 
-    const fullUrl = new URL(anchor.href, window.location.href);
-    const baseDomain = new URL("${targetUrl}").hostname;
-    const targetDomain = fullUrl.hostname;
+          // Define cursor geral
+          document.body.style.cursor = mode === 'comentar' ? 'crosshair' : '';
 
-    if (baseDomain !== targetDomain) {
-      e.preventDefault();
+          // Força cursor em todos os elementos interativos
+          document.querySelectorAll('a, button, [role="button"]').forEach(el => {
+            el.style.cursor = mode === 'comentar' ? 'crosshair' : '';
+          });
+        }
+      });
 
-      const proxiedHref = new URL(anchor.href, window.location.href);
-      const originalHref = proxiedHref.searchParams.get('url') || anchor.href;
+      document.addEventListener('click', function (e) {
+        const anchor = e.target.closest('a');
+        if (!anchor) return;
 
-      window.parent.postMessage({ type: 'external-link', href: originalHref }, '*');
+        const href = anchor.getAttribute('href') || '';
 
-      document.body.appendChild(toast);
-      return;
-    }
+        // Ignora links internos de âncora ou especiais
+        if (
+          href.startsWith('#') ||
+          href.startsWith('mailto:') ||
+          href.startsWith('tel:') ||
+          anchor.target === '_blank'
+        ) return;
 
-    e.preventDefault();
-    const proxied = '/api/proxy?url=' + encodeURIComponent(fullUrl.href);
-    window.location.href = proxied;
-  });
-</script>`);
+        // MODO COMENTAR → bloqueia absolutamente tudo
+        if (mode === 'comentar') {
+          e.preventDefault();
+          return;
+        }
 
+        // MODO NAVEGAR → permite links internos ao domínio original
+        const fullUrl = new URL(anchor.href, window.location.href);
+        const baseDomain = new URL("${targetUrl}").hostname;
+        const targetDomain = fullUrl.hostname;
+
+        // Se for domínio externo → bloqueia e envia para toast no app React
+        if (baseDomain !== targetDomain) {
+          e.preventDefault();
+          window.parent.postMessage({
+            type: 'external-link',
+            href: fullUrl.href
+          }, '*');
+          return;
+        }
+
+        // Se já estiver proxificado → permite
+        if (href.startsWith('/api/proxy?url=')) return;
+
+        // Caso contrário, proxifica e redireciona
+        e.preventDefault();
+        const proxied = '/api/proxy?url=' + encodeURIComponent(fullUrl.href);
+        window.location.href = proxied;
+      });
+    </script>`);
 
     html = fixRelativeUrlsWithProxy(html, targetUrl);
     html = fixInlineStyleUrls(html, targetUrl);
@@ -88,16 +119,30 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
   });
 
   html = html.replace(/<a\s+[^>]*href=["']([^"']+)["']/gi, (match: string, path: string) => {
-    if (/^(https?:|\/\/)/i.test(path)) {
-      const fullUrl = path.startsWith('//') ? `https:${path}` : path;
-      return match.replace(`href="${path}"`, `href="/api/proxy?url=${encodeURIComponent(fullUrl)}"`);
-    } else if (/^(#|mailto:|javascript:|tel:)/i.test(path)) {
-      return match;
+  if (/^(#|mailto:|javascript:|tel:)/i.test(path)) {
+    return match; // não reescreve âncoras, e-mails, etc.
+  }
+
+  const absoluteUrl = path.startsWith('http') || path.startsWith('//')
+    ? path.startsWith('//') ? `https:${path}` : path
+    : new URL(path, base).toString();
+
+  try {
+    const linkDomain = new URL(absoluteUrl).hostname;
+    const baseDomain = base.hostname;
+
+    if (linkDomain === baseDomain) {
+      return match.replace(
+        `href="${path}"`,
+        `href="/api/proxy?url=${encodeURIComponent(absoluteUrl)}"`
+      );
     } else {
-      const absoluteUrl = new URL(path, base).toString();
-      return match.replace(`href="${path}"`, `href="/api/proxy?url=${encodeURIComponent(absoluteUrl)}"`);
+      return match; // link externo → não reescreve
     }
-  });
+  } catch {
+    return match; // URL inválida → não reescreve
+  }
+});
 
   html = html.replace(/<link\s+[^>]*href=["'](https?:\/\/[^"']+)["']/gi, (match: string, url: string) => {
     return match.replace(

@@ -24,7 +24,7 @@ const SiteArea: React.FC<Props> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const { documentData, handleTitleUpdate, pages } = usePageContext()
-  const [siteComentar, setSiteComentar] = useState('');
+  const [siteComentar, setSiteComentar] = useState('comentar');
 
   useIframePinInteraction({ iframeRef, pins, handleImageClick })
 
@@ -75,6 +75,13 @@ const SiteArea: React.FC<Props> = ({
       console.error('Erro ao baixar imagem:', error)
     }
   }
+
+  useEffect(() => {
+  const iframe = iframeRef.current;
+  if (iframe?.contentWindow) {
+    iframe.contentWindow.postMessage({ type: 'set-mode', mode: siteComentar }, '*');
+  }
+}, [siteComentar]);
 
   useEffect(() => {
   function handleMessage(event: MessageEvent) {

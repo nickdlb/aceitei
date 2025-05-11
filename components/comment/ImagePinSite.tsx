@@ -13,12 +13,9 @@ interface ImagePinPropsSite {
 
 const ImagePinSite: React.FC<ImagePinPropsSite> = ({
   pin,
-  draggingPin,
   setDraggingPin,
-  isDragging: isParentDragging,
   setIsDragging: setParentDragging,
   updatePinPosition,
-  style
 }) => {
   const [dragPosition, setDragPosition] = useState({ x: pin.x, y: pin.y });
   const [localIsDragging, setLocalIsDragging] = useState(false);
