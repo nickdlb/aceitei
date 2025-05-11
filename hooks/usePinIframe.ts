@@ -28,7 +28,6 @@ export function useIframePinInteraction({
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-    console.log('🟢 Clique detectado no iframe');
     await handleImageClick(x, y, iframeUrl);
   };
 
@@ -47,20 +46,20 @@ export function useIframePinInteraction({
         position: 'absolute',
         left: `${pin.x}%`,
         top: `${pin.y}%`,
-        width: '20px',
-        height: '20px',
+        width: '30px',
+        height: '30px',
         borderRadius: '50%',
         backgroundColor: '#2563eb',
         border: '2px solid white',
         color: 'white',
-        fontSize: '12px',
+        fontSize: '13px',
+        fontWeight: 'bold',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         transform: 'translate(-50%, -50%)',
         zIndex: '9999',
       });
-
       body.appendChild(el);
     });
   };
