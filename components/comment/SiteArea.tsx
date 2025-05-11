@@ -50,6 +50,28 @@ useEffect(() => {
   };
 }, [siteComentar]);
 
+/*
+  const extrairUrlFinal = (proxiedUrl: string): string | null => {
+  try {
+    let atual = proxiedUrl;
+    for (let i = 0; i < 2; i++) {
+      const decoded = decodeURIComponent(decodeURIComponent(proxiedUrl.slice(proxiedUrl.lastIndexOf("http"))))
+      if (!decoded) return atual;
+      atual = decoded;
+    }
+    return atual;
+  } catch {
+    return null;
+  }
+};
+
+const urlRealDoIframe = extrairUrlFinal(iframeUrl);
+
+const pinsVisiveisNoIframe = pins.filter(pin => {
+  return pin.url_comentario && urlRealDoIframe === pin.url_comentario;
+});
+
+*/
   useIframePinInteraction({ iframeRef, pins, handleImageClick, iframeUrl, siteComentar})
 
   const handleZoomChange = useCallback((value: string) => {

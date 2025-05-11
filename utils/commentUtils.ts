@@ -99,7 +99,8 @@
                     status: 'ativo' as const,
                     user_id: session.user.id,
                     page_id: pageId,
-                    reactions: []
+                    reactions: [],
+                    url_comentario: null
                 };
 
                 setPins(prevPins => [...prevPins, newPin]);

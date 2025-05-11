@@ -10,6 +10,7 @@ export interface PinProps {
     page_id: string;
     reactions?: CommentReactionPin[];
     isEditing?: boolean;
+    url_comentario: string | null | any
 }
 
 export interface CommentReactionPin {

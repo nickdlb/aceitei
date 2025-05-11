@@ -4,6 +4,7 @@ import SiteArea from '@/components/comment/SiteArea';
 import ImageSidebar from '@/components/comment/ImageSidebar';
 import AuthPopup from '@/components/common/auth/AuthPopup';
 import { usePageContext } from '@/contexts/PageContext';
+import CommentBarSite from './CommentBarSite';
 
 interface PageLayoutSiteProps {
   commentBarProps: any;
@@ -34,7 +35,7 @@ const PageLayoutSite: React.FC<PageLayoutSiteProps> = ({
   return (
     <div className="w-full h-screen flex">
       <div className="w-70 flex-shrink-0 !border-0">
-        <CommentBar {...commentBarProps} />
+        <CommentBarSite {...commentBarProps} />
       </div>
       <div className="flex-1 flex">
         <SiteArea {...enhancedSiteAreaProps} />
