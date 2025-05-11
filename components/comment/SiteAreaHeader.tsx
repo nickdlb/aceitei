@@ -2,6 +2,7 @@ import React from 'react'
 import { Download, Pencil, LayoutList } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useState } from 'react'
 
 interface SiteAreaHeaderProps {
   exibirImagem: string
@@ -17,23 +18,23 @@ interface SiteAreaHeaderProps {
   toggleEditTitle: () => void
   setNewTitle: (title: string) => void
   handleDownload: () => void
+  siteComentar: string
+  setSiteComentar: (value: string) => void
 }
 
 const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
-  exibirImagem,
   zoomLevel,
   handleZoomChange,
-  onTogglePages,
-  isPagesOpen,
   imageTitle,
   isEditingTitle,
   newTitle,
   handleTitleEdit,
   toggleEditTitle,
   setNewTitle,
-  handleDownload,
-  pagesCount
+  siteComentar,
+  setSiteComentar
 }) => {
+
   return (
     <div className="h-16 bg-acbgbranco flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
@@ -63,6 +64,10 @@ const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
         <p className="min-w-fit text-xs text-actextocinza">
         </p>
       </div>
+      <div className='flex gap-4'>
+        <Button onClick={() => setSiteComentar('comentar')} variant={'outline'} className={`${siteComentar === 'comentar' ? 'bg-blue-700 text-white' : ''}`}>Comentar</Button>
+        <Button onClick={() => setSiteComentar('navegar')} variant={'outline'} className={`${siteComentar === 'navegar' ? 'bg-blue-700 text-white' : ''}`}>Navegar</Button>
+      </div>
       <div className="flex items-center gap-4">
         <select
           value={zoomLevel}
@@ -73,24 +78,6 @@ const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
           <option value="150">150%</option>
           <option value="200">200%</option>
         </select>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleDownload}
-          className="text-acpreto hover:text-acazul"
-        >
-          <Download className="w-5 h-5" />
-        </Button>
-        {pagesCount && pagesCount > 1 && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onTogglePages}
-            className="text-acpreto hover:text-aclaranja"
-          >
-            <LayoutList className="w-5 h-5" />
-          </Button>
-        )}
       </div>
     </div>
   )

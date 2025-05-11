@@ -3,6 +3,8 @@ import SiteAreaHeader from './SiteAreaHeader'
 import { SiteAreaProps } from '@/types'
 import { usePageContext } from '@/contexts/PageContext'
 import { useIframePinInteraction } from '@/hooks/usePinIframe'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 interface Props extends SiteAreaProps {
   onTogglePages: () => void
@@ -10,15 +12,8 @@ interface Props extends SiteAreaProps {
 
 const SiteArea: React.FC<Props> = ({
   exibirImagem,
-  imageId,
   pins,
   handleImageClick,
-  draggingPin,
-  setDraggingPin,
-  isDragging,
-  setIsDragging,
-  updatePinPosition,
-  imageRef,
   onTogglePages,
   isPagesOpen
 }) => {
@@ -29,8 +24,8 @@ const SiteArea: React.FC<Props> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const { documentData, handleTitleUpdate, pages } = usePageContext()
+  const [siteComentar, setSiteComentar] = useState('');
 
-  // 🔁 Hook que trata clique e renderização de pins no iframe
   useIframePinInteraction({ iframeRef, pins, handleImageClick })
 
   const handleZoomChange = useCallback((value: string) => {
@@ -81,9 +76,29 @@ const SiteArea: React.FC<Props> = ({
     }
   }
 
+  useEffect(() => {
+  function handleMessage(event: MessageEvent) {
+    if (event.data?.type === 'external-link') {
+      const url = event.data.href;
+      toast.warning('Link fora do Feedybacky.', {
+        action: {
+          label: 'Abrir em outra janela',
+          onClick: () => window.open(url, '_blank')
+        }
+      });
+    }
+  }
+
+  window.addEventListener('message', handleMessage);
+  return () => window.removeEventListener('message', handleMessage);
+}, []);
+
+
   return (
     <div className="flex flex-col min-h-screen flex-1">
       <SiteAreaHeader
+        siteComentar={siteComentar}
+        setSiteComentar={setSiteComentar}
         exibirImagem={exibirImagem}
         zoomLevel={zoomLevel}
         onTogglePages={onTogglePages}
@@ -101,12 +116,7 @@ const SiteArea: React.FC<Props> = ({
       <div ref={containerRef} className="flex-1 overflow-auto relative flex items-start justify-center bg-acbg">
         <div ref={scrollContainerRef} className="relative w-full flex justify-center">
           <div className="relative w-full" style={{ minHeight: 'calc(100vh - 4rem)' }}>
-            <iframe
-              ref={iframeRef}
-              style={{ visibility: 'visible', width: '100%', height: '100%' }}
-              sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-presentation allow-popups allow-popups-to-escape-sandbox"
-              src={`/api/proxy?url=${documentData?.url}`}
-            />
+            <iframe ref={iframeRef} style={{ visibility: 'visible', width: '100%', height: '100%' }} sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-presentation allow-popups allow-popups-to-escape-sandbox" src={`/api/proxy?url=${documentData?.url}`}/>
           </div>
         </div>
       </div>

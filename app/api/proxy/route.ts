@@ -23,14 +23,12 @@ export async function GET(req: NextRequest) {
     let html = await response.text();
 
     // Remove políticas de segurança que bloqueiam iframe
-    html = html
-      .replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi, '')
-      .replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, '');
+    html = html.replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi, '').replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, '');
 
     // Injeta <base> e script interceptador
     html = html.replace(/<head[^>]*>/i, (match) => `${match}
-<base href="${targetUrl}">
-<script>
+    <base href="${targetUrl}">
+    <script>
   document.addEventListener('click', function (e) {
     const anchor = e.target.closest('a');
     if (!anchor) return;
@@ -38,14 +36,28 @@ export async function GET(req: NextRequest) {
     const href = anchor.getAttribute('href');
     if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || anchor.target === '_blank') return;
 
-    if (href.startsWith('/api/proxy')) return; // previne recursão
-
     const fullUrl = new URL(anchor.href, window.location.href);
+    const baseDomain = new URL("${targetUrl}").hostname;
+    const targetDomain = fullUrl.hostname;
+
+    if (baseDomain !== targetDomain) {
+      e.preventDefault();
+
+      const proxiedHref = new URL(anchor.href, window.location.href);
+      const originalHref = proxiedHref.searchParams.get('url') || anchor.href;
+
+      window.parent.postMessage({ type: 'external-link', href: originalHref }, '*');
+
+      document.body.appendChild(toast);
+      return;
+    }
+
     e.preventDefault();
     const proxied = '/api/proxy?url=' + encodeURIComponent(fullUrl.href);
     window.location.href = proxied;
   });
 </script>`);
+
 
     html = fixRelativeUrlsWithProxy(html, targetUrl);
     html = fixInlineStyleUrls(html, targetUrl);
@@ -63,7 +75,6 @@ export async function GET(req: NextRequest) {
 function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
   const base = new URL(baseUrl);
 
-  // Corrige src e href em tags que não sejam <a>
   html = html.replace(/<(?!a\s)(\w+)[^>]+?(src|href)=["']([^"']+)["']/gi, (match: string, tag: string, attr: string, path: string) => {
     if (/^(https?:|\/\/)/i.test(path)) {
       const fullUrl = path.startsWith('//') ? `https:${path}` : path;
@@ -76,7 +87,6 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
     }
   });
 
-  // Corrige <a href="..."> para navegar via proxy
   html = html.replace(/<a\s+[^>]*href=["']([^"']+)["']/gi, (match: string, path: string) => {
     if (/^(https?:|\/\/)/i.test(path)) {
       const fullUrl = path.startsWith('//') ? `https:${path}` : path;
@@ -87,6 +97,13 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
       const absoluteUrl = new URL(path, base).toString();
       return match.replace(`href="${path}"`, `href="/api/proxy?url=${encodeURIComponent(absoluteUrl)}"`);
     }
+  });
+
+  html = html.replace(/<link\s+[^>]*href=["'](https?:\/\/[^"']+)["']/gi, (match: string, url: string) => {
+    return match.replace(
+      url,
+      `/api/proxy-resource?url=${encodeURIComponent(url)}&originalUrl=${encodeURIComponent(baseUrl)}`
+    );
   });
 
   // Corrige srcset
@@ -109,39 +126,31 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
     return `@import url("/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(baseUrl)}")`;
   });
 
-  // Corrige data-settings com JSON
   html = html.replace(/data-settings="([^"]+)"/gi, (match: string, encoded: string) => {
     try {
-      const decoded = decodeURIComponent(encoded);
-      const jsonStr = decoded.replace(/&quot;/g, '"');
-      const json = JSON.parse(jsonStr);
-
+      const decoded = decodeURIComponent(encoded).replace(/&quot;/g, '"');
+      const json = JSON.parse(decoded);
       if (json?.background_slideshow_gallery?.length) {
         for (const item of json.background_slideshow_gallery) {
-          if (item.url && typeof item.url === 'string') {
+          if (typeof item.url === 'string') {
             item.url = `/api/proxy-resource?url=${encodeURIComponent(item.url)}&originalUrl=${encodeURIComponent(baseUrl)}`;
           }
         }
       }
-
-      const updatedJsonStr = JSON.stringify(json).replace(/"/g, '&quot;');
-      return `data-settings="${updatedJsonStr}"`;
+      const updatedJson = JSON.stringify(json).replace(/"/g, '&quot;');
+      return `data-settings="${updatedJson}"`;
     } catch {
       return match;
     }
   });
 
-  // Corrige data-bg, data-background etc.
   html = html.replace(/(data-(?:bg|background|image|src))=["']([^"']+)["']/gi, (match: string, attr: string, path: string) => {
-    if (/^(https?:|\/\/)/i.test(path)) {
-      const fullUrl = path.startsWith('//') ? `https:${path}` : path;
-      return `${attr}="/api/proxy-resource?url=${encodeURIComponent(fullUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`;
-    }
-    const absoluteUrl = new URL(path, base).toString();
+    const absoluteUrl = path.startsWith('http') || path.startsWith('//')
+      ? path.startsWith('//') ? `https:${path}` : path
+      : new URL(path, base).toString();
     return `${attr}="/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`;
   });
 
-  // Corrige style="background-image: url(...)"
   html = html.replace(/style=["'][^"']*url\(([^)]+)\)[^"']*["']/gi, (match: string) => {
     return match.replace(/url\(["']?([^)"']+)["']?\)/gi, (_, urlPath: string) => {
       const absoluteUrl = urlPath.startsWith('http') || urlPath.startsWith('//')
@@ -151,7 +160,6 @@ function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
     });
   });
 
-  // Corrige "url": "https://..." em scripts inline
   html = html.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, (match: string, scriptContent: string) => {
     const rewritten = scriptContent.replace(/"url"\s*:\s*"([^"]+)"/gi, (m, path: string) => {
       if (!path.startsWith('http') && !path.startsWith('//')) return m;

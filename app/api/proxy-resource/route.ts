@@ -25,31 +25,35 @@ export async function GET(req: NextRequest) {
 
     const contentType = response.headers.get('content-type') || 'application/octet-stream';
     const isText = contentType.includes('text/') || contentType.includes('application/javascript') || contentType.includes('application/json');
-    const isCss =
+
+    const rawContent = await response.text();
+
+    // Heurística mais inteligente para detectar CSS
+    const isProbablyCss =
       contentType.includes('text/css') ||
-      targetUrl.endsWith('.css') ||
-      targetUrl.includes('.css?');
+      targetUrl.includes('.css') ||
+      /url\(['"]?[^)"']+\.(woff2?|ttf|eot|svg)/i.test(rawContent);
 
     const headers = new Headers();
     headers.set('Content-Type', contentType);
     headers.set('Cache-Control', 'public, max-age=86400');
+    headers.set('Access-Control-Allow-Origin', '*');
 
-    if (isCss) {
+    if (isProbablyCss) {
       const base = new URL(targetUrl);
-      const rawCss = await response.text();
 
-      const rewrittenCss = rawCss
+      const rewrittenCss = rawContent
         .replace(/url\(["']?([^)"']+)["']?\)/gi, (match: string, urlPath: string) => {
-          if (/^(https?:|\/\/|data:)/i.test(urlPath)) {
-            const fullUrl = urlPath.startsWith('//') ? `https:${urlPath}` : urlPath;
-            return `url("/api/proxy-resource?url=${encodeURIComponent(fullUrl)}&originalUrl=${encodeURIComponent(originalUrl)}")`;
-          }
+          if (/^data:/i.test(urlPath)) return match;
+
+          let absoluteUrl: string;
           try {
-            const absoluteUrl = new URL(urlPath, base).toString();
-            return `url("/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(originalUrl)}")`;
+            absoluteUrl = new URL(urlPath, base).toString();
           } catch {
             return match;
           }
+
+          return `url("/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(originalUrl)}")`;
         })
         .replace(/@import\s+url\(["']?([^)"']+)["']?\)/gi, (match: string, importUrl: string) => {
           const absoluteUrl = importUrl.startsWith('http') || importUrl.startsWith('//')
@@ -62,11 +66,10 @@ export async function GET(req: NextRequest) {
     }
 
     if (isText) {
-      const rawText = await response.text();
-      return new NextResponse(rawText, { status: 200, headers });
+      return new NextResponse(rawContent, { status: 200, headers });
     }
 
-    const buffer = await response.arrayBuffer();
+    const buffer = await fetch(targetUrl).then(res => res.arrayBuffer());
     return new NextResponse(Buffer.from(buffer), { status: 200, headers });
 
   } catch (err) {
