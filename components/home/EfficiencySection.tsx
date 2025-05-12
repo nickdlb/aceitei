@@ -1,64 +1,169 @@
+'use client';
+
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  LayoutDashboard,
+  Users,
+  CheckCircle,
+  History
+} from 'lucide-react';
+
+const tabs = [
+  {
+    title: 'Dashboard',
+    heading: 'Painel Centralizado',
+    description:
+      'Visualize todo o fluxo de feedbacks em tempo real, com dados centralizados e acessíveis em uma única tela.',
+    image: '/gestao-preview.png',
+    icon: LayoutDashboard
+  },
+  {
+    title: 'Colaboração',
+    heading: 'Trabalho em Equipe',
+    description:
+      'Trabalhe em equipe de forma organizada. Todos os comentários em um só lugar, sem ruídos na comunicação.',
+    image: '/comentarios.png',
+    icon: Users
+  },
+  {
+    title: 'Aprovações',
+    heading: 'Fluxo de Aprovação Visual',
+    description:
+      'Facilite o processo de aprovação com um sistema visual, claro e direto para seus clientes e equipe.',
+    image: '/gestao-preview.png',
+    icon: CheckCircle
+  },
+  {
+    title: 'Histórico',
+    heading: 'Registro de Alterações',
+    description:
+      'Acompanhe todas as interações e mudanças feitas no projeto, com histórico completo de revisões.',
+    image: '/gestao-preview.png',
+    icon: History
+  },
+];
+
 export default function EfficiencySection() {
-    return (
-      <section className="bg-acbg px-0 py-20 overflow-hidden relative">
-        {/* Imagem fora do container, colada à direita */}
-        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 h-[calc(100%-160px)] z-0">
-          <img
-            src="/gestao-preview.png"
-            alt="Dashboard do Feedybacky"
-            className="h-full object-contain rounded-l-2xl shadow-2xl"
-          />
-        </div>
-  
-        {/* Conteúdo centralizado com limite de 1300px */}
-        <div className="max-w-[1300px] mx-auto relative z-10 flex flex-col-reverse lg:flex-row items-center lg:items-stretch w-full px-6">
-          
-          {/* Texto à esquerda sem padding */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center">
-            <div className="w-full max-w-3xl">
-              <p className="text-sm text-acazul font-medium uppercase mb-2">
-                FEEDBACKS DESORGANIZADOS? PROJETOS ATRASADOS?
-              </p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-acpreto mb-6 leading-tight">
-                <span className="text-acazul">Feedybacky</span> é a maneira mais eficiente de gerenciar feedbacks visuais
-              </h2>
-              <p className="text-accinza text-base mb-6">
-                Se você já perdeu tempo buscando sugestões espalhadas em e-mails, mensagens e comentários soltos,
-                sabe como isso atrasa seu fluxo de trabalho e gera retrabalho desnecessário. Com o Feedybacky,
-                você transforma o caos da revisão em um processo simples, eficiente e visual!
-              </p>
-  
-              <div className="flex flex-wrap gap-3 mb-6">
-                {[
-                  "Comentários direto na arte",
-                  "Compartilhamento fácil",
-                  "Rastreio de alterações",
-                  "Acesso de qualquer lugar",
-                  "Aprovações rápidas",
-                  "Histórico completo"
-                ].map((item) => (
-                  <span
-                    key={item}
-                    className="bg-acbgbranco text-sm text-acpreto font-medium px-4 py-2 rounded-full"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-  
-              <a
-                href="#inscricao"
-                className="inline-flex items-center border border-acroxo text-acroxo px-6 py-3 rounded-full font-medium hover:bg-acbg transition"
-              >
-                Inscreva-se <span className="ml-2">→</span>
-              </a>
-            </div>
+  const [activeTab, setActiveTab] = useState(0);
+  const current = tabs[activeTab];
+
+  return (
+    <section className="relative bg-acbranco min-h-[820px] py-20 sm:py-32 overflow-hidden">
+      <div className="relative z-10 max-w-[1300px] mx-auto px-6 lg:px-0 flex flex-col lg:flex-row items-start gap-8">
+        {/* CONTEÚDO PRINCIPAL */}
+        <div className="w-full lg:w-1/2 pr-0 lg:pr-5 flex flex-col items-center lg:items-start text-center lg:text-left">
+          <p
+            className="text-sm font-medium uppercase tracking-wide mb-5 inline-block px-4 py-2 rounded-full"
+            style={{
+              backgroundColor: '#EEF1FF',
+              color: '#4A5EFF',
+            }}
+          >
+            COMO FUNCIONA?
+          </p>
+
+          <h2 className="text-3xl sm:text-5xl font-bold text-acpreto mb-6 leading-tight">
+            maneira mais eficiente de gerenciar feedbacks visuais
+          </h2>
+
+          {/* Botões com ícones */}
+          <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
+            {tabs.map((tab, i) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setActiveTab(i)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition ${
+                    activeTab === i
+                      ? 'bg-acazul text-white border-acazul'
+                      : 'text-acpreto border-gray-300 hover:bg-gray-100'
+                  }`}
+                >
+                  <Icon size={16} />
+                  {tab.title}
+                </button>
+              );
+            })}
           </div>
-  
-          {/* Espaço reservado para alinhar com a imagem à direita */}
-          <div className="w-full lg:w-1/2 hidden lg:block" />
+
+          <div className="pt-[10px]">
+            <h3 className="text-2xl font-semibold text-acpreto mb-2">
+              {current.heading}
+            </h3>
+            <p className="text-lg text-accinza mb-6">{current.description}</p>
+          </div>
+
+          {/* Botão mostrado apenas no desktop */}
+          <a
+            href="#inscricao"
+            className="hidden lg:inline-flex items-center border border-acroxo text-acroxo px-6 py-3 rounded-full font-medium hover:bg-acroxo hover:text-white transition"
+          >
+            Comece agora <span className="ml-2">→</span>
+          </a>
         </div>
-      </section>
-    );
-  }
-  
+
+        {/* IMAGEM MOBILE (visível apenas no mobile) */}
+        <div className="block lg:hidden w-full mt-10">
+          <div className="relative h-[300px] sm:h-[400px] w-full">
+            <AnimatePresence mode="sync">
+              <motion.div
+                key={current.image + activeTab}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+              >
+                <div className="w-full h-full rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                  <img
+                    src={current.image}
+                    alt={current.title}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Botão "Comece agora" somente no mobile */}
+          <div className="mt-6 flex justify-center">
+            <a
+              href="#inscricao"
+              className="inline-flex items-center border border-acroxo text-acroxo px-6 py-3 rounded-full font-medium hover:bg-acroxo hover:text-white transition"
+            >
+              Comece agora <span className="ml-2">→</span>
+            </a>
+          </div>
+        </div>
+
+        {/* IMAGEM DESKTOP (inalterada) */}
+        <div className="hidden lg:block w-1/2" />
+      </div>
+
+      <div className="hidden lg:flex absolute right-0 top-0 h-full w-[50vw] z-0 items-center">
+        <div className="relative h-[600px] w-full py-12">
+          <AnimatePresence mode="sync">
+            <motion.div
+              key={current.image + activeTab + '-desktop'}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 100 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+            >
+              <div className="w-full h-full rounded-l-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                <img
+                  src={current.image}
+                  alt={current.title}
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  );
+}

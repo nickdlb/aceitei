@@ -10,7 +10,7 @@ import CtaSection from '@/components/home/CtaSection';
 import HeaderSection from '@/components/home/HeaderSection';
 import RevisionSection from '@/components/home/RevisionSection';
 import EfficiencySection from '@/components/home/EfficiencySection';
-import LaptopSection from '@/components/home/LaptopSection';
+
 
 
 const HomePage = () => {
@@ -19,10 +19,9 @@ const HomePage = () => {
       <div className="text-gray-800 font-sans w-full max-w-full">
         <HeaderSection/>
         <HeroSection/>
-        <LaptopSection/>
         <BenefitsSection/>
-        <ProfissionalsSection/>
         <EfficiencySection/>
+        <ProfissionalsSection/>
         <RevisionSection/>
         <FaqSection/>
         <CtaSection/>

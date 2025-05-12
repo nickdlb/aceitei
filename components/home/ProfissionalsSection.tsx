@@ -42,23 +42,31 @@ export default function ProfissionalsSection() {
   ];
 
   return (
-    <section className="bg-[linear-gradient(180deg,_#FFFFFF_0%,_#FFFFFF96_94%),url('/img_pattern_pinify.png')] py-20 px-6">
-      <div className="max-w-[1280px] mx-auto text-center">
-        <p className="text-sm text-acazul font-medium uppercase tracking-wide mb-2">
-          FEEDYBACKY É PARA VOCÊ? DESCUBRA AGORA!
-        </p>
+    <section className="bg-[linear-gradient(180deg,_#FFFFFF_0%,_#FFFFFF96_20%,_#FFFFFF96_80%,_#FFFFFF_100%),url('/img_pattern_pinify.png')] pt-[100px] pb-[150px] px-6">
+      <div className="max-w-[1300px] mx-auto text-center">
+      <p className="text-sm font-medium uppercase tracking-wide mb-5 inline-block px-4 py-2 rounded-full"
+   style={{
+     backgroundColor: '#EEF1FF', // fundo azul claro translúcido
+     color: '#4A5EFF'            // azul vibrante do texto
+   }}>
+  FEEDYBACKY É PARA VOCÊ? DESCUBRA AGORA!
+</p>
         <div className="flex items-center justify-center">
-          <h2 className="text-5xl font-extrabold text-acpreto mb-12 w-[70%]">
-            Profissionais que vão elevar sua produtividade com o <span className="text-acazul">Feedybacky</span> </h2>
+        <h2 className="text-5xl font-bold text-acpreto mb-20 w-[70%]">
+  Profissionais que vão elevar sua produtividade com o{" "}
+  <span className="bg-gradient-to-r from-[#fdd945] to-[#fc7db0] bg-clip-text text-transparent">
+    Feedybacky
+  </span>
+</h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-4 bg-[#4C50641A] p-4 rounded-2xl">
+        <div className="grid md:grid-cols-3 gap-5 bg-[#4C50641A] p-6 rounded-xl">
           {professionals.map((item) => (
-            <div key={item.title} className="bg-acbranco p-6 rounded-xl shadow-md text-left hover:shadow-lg transition">
-              <div className="w-16 h-16 bg-acazul rounded-full flex items-center justify-center mb-4">
+            <div key={item.title} className="bg-acbranco p-7 rounded-xl shadow-md text-left hover:shadow-lg transition">
+              <div className="w-16 h-16 bg-acazul rounded-full flex items-center justify-center mb-5">
                 <Lottie animationData={item.animation} loop={true} autoplay={true} className="w-10 h-10" />
               </div>
-              <h3 className="text-lg font-semibold text-acpreto mb-2">{item.title}</h3>
-              <p className="text-acpreto text-sm">{item.description}</p>
+              <h3 className="text-xl font-semibold text-acpreto mb-2">{item.title}</h3>
+              <p className="text-accinza text-base">{item.description}</p>
             </div>
           ))}
         </div>
