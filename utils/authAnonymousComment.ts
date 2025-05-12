@@ -44,7 +44,8 @@ export const authAnonymousComment = async (
                 setStatusFilter,
                 pendingClick,
                 setShowAuthPopup,
-                editingPinId
+                editingPinId,
+                null // Pass null for iframeUrl
             );
             setShowAuthPopup(false);
         }
