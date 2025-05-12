@@ -23,7 +23,8 @@ export const SaveTempComment = async (
     setTempPinData: (data: TempPinData | null) => void,
     setTempCommentText: (text: string) => void,
     loadComments: () => Promise<void>,
-    urlComentario?: string | null // Added for site comments
+    urlComentario?: string | null,
+    iframeSize?: string | null,
 ) => {
   if (!tempPinData || !tempCommentText.trim() || !session?.user?.id || !pageId) {
         console.error('Save validation failed: Missing data for saving temporary comment.');
@@ -45,10 +46,11 @@ export const SaveTempComment = async (
             page_id: tempPinData.pageId,
             document_id: currentDocumentId,
             user_id: session.user.id,
-            pin_number: nextPinNumber, // Assuming 'pin_number' is the column name
+            pin_number: nextPinNumber,
             status: 'ativo',
-            content: tempCommentText.trim(), // Assuming 'content' is the column name for comment text
-            url_comentario: urlComentario, // Add url_comentario
+            content: tempCommentText.trim(),
+            url_comentario: urlComentario,
+            iframe_size: iframeSize
     };
 
     const { data: newComment, error: commentError } = await supabase

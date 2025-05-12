@@ -19,6 +19,8 @@ interface SiteAreaHeaderProps {
   handleDownload: () => void
   siteComentar: boolean
   setSiteComentar: (value: boolean) => void
+  iframeSize: string
+  setIframeSize: (value: string) => void
 }
 
 const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
@@ -31,7 +33,9 @@ const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
   toggleEditTitle,
   setNewTitle,
   siteComentar,
-  setSiteComentar
+  setSiteComentar,
+  iframeSize,
+  setIframeSize
 }) => {
 
   return (
@@ -68,6 +72,8 @@ const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
         <Button onClick={() => setSiteComentar(false)} variant={'outline'} className={`${siteComentar === false ? 'bg-blue-700 text-white' : ''}`}>Navegar</Button>
       </div>
       <div className="flex items-center gap-4">
+        <Button onClick={() => setIframeSize('desktop')} variant={'outline'} className={`${iframeSize === 'desktop' ? 'bg-blue-700 text-white' : ''}`}>Desktop</Button>
+        <Button onClick={() => setIframeSize('mobile')} variant={'outline'} className={`${iframeSize === 'mobile' ? 'bg-blue-700 text-white' : ''}`}>Mobile</Button>
         <select
           value={zoomLevel}
           onChange={(e) => handleZoomChange(e.target.value)}
