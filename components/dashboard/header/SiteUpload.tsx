@@ -13,51 +13,70 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
   const { refreshImages } = useDashboardContext();
 
   const handleLinkUpload = async (url: string) => {
-    if (!session?.user?.id) return;
-    setIsLoading(true);
-    url = handleHttpsInput(url);
-    try {
-      const { data: document, error: documentError } = await supabase
-        .from('documents')
-        .insert({
-          url,
-          user_id: session.user.id,
-          title: 'Site',
-          type: 'site'
-        })
-        .select()
-        .single();
+  if (!session?.user?.id) return;
+  setIsLoading(true);
+  const novaurl = url.replace(/^https?:\/\//, '');
+  url = handleHttpsInput(url);
 
-      if (documentError) {
-        console.error('Erro ao salvar o link no documento:', documentError.message);
-        return;
-      }
+  try {
+    // Cria o documento
+    const { data: document, error: documentError } = await supabase
+      .from('documents')
+      .insert({
+        url,
+        user_id: session.user.id,
+        title: novaurl,
+        type: 'site'
+      })
+      .select()
+      .single();
 
-      const { data: page, error: pageError } = await supabase
-        .from('pages')
-        .insert({
-          document_id: document.id,
-          user_id: session.user.id,
-          page_number: 1,
-          imageTitle: 'Página do link',
-        })
-        .select()
-        .single();
-
-      if (pageError) {
-        console.error('Erro ao criar a página vinculada:', pageError.message);
-        return;
-      }
-
-      if (onUploadSuccess) onUploadSuccess(page);
-      await refreshImages();
-    } catch (err) {
-      const error = err as Error;
-      console.error('Erro ao fazer upload do link:', error.message);
-    } finally {
-      setIsLoading(false);
+    if (documentError) {
+      console.error('Erro ao salvar o link no documento:', documentError.message);
+      return;
     }
-  };
+
+    // Chama a API que gera o screenshot
+    const res = await fetch(`/api/screenshot?url=${encodeURIComponent(url)}`);
+    const json = await res.json();
+
+    if (!res.ok || !json?.url) {
+      console.error('Erro ao gerar imagem:', json?.error || 'Resposta inválida');
+      return;
+    }
+
+    const publicUrl: string = json.url;
+    const imageUrl = publicUrl.split('/files/')[1]
+      ? '/' + publicUrl.split('/files/')[1]
+      : '';
+
+    const { data: page, error: pageError } = await supabase
+      .from('pages')
+      .insert({
+        document_id: document.id,
+        user_id: session.user.id,
+        page_number: 1,
+        imageTitle: novaurl,
+        image_url: imageUrl
+      })
+      .select()
+      .single();
+
+    if (pageError) {
+      console.error('Erro ao criar a página vinculada:', pageError.message);
+      return;
+    }
+
+    if (onUploadSuccess) onUploadSuccess(page);
+    await refreshImages();
+
+  } catch (err) {
+    const error = err as Error;
+    console.error('Erro ao fazer upload do link:', error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleHttpsInput = (url: string): string => {
     if (!url) return '';
