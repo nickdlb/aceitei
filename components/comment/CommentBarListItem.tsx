@@ -130,7 +130,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
 
   return (
     <Card key={pin.id} className="pl-4 pr-4 pt-4 pb-3 bg-acbg !border-none shadow gap-1" id={`comment-list-item-${pin.id}`}>
-      <div id={`comment-header-${pin.id}`} className="flex gap-4 items-center align-middle pr-2">
+      <div id={`comment-header-${pin.id}`} className="flex gap-3 items-center align-middle pr-2">
         <div className="flex items-center gap-2">
           <span className="flex font-semibold text-xs text-acbranco bg-acazul h-6 w-6 items-center justify-center rounded-full">{pin.num}</span>
           <Badge
@@ -140,19 +140,15 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
             {pin.status === 'ativo' ? 'Ativo' : 'Resolvido'}
           </Badge>
         </div>
-        <div className='flex align-middle'>
-          {userNames[pin.user_id] && (() => {
-            const fullName = userNames[pin.user_id];
-            const displayName = fullName.length > 15 ? fullName.substring(0, 13) + '...' : fullName;
-            return (
-              <span
-                className="text-xs font-semibold text-actextocinza"
-                title={fullName}
-              >
-                {displayName}
-              </span>
-            );
-          })()}
+        <div className='flex align-middle flex-shrink min-w-0 overflow-hidden'> {/* Enhanced for better shrinking and overflow control */}
+          {userNames[pin.user_id] && (
+            <span
+              className="text-xs font-semibold text-actextocinza truncate" /* Added truncate for CSS-based ellipsis */
+              title={userNames[pin.user_id]} /* Use full name for tooltip */
+            >
+              {userNames[pin.user_id]} {/* Display full name, CSS will truncate */}
+            </span>
+          )}
         </div>
         <div className="flex items-center ml-0.5 min-w-20">
           <span className="text-xs text-actextocinza">{formatDateTime(pin.created_at)}</span>

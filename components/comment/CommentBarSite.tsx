@@ -268,13 +268,9 @@ const CommentBar = ({
         <div className="px-4 space-y-4 thin-scrollbar">
           {Object.entries(groupedPins).map(([url, group]) => (
             <div key={url}>
-              <button
-                onClick={() => toggleGroup(url)}
-                className={`w-full text-sm font-semibold transition text-left hover:text-acazul ${expandedUrls[url] === false ? 'text-gray-400' : 'text-acpreto'}`}
-              >
+              <button onClick={() => toggleGroup(url)} className={`w-full text-sm font-semibold transition text-left hover:text-acazul ${expandedUrls[url] === false ? 'text-gray-400' : 'text-acpreto'}`}>
                 {url} ({group.length})
               </button>
-
               {expandedUrls[url] !== false && (
                 <div className="space-y-6 mt-2">
                   {group

@@ -69,7 +69,39 @@ const pinsVisiveisNoIframe = pins.filter(pin => {
   return pin.url_comentario && urlRealDoIframe === pin.url_comentario;
 });
 
-  useIframePinInteraction({ iframeRef, pins:pinsVisiveisNoIframe, handleImageClick, iframeUrl, siteComentar})
+  useIframePinInteraction({ iframeRef, pins:pinsVisiveisNoIframe, handleImageClick, iframeUrl, siteComentar});
+
+  // Apply cursor style based on siteComentar state
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (iframe && iframe.contentWindow) {
+      const doc = iframe.contentWindow.document;
+      if (doc) {
+        let styleElement = doc.getElementById('custom-cursor-style') as HTMLStyleElement | null;
+        if (!styleElement) {
+          styleElement = doc.createElement('style');
+          styleElement.id = 'custom-cursor-style';
+          doc.head.appendChild(styleElement);
+        }
+
+        if (siteComentar) {
+          // Apply custom cursor to body and all elements within, overriding other styles
+          styleElement.innerHTML = `
+            body, body * { 
+              cursor: url("/cursor-comentar.svg") 18 18, crosshair !important; 
+            }
+          `;
+        } else {
+          // Remove custom cursor style override
+          styleElement.innerHTML = '';
+          // Ensure default cursor is set on body if no other styles apply
+          if (doc.body) {
+            doc.body.style.cursor = 'default';
+          }
+        }
+      }
+    }
+  }, [siteComentar, iframeUrl]); // Re-run when siteComentar or iframeUrl changes
 
   const handleZoomChange = useCallback((value: string) => {
     setZoomLevel(value)
@@ -119,12 +151,12 @@ const pinsVisiveisNoIframe = pins.filter(pin => {
     }
   }
 
-  useEffect(() => {
-  const iframe = iframeRef.current;
-  if (iframe?.contentWindow) {
-    iframe.contentWindow.postMessage({ type: 'set-mode', mode: siteComentar }, '*');
-  }
-}, [siteComentar]);
+  // useEffect(() => { // This useEffect seems redundant with the one above that handles cursor and postMessage
+  // const iframe = iframeRef.current;
+  // if (iframe?.contentWindow) {
+  //   iframe.contentWindow.postMessage({ type: 'set-mode', mode: siteComentar }, '*');
+  // }
+  // }, [siteComentar]);
 
   useEffect(() => {
   function handleMessage(event: MessageEvent) {
