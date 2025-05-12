@@ -45,6 +45,7 @@ const ImageArea: React.FC<Props> = ({
   const [tempCommentText, setTempCommentText] = useState('');
   const [showTempCommentBox, setShowTempCommentBox] = useState(false);
   const tempCommentBoxRef = useRef<HTMLDivElement>(null);
+  const [tempCommentBoxStyle, setTempCommentBoxStyle] = useState<React.CSSProperties>({});
 
   const handleImageClickInternal = (e: React.MouseEvent<HTMLImageElement>) => {
     if (!scrollContainerRef.current || isDragging || draggingPin || !imageRef.current) return;
@@ -116,6 +117,69 @@ const ImageArea: React.FC<Props> = ({
     };
   }, [showTempCommentBox, imageRef, tempCommentBoxRef]);
 
+  useEffect(() => {
+    if (showTempCommentBox && tempPinData && tempCommentBoxRef.current && containerRef.current && imageRef.current) {
+      const commentBoxWidth = tempCommentBoxRef.current.offsetWidth;
+      const commentBoxHeight = tempCommentBoxRef.current.offsetHeight;
+      const containerWidth = containerRef.current.offsetWidth;
+      const containerHeight = containerRef.current.offsetHeight;
+      const imageRect = imageRef.current.getBoundingClientRect(); // Coords relative to viewport
+      const containerRect = containerRef.current.getBoundingClientRect(); // Coords relative to viewport
+
+      // Calculate pin position in pixels relative to the containerRef
+      // This needs to account for the image's position within the scroll container and the scroll container's transform.
+      const scrollContainerStyle = window.getComputedStyle(scrollContainerRef.current!);
+      const scrollMatrix = new DOMMatrixReadOnly(scrollContainerStyle.transform);
+      const scale = scrollMatrix.a || 1;
+
+      // Pin position relative to the scaled image
+      const pinXOnScaledImage = (tempPinData.x / 100) * (imageRect.width / scale);
+      const pinYOnScaledImage = (tempPinData.y / 100) * (imageRect.height / scale);
+      
+      // Image offset within the scroll container (which is centered in containerRef)
+      // This is tricky because imageRef.current.offsetLeft/Top are relative to its offsetParent, which might not be scrollContainerRef
+      // Let's use the getBoundingClientRects and subtract.
+      const imageOffsetLeftInContainer = imageRect.left - containerRect.left;
+      const imageOffsetTopInContainer = imageRect.top - containerRect.top;
+
+      // Absolute pin position in pixels from the top-left of containerRef
+      const pinAbsoluteX = imageOffsetLeftInContainer + pinXOnScaledImage * scale;
+      const pinAbsoluteY = imageOffsetTopInContainer + pinYOnScaledImage * scale;
+
+      let newLeft = pinAbsoluteX + 15; // Default: to the right of the pin
+      let newTop = pinAbsoluteY - commentBoxHeight / 2; // Default: vertically centered with pin
+
+      // Adjust if overflowing right
+      if (newLeft + commentBoxWidth > containerWidth) {
+        newLeft = pinAbsoluteX - commentBoxWidth - 15; // Move to the left of the pin
+      }
+
+      // Adjust if overflowing left (can happen if moved to left and still overflows)
+      if (newLeft < 0) {
+        newLeft = 0; // Align with left edge
+      }
+      
+      // Adjust if overflowing bottom
+      if (newTop + commentBoxHeight > containerHeight) {
+        newTop = containerHeight - commentBoxHeight; // Align with bottom edge
+      }
+
+      // Adjust if overflowing top
+      if (newTop < 0) {
+        newTop = 0; // Align with top edge
+      }
+      
+      setTempCommentBoxStyle({
+        position: 'absolute',
+        left: `${newLeft}px`,
+        top: `${newTop}px`,
+        minWidth: '250px',
+        zIndex: 50,
+      });
+
+    }
+  }, [showTempCommentBox, tempPinData, pins, pageId]);
+
 
   return (
     <div className="flex-1 flex-col">
@@ -183,7 +247,7 @@ const ImageArea: React.FC<Props> = ({
               />
             )}
             {showTempCommentBox && tempPinData && (
-              <div ref={tempCommentBoxRef} className="absolute bg-white p-3 rounded-md shadow-xl border border-gray-300 z-50" style={{ left: `calc(${tempPinData.x}% + 15px)`, top: `calc(${tempPinData.y}% - 15px)`, transform: 'translateY(-50%)', minWidth: '250px',}}
+              <div ref={tempCommentBoxRef} className="absolute bg-white p-3 rounded-md shadow-xl border border-gray-300" style={tempCommentBoxStyle}
                 onClick={(e) => e.stopPropagation()}>
                 <textarea value={tempCommentText} onChange={(e) => setTempCommentText(e.target.value)} placeholder="Adicionar comentário..." className="w-full p-2 border border-gray-300 rounded-md resize-none focus:ring-acazul focus:border-acazul text-sm" rows={3} autoFocus onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {

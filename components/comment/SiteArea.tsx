@@ -52,6 +52,7 @@ const SiteArea: React.FC<SiteAreaExtendedProps> = ({
   const [tempSiteCommentText, setTempSiteCommentText] = useState('');
   const [showTempSiteCommentBox, setShowTempSiteCommentBox] = useState(false);
   const tempSiteCommentBoxRef = useRef<HTMLDivElement>(null);
+  const [tempSiteCommentBoxStyle, setTempSiteCommentBoxStyle] = useState<React.CSSProperties>({});
 
 
   const handlePinAttempt = (
@@ -182,6 +183,52 @@ const pinsVisiveisNoIframe = pins.filter(pin => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showTempSiteCommentBox, iframeRef, tempSiteCommentBoxRef]);
+
+  useEffect(() => {
+    if (showTempSiteCommentBox && tempSitePinData && tempSiteCommentBoxRef.current) {
+      const commentBoxWidth = tempSiteCommentBoxRef.current.offsetWidth;
+      const commentBoxHeight = tempSiteCommentBoxRef.current.offsetHeight;
+      
+      // Since the box is position: fixed, viewport dimensions are the boundaries.
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // tempSitePinData.clientX and clientY are already viewport-relative click coordinates
+      const pinClientX = tempSitePinData.clientX;
+      const pinClientY = tempSitePinData.clientY;
+
+      let newLeft = pinClientX + 30; // Default: to the right of the pin
+      let newTop = pinClientY - commentBoxHeight / 3 ; // Default: vertically centered with pin
+
+      // Adjust if overflowing right
+      if (newLeft + commentBoxWidth > viewportWidth) {
+        newLeft = pinClientX - commentBoxWidth - 15; // Move to the left of the pin
+      }
+
+      // Adjust if overflowing left
+      if (newLeft < 0) {
+        newLeft = 0; // Align with left edge of viewport
+      }
+      
+      // Adjust if overflowing bottom
+      if (newTop + commentBoxHeight > viewportHeight) {
+        newTop = viewportHeight - commentBoxHeight; // Align with bottom edge of viewport
+      }
+
+      // Adjust if overflowing top
+      if (newTop < 0) {
+        newTop = 0; // Align with top edge of viewport
+      }
+      
+      setTempSiteCommentBoxStyle({
+        position: 'fixed', // Already fixed, but good to be explicit
+        left: `${newLeft}px`,
+        top: `${newTop}px`,
+        minWidth: '250px',
+        zIndex: 99999, // Keep high z-index
+      });
+    }
+  }, [showTempSiteCommentBox, tempSitePinData]);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -332,14 +379,7 @@ const pinsVisiveisNoIframe = pins.filter(pin => {
               <div
                 ref={tempSiteCommentBoxRef}
                 className="fixed bg-white p-3 rounded-md shadow-xl border border-gray-300 z-[99999]" // High z-index
-                style={{
-                  // Position using clientX, clientY from the click event
-                  // These coordinates are relative to the viewport.
-                  left: `${tempSitePinData.clientX + 15}px`, // Offset from click
-                  top: `${tempSitePinData.clientY - 15}px`,  // Offset from click
-                  transform: 'translateY(-50%)', 
-                  minWidth: '250px',
-                }}
+                style={tempSiteCommentBoxStyle}
                 onClick={(e) => e.stopPropagation()}
               >
                 <textarea
