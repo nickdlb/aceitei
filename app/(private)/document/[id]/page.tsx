@@ -145,7 +145,8 @@ export default function Page() {
             setStatusFilter,
             setPendingClick,
             setShowAuthPopup,
-            editingPinId
+            editingPinId,
+            null // iframeUrl is null for ImageArea context
         );
     };
 
@@ -277,7 +278,6 @@ export default function Page() {
         imageTitle: currentTitle || 'Sem título',
         imageId: pageData?.id ?? '',
         pins: filteredPins,
-        handleImageClick: handleImageClickPin,
         draggingPin: draggingPin,
         setDraggingPin: setDraggingPin,
         isDragging: isDragging,
@@ -286,11 +286,14 @@ export default function Page() {
         imageRef: imageRef,
         onTitleUpdate: handleTitleUpdate,
         onTogglePages: () => setIsPagesOpen(!isPagesOpen),
-        isPagesOpen: isPagesOpen
+        isPagesOpen: isPagesOpen,
+        session: session,
+        loadComments: loadComments,
+        pageId: pageData?.id ?? '',
     };
 
     const handleAuthSubmitAnonForm = async (name: string, email: string) => {
-        await authAnonymousComment(name, email, pageData?.id ?? '', pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
+        await authAnonymousComment(name, email, pageData?.id ?? '', pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickPin);
     };
 
     return (
@@ -304,7 +307,9 @@ export default function Page() {
                 status: pageData?.documents?.status ?? '',
                 type: pageData?.documents?.type ?? '',
                 url: pageData?.documents?.url ?? '',
-            }
+            },
+            iframeUrl: '',
+            setIframeUrl: () => {},
         }}>
             <PageLayout
                 commentBarProps={commentBarProps}
