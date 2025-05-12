@@ -33,7 +33,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 
   return (
     <div className="w-full h-screen flex">
-      <div className="w-96 flex-shrink-0 !border-0">
+      <div className="w-[380px] flex-shrink-0 !border-0">
         <CommentBar {...commentBarProps} />
       </div>
       <div className="flex-1 flex">

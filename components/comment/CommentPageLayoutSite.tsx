@@ -34,7 +34,7 @@ const PageLayoutSite: React.FC<PageLayoutSiteProps> = ({
 
   return (
     <div className="w-full h-screen flex">
-      <div className="w-80 flex-shrink-0 !border-0">
+      <div className="w-[380px] flex-shrink-0 !border-0">
         <CommentBarSite {...commentBarProps} />
       </div>
       <div className="flex-1 flex">

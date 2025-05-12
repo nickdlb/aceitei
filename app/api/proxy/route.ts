@@ -69,6 +69,7 @@ export async function GET(req: NextRequest) {
         const fullUrl = new URL(anchor.href, window.location.href);
         // Pega a URL original da query string (de /api/proxy?url=...)
         const currentUrl = new URLSearchParams(window.location.search).get('url');
+        const fullUrl = new URL(anchor.getAttribute('href'), currentUrl);
         const baseDomain = currentUrl ? new URL(currentUrl).hostname : '';
 
         // A URL que o link aponta
@@ -110,17 +111,30 @@ export async function GET(req: NextRequest) {
 
 function fixRelativeUrlsWithProxy(html: string, baseUrl: string) {
   const base = new URL(baseUrl);
-
   html = html.replace(/<(?!a\s)(\w+)[^>]+?(src|href)=["']([^"']+)["']/gi, (match: string, tag: string, attr: string, path: string) => {
+    const isIframe = tag.toLowerCase() === 'iframe';
     if (/^(https?:|\/\/)/i.test(path)) {
       const fullUrl = path.startsWith('//') ? `https:${path}` : path;
+      if (isIframe) {
+        try {
+          const targetHost = new URL(fullUrl).hostname;
+          const baseHost = new URL(base).hostname;
+          if (targetHost !== baseHost) return match;
+        } catch {
+          return match;
+        }
+      }
+
       return match.replace(`${attr}="${path}"`, `${attr}="/api/proxy-resource?url=${encodeURIComponent(fullUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`);
-    } else if (/^(#|mailto:|javascript:|tel:)/i.test(path)) {
-      return match;
-    } else {
-      const absoluteUrl = new URL(path, base).toString();
-      return match.replace(`${attr}="${path}"`, `${attr}="/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`);
     }
+
+    // Permite âncoras, JS, etc.
+    if (/^(#|mailto:|javascript:|tel:)/i.test(path)) {
+      return match;
+    }
+
+    const absoluteUrl = new URL(path, base).toString();
+    return match.replace(`${attr}="${path}"`, `${attr}="/api/proxy-resource?url=${encodeURIComponent(absoluteUrl)}&originalUrl=${encodeURIComponent(baseUrl)}"`);
   });
 
   html = html.replace(/<a\s+[^>]*href=["']([^"']+)["']/gi, (match: string, path: string) => {
