@@ -23,7 +23,8 @@ const PopupUpload = ({ onUploadComplete }: PopupUploadProps) => {
                 <div className="mb-4 space-y-2">
                     <div>
                         <p className="text-sm font-medium text-actextocinza mb-2">Adicionar Site</p>
-                        <SiteUpload />
+                        {/* Pass handleUploadSuccess to SiteUpload */}
+                        <SiteUpload onUploadSuccess={handleUploadSuccess} />
                     </div>
                     <p className="text-sm font-medium text-actextocinza mb-2"> ou </p>
                     <div>
