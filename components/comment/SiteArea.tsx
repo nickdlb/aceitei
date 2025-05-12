@@ -118,7 +118,7 @@ const SiteArea: React.FC<SiteAreaExtendedProps> = ({
   console.log('Essa é a url RealdOIframe', urlRealDoIframe)
 
   const pinsVisiveisNoIframe = pins.filter(pin => {
-    return pin.url_comentario && urlRealDoIframe === pin.url_comentario && iframeSize === iframeSize;
+    return pin.url_comentario && urlRealDoIframe === pin.url_comentario && pin.iframeSize === iframeSize;
   });
 
   createPinIframe({

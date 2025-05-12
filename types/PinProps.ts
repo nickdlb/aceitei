@@ -11,6 +11,7 @@ export interface PinProps {
     reactions?: CommentReactionPin[];
     isEditing?: boolean;
     url_comentario: string | null | any
+    iframeSize: string
 }
 
 export interface CommentReactionPin {
