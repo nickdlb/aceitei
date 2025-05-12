@@ -33,48 +33,67 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
 
     if (documentError) {
       console.error('Erro ao salvar o link no documento:', documentError.message);
+      setIsLoading(false);
       return;
     }
 
-    // Chama a API que gera o screenshot
-    const res = await fetch(`/api/screenshot?url=${encodeURIComponent(url)}`);
-    const json = await res.json();
-
-    if (!res.ok || !json?.url) {
-      console.error('Erro ao gerar imagem:', json?.error || 'Resposta inválida');
-      return;
-    }
-
-    const publicUrl: string = json.url;
-    const imageUrl = publicUrl.split('/files/')[1]
-      ? '/' + publicUrl.split('/files/')[1]
-      : '';
-
-    const { data: page, error: pageError } = await supabase
+    const placeholderImageUrl = '/logo-feedybacky-dark.png'; 
+    const { data: initialPage, error: initialPageError } = await supabase
       .from('pages')
       .insert({
         document_id: document.id,
         user_id: session.user.id,
         page_number: 1,
         imageTitle: novaurl,
-        image_url: imageUrl
+        image_url: placeholderImageUrl
       })
       .select()
       .single();
 
-    if (pageError) {
-      console.error('Erro ao criar a página vinculada:', pageError.message);
+    if (initialPageError) {
+      console.error('Erro ao criar a página inicial com placeholder:', initialPageError.message);
+      await supabase.from('documents').delete().match({ id: document.id });
+      setIsLoading(false);
       return;
     }
 
-    if (onUploadSuccess) onUploadSuccess(page);
+    if (onUploadSuccess) onUploadSuccess(initialPage);
     await refreshImages();
+    setIsLoading(false); 
+
+    try {
+      const res = await fetch(`/api/screenshot?url=${encodeURIComponent(url)}`);
+      const json = await res.json();
+
+      if (!res.ok || !json?.url) {
+        console.error('Erro ao gerar imagem:', json?.error || 'Resposta inválida. Mantendo placeholder.');
+      } else {
+        const publicUrl: string = json.url;
+        const actualImageUrl = publicUrl.split('/files/')[1]
+          ? '/' + publicUrl.split('/files/')[1]
+          : '';
+
+        const { error: updatePageError } = await supabase
+          .from('pages')
+          .update({ image_url: actualImageUrl })
+          .match({ id: initialPage.id });
+
+        if (updatePageError) {
+          console.error('Erro ao atualizar a página com a imagem real:', updatePageError.message);
+        } else {
+          await refreshImages(); 
+        }
+      }
+    } catch (screenshotError) {
+      console.error('Erro na chamada da API de screenshot:', (screenshotError as Error).message);
+    }
 
   } catch (err) {
-    const error = err as Error;
-    console.error('Erro ao fazer upload do link:', error.message);
-  } finally {
-    setIsLoading(false);
+     const error = err as Error;
+    console.error('Erro ao fazer upload do link (antes do placeholder):', error.message);
+    if (isLoading) { 
+        setIsLoading(false);
+    }
   }
 };
 
