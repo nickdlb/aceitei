@@ -110,7 +110,6 @@ export async function POST(request: NextRequest) {
       const imageUrl = `${imageName}`;
       imageUrls.push(imageUrl);
 
-      // Insert image data into the Images table
       const { error: insertError } = await supabase
         .from('pages')
         .insert([{ image_url: imageUrl, document_id: documentId, page_number: pageNum }]);

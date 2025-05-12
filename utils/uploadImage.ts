@@ -9,7 +9,6 @@ export const uploadImage = async (
   try {
     const fileList = Array.isArray(files) ? files : [files];
 
-    // Criação única do documento
     const { data: documentData, error: documentError } = await supabase
       .from('documents')
       .insert([{ title: title || fileList[0].name, user_id: userId }])
@@ -38,12 +37,25 @@ export const uploadImage = async (
         return null;
       }
 
+      const { data: publicUrlData } = supabase.storage
+        .from('files')
+        .getPublicUrl(fileName);
+
+      if (!publicUrlData) {
+        console.error('Error getting public URL for file:', fileName);
+        await supabase.from('documents').delete().eq('id', documentData.id);
+        await supabase.storage.from('files').remove([fileName]);
+        return null;
+      }
+
+      const imageUrl = publicUrlData.publicUrl;
+
       const { data: pageData, error: pageError } = await supabase
         .from('pages')
         .insert([
           {
             document_id: documentData.id,
-            image_url: fileName,
+            image_url: imageUrl,
             imageTitle: title || file.name,
             page_number: i + 1,
             user_id: userId,

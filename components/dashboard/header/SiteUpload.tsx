@@ -37,7 +37,7 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
       return;
     }
 
-    const placeholderImageUrl = '/logo-feedybacky-dark.png'; 
+    const placeholderImageUrl = '/feedybacky-bg-card.jpg'; 
     const { data: initialPage, error: initialPageError } = await supabase
       .from('pages')
       .insert({
@@ -69,13 +69,9 @@ export default function SiteUpload({ onUploadSuccess }: { onUploadSuccess?: (pag
         console.error('Erro ao gerar imagem:', json?.error || 'Resposta inválida. Mantendo placeholder.');
       } else {
         const publicUrl: string = json.url;
-        const actualImageUrl = publicUrl.split('/files/')[1]
-          ? '/' + publicUrl.split('/files/')[1]
-          : '';
-
         const { error: updatePageError } = await supabase
           .from('pages')
-          .update({ image_url: actualImageUrl })
+          .update({ image_url: publicUrl })
           .match({ id: initialPage.id });
 
         if (updatePageError) {

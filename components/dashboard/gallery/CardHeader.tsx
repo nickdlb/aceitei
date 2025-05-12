@@ -16,7 +16,7 @@ export const CardHeader = () => {
     handleDeleteCard,
   } = useCard(pageData);
   const [isNavigating, setIsNavigating] = useState(false);
-  const imageUrl = pageData.image_url ? `https://nokrffogsfxouxzrrkdp.supabase.co//storage/v1/object/public/files/${pageData.image_url}` : '/noite-estrelada-comentada.jpg'
+  const imageUrl = pageData.image_url ? pageData.image_url : '/noite-estrelada-comentada.jpg'
 
   const shareLink = () => {
     if (documentData.type === 'site') {

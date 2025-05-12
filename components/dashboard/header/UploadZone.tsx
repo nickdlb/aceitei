@@ -6,6 +6,10 @@ import MultipleUploadModal from './MultipleUploadModal';
 import { UploadCloud } from 'lucide-react';
 import { supabase } from '@/utils/supabaseClient';
 
+const sanitizeFilename = (filename: string): string => {
+  return filename.replace(/[^a-zA-Z0-9-.]/g, '-').replace(/ /g, '-');
+};
+
 export interface UploadZoneProps {
   onUploadSuccess: (data: any) => void;
   refreshImages: () => Promise<void>;
@@ -20,9 +24,18 @@ export const UploadZone = ({ onUploadSuccess, refreshImages }: UploadZoneProps) 
   const combineImages = async (files: File[]) => {
     console.log('Combining images:', files);
     if (!session?.user?.id) return;
-    const data = await uploadImage(files, session.user.id, files[0].name, true);
-    if (data) {
-      onUploadSuccess(data);
+    setLoading(true); // Show loading state for combine operation
+    try {
+      const data = await uploadImage(files, session.user.id, files[0].name, true);
+      if (data) {
+        onUploadSuccess(data);
+        await refreshImages(); // Ensure UI updates after combined upload
+      }
+    } catch (err) {
+      const error = err as Error;
+      console.error('Erro no combineImages:', error.message);
+    } finally {
+      setLoading(false); // Hide loading state
     }
   };
 
@@ -68,11 +81,93 @@ export const UploadZone = ({ onUploadSuccess, refreshImages }: UploadZoneProps) 
           onUploadSuccess(responseData);
           await refreshImages();
         } else {
-          const data = await uploadImage(file, session.user.id, file.name);
-          if (data) {
-            onUploadSuccess(data);
-            await refreshImages();
+          // Optimistic UI update for non-PDF files
+          if (!session?.user?.id) continue;
+
+          // 1. Create document optimistically
+          const { data: docData, error: docError } = await supabase
+            .from('documents')
+            .insert({ title: file.name, user_id: session.user.id, type: file.type.startsWith('image/') ? 'image' : 'file' })
+            .select()
+            .single();
+
+          if (docError || !docData) {
+            console.error('Error creating document optimistically for:', file.name, docError);
+            continue; // Skip to next file on error
           }
+
+          // 2. Create page with placeholder optimistically
+          const placeholderImageUrl = '/feedybacky-bg-card.jpg'; // Generic placeholder
+          const { data: initialPage, error: initialPageError } = await supabase
+            .from('pages')
+            .insert({
+              document_id: docData.id,
+              user_id: session.user.id,
+              page_number: 1,
+              imageTitle: file.name,
+              image_url: placeholderImageUrl,
+            })
+            .select()
+            .single();
+
+          if (initialPageError || !initialPage) {
+            console.error('Error creating initial page with placeholder for:', file.name, initialPageError);
+            await supabase.from('documents').delete().eq('id', docData.id); // Rollback document
+            continue; // Skip to next file
+          }
+
+          // 3. Call onUploadSuccess for instant card
+          const optimisticPageData = [{
+            ...initialPage,
+            documents: { id: docData.id, title: docData.title, created_at: docData.created_at, user_id: docData.user_id, url: docData.url, type: docData.type }
+          }];
+          onUploadSuccess(optimisticPageData);
+          await refreshImages();
+
+          // 4. Upload actual file to storage and update page (async, don't block UI thread more than necessary)
+          (async () => {
+            try {
+              const fileExt = file.name.split('.').pop();
+              // Using a more robust naming to avoid collisions, e.g., based on page ID or a UUID
+              const sanitizedFilename = sanitizeFilename(file.name);
+              const storageFileName = `${session.user.id}/${docData.id}/${initialPage.id}-${sanitizedFilename}`;
+
+              const { error: storageError } = await supabase.storage
+                .from('files')
+                .upload(storageFileName, file);
+
+              if (storageError) {
+                console.error('Error uploading actual file to storage:', file.name, storageError);
+                // Placeholder remains, refreshImages might eventually show an error or broken link if not handled by card component
+                return;
+              }
+
+              const { data: publicUrlData } = supabase.storage
+                .from('files')
+                .getPublicUrl(storageFileName);
+
+              if (!publicUrlData || !publicUrlData.publicUrl) {
+                console.error('Error getting public URL for:', storageFileName);
+                return;
+              }
+              const actualImageUrl = publicUrlData.publicUrl;
+
+              // 5. Update the page record with the actual image_url
+              const { error: updatePageError } = await supabase
+                .from('pages')
+                .update({ image_url: actualImageUrl })
+                .eq('id', initialPage.id);
+
+              if (updatePageError) {
+                console.error('Error updating page with actual image URL for:', file.name, updatePageError);
+              } else {
+                // 6. Refresh again to show the real image
+                await refreshImages();
+              }
+            } catch (uploadAndUpdateError) {
+              console.error('Error in background upload and update for:', file.name, uploadAndUpdateError);
+            }
+          })();
         }
       }
     } catch (err: unknown) {

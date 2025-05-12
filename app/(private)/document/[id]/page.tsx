@@ -243,7 +243,7 @@ export default function Page() {
         );
     }
 
-    const imageUrl = `https://nokrffogsfxouxzrrkdp.supabase.co//storage/v1/object/public/files/${pageData.image_url}`;
+    const imageUrl = pageData.image_url
 
     if (!imageUrl) {
         return <PageImageNotFound />;
