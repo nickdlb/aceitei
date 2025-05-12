@@ -1,18 +1,22 @@
-import { useEffect } from 'react'
+import { useEffect } from 'react';
+import { PinProps } from '@/types'; // Import PinProps
+
+export interface IframePinInteractionProps {
+  iframeRef: React.RefObject<HTMLIFrameElement | null>;
+  pins: PinProps[]; // Use PinProps type for better type safety
+  // Callback now includes iframe-relative clientX, clientY
+  onPinAttempt: (xPercent: number, yPercent: number, iframeUrl: string, iframeClientX: number, iframeClientY: number) => void; 
+  iframeUrl: string; // Current URL of the iframe content
+  siteComentar: boolean; // Is comment mode active?
+}
 
 export function useIframePinInteraction({
   iframeRef,
   pins,
-  handleImageClick,
+  onPinAttempt,
   iframeUrl,
   siteComentar
-}: {
-  iframeRef: React.RefObject<HTMLIFrameElement | null>
-  pins: { x: number; y: number; num?: number }[]
-  handleImageClick: (x: number, y: number, iframeUrl: string) => void
-  iframeUrl: string | any
-  siteComentar: boolean
-}) {
+}: IframePinInteractionProps) {
   useEffect(() => {
   const iframe = iframeRef.current;
   if (!iframe) return;
@@ -28,7 +32,8 @@ export function useIframePinInteraction({
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-    await handleImageClick(x, y, iframeUrl);
+    // Call the new callback prop, passing iframe-relative clientX/Y
+    onPinAttempt(x, y, iframeUrl, e.clientX, e.clientY); 
   };
 
   const renderPinsInIframe = () => {
@@ -41,6 +46,7 @@ export function useIframePinInteraction({
       const el = iframeDoc.createElement('div');
       el.className = 'pin-custom';
       el.innerText = `${pin.num || ''}`;
+      el.setAttribute('data-feedybacky-id', pin.id); // Add the data attribute
 
       Object.assign(el.style, {
         position: 'absolute',
@@ -88,5 +94,6 @@ export function useIframePinInteraction({
     iframe.removeEventListener('load', setupIframe);
     iframe.contentDocument?.body?.removeEventListener('click', onClick);
   };
-}, [pins, handleImageClick, iframeUrl, siteComentar]);
+  // Ensure all dependencies are correctly listed
+}, [iframeRef, pins, onPinAttempt, iframeUrl, siteComentar]); 
 }

@@ -1,31 +1,83 @@
-import React, { useState, useRef, useCallback } from 'react'
-import SiteAreaHeader from './SiteAreaHeader'
-import { SiteAreaProps } from '@/types'
-import { usePageContext } from '@/contexts/PageContext'
-import { useIframePinInteraction } from '@/hooks/usePinIframe'
-import { useEffect } from 'react'
-import { toast } from 'sonner'
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import SiteAreaHeader from './SiteAreaHeader';
+import { SiteAreaProps as OriginalSiteAreaProps, PinProps } from '@/types'; // Renamed to avoid conflict
+import { usePageContext } from '@/contexts/PageContext';
+import { useIframePinInteraction } from '@/hooks/usePinIframe';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { 
+  SaveTempComment, 
+  CancelTempComment 
+} from '@/utils/tempCommentUtils'; // Corrected import names
+import { supabase } from '@/utils/supabaseClient';
+import { Session } from '@supabase/supabase-js';
 
-interface Props extends SiteAreaProps {
-  onTogglePages: () => void
+// Define a more specific Props interface for SiteArea, including new ones needed
+export interface SiteAreaExtendedProps extends OriginalSiteAreaProps {
+  onTogglePages: () => void;
+  session: Session | null;
+  loadComments: () => Promise<void>;
+  // pins prop is already part of OriginalSiteAreaProps
 }
 
-const SiteArea: React.FC<Props> = ({
-  exibirImagem,
+interface TempSitePinData {
+  xPercent: number; // X relative to iframe content
+  yPercent: number; // Y relative to iframe content
+  clientX: number;  // X relative to viewport, for overlay positioning
+  clientY: number;  // Y relative to viewport, for overlay positioning
+  iframePageUrl: string;
+}
+
+const SiteArea: React.FC<SiteAreaExtendedProps> = ({
+  exibirImagem, // This might be irrelevant for SiteArea, consider removing from props if so
   pins,
-  handleImageClick,
+  // handleImageClick, // This will be replaced by onPinAttempt logic
   onTogglePages,
-  isPagesOpen
+  isPagesOpen,
+  session,
+  loadComments,
 }) => {
-  const [zoomLevel, setZoomLevel] = useState('100')
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
-  const [newTitle, setNewTitle] = useState('')
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
-  const { documentData, handleTitleUpdate, pages } = usePageContext()
+  const [zoomLevel, setZoomLevel] = useState('100');
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const scrollContainerRef = useRef<HTMLDivElement>(null); // For iframe container scroll, if any
+  const containerRef = useRef<HTMLDivElement>(null); // Main container for SiteArea
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { documentData, handleTitleUpdate, pages, pageId } = usePageContext(); // pageId for saving
   const [siteComentar, setSiteComentar] = useState(false);
-  const { iframeUrl, setIframeUrl } = usePageContext()
+  const { iframeUrl, setIframeUrl } = usePageContext();
+
+  // State for temporary site comment box
+  const [tempSitePinData, setTempSitePinData] = useState<TempSitePinData | null>(null);
+  const [tempSiteCommentText, setTempSiteCommentText] = useState('');
+  const [showTempSiteCommentBox, setShowTempSiteCommentBox] = useState(false);
+  const tempSiteCommentBoxRef = useRef<HTMLDivElement>(null);
+
+
+  const handlePinAttempt = (
+    xPercent: number, 
+    yPercent: number, 
+    currentIframeUrl: string, 
+    iframeClientX: number, // Received from updated useIframePinInteraction
+    iframeClientY: number  // Received from updated useIframePinInteraction
+  ) => {
+    const iframeRect = iframeRef.current?.getBoundingClientRect();
+    if (!iframeRect) return;
+
+    // Calculate absolute viewport coordinates for the overlay
+    const finalClientX = iframeRect.left + iframeClientX;
+    const finalClientY = iframeRect.top + iframeClientY;
+
+    setTempSitePinData({ 
+      xPercent: xPercent, 
+      yPercent: yPercent, 
+      clientX: finalClientX, 
+      clientY: finalClientY, 
+      iframePageUrl: currentIframeUrl 
+    });
+    setTempSiteCommentText('');
+    setShowTempSiteCommentBox(true);
+  };
 
 useEffect(() => {
   const iframe = iframeRef.current;
@@ -69,9 +121,68 @@ const pinsVisiveisNoIframe = pins.filter(pin => {
   return pin.url_comentario && urlRealDoIframe === pin.url_comentario;
 });
 
-  useIframePinInteraction({ iframeRef, pins:pinsVisiveisNoIframe, handleImageClick, iframeUrl, siteComentar});
+  useIframePinInteraction({ 
+    iframeRef, 
+    pins: pinsVisiveisNoIframe, 
+    onPinAttempt: handlePinAttempt,
+    iframeUrl, 
+    siteComentar 
+  });
 
-  // Apply cursor style based on siteComentar state
+  const handleSaveTempSiteComment = async () => {
+    if (!tempSitePinData) return;
+    const currentDocDataForUtil = documentData ? { id: documentData.id } : null;
+    const pinDataForUtil = { 
+      x: tempSitePinData.xPercent, 
+      y: tempSitePinData.yPercent, 
+      pageId: pageId || '' 
+    };
+
+    const urlfinal = decodeURIComponent(decodeURIComponent(tempSitePinData.iframePageUrl.slice(tempSitePinData.iframePageUrl.lastIndexOf("http")))).slice(8)
+
+    await SaveTempComment(
+      pinDataForUtil,
+      tempSiteCommentText,
+      session,
+      pageId || '', 
+      pins, 
+      currentDocDataForUtil,
+      supabase,
+      setShowTempSiteCommentBox,
+      () => setTempSitePinData(null),
+      setTempSiteCommentText,
+      loadComments,
+      urlfinal
+    );
+  };
+
+  const handleCancelTempSiteComment = () => {
+    CancelTempComment(
+      setShowTempSiteCommentBox,
+      () => setTempSitePinData(null),
+      setTempSiteCommentText
+    );
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tempSiteCommentBoxRef.current && !tempSiteCommentBoxRef.current.contains(event.target as Node)) {
+         const iframeBody = iframeRef.current?.contentWindow?.document.body;
+        if (iframeBody && iframeBody.contains(event.target as Node)) {
+            return;
+        }
+        handleCancelTempSiteComment();
+      }
+    };
+
+    if (showTempSiteCommentBox) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTempSiteCommentBox, iframeRef, tempSiteCommentBoxRef]);
+
   useEffect(() => {
     const iframe = iframeRef.current;
     if (iframe && iframe.contentWindow) {
@@ -215,6 +326,65 @@ const pinsVisiveisNoIframe = pins.filter(pin => {
         <div ref={scrollContainerRef} className="relative w-full flex justify-center">
           <div className="relative w-full" style={{ minHeight: 'calc(100vh - 4rem)' }}>
             <iframe ref={iframeRef} style={{ visibility: 'visible', width: '100%', height: '100%' }} sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-presentation allow-popups allow-popups-to-escape-sandbox" src={`/api/proxy?url=${documentData?.url}`}/>
+            
+            {/* Temporary Site Comment Box Overlay */}
+            {showTempSiteCommentBox && tempSitePinData && (
+              <div
+                ref={tempSiteCommentBoxRef}
+                className="fixed bg-white p-3 rounded-md shadow-xl border border-gray-300 z-[99999]" // High z-index
+                style={{
+                  // Position using clientX, clientY from the click event
+                  // These coordinates are relative to the viewport.
+                  left: `${tempSitePinData.clientX + 15}px`, // Offset from click
+                  top: `${tempSitePinData.clientY - 15}px`,  // Offset from click
+                  transform: 'translateY(-50%)', 
+                  minWidth: '250px',
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <textarea
+                  value={tempSiteCommentText}
+                  onChange={(e) => setTempSiteCommentText(e.target.value)}
+                  placeholder="Adicionar comentário..."
+                  className="w-full p-2 border border-gray-300 rounded-md resize-none focus:ring-acazul focus:border-acazul text-sm"
+                  rows={3}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSaveTempSiteComment();
+                    } else if (e.key === 'Escape') {
+                      handleCancelTempSiteComment();
+                    }
+                  }}
+                />
+                <div className="flex justify-end gap-2 mt-2">
+                  <Button variant="outline" size="sm" onClick={handleCancelTempSiteComment} className="text-xs">
+                    Cancelar
+                  </Button>
+                  <Button size="sm" onClick={handleSaveTempSiteComment} disabled={!tempSiteCommentText.trim()} className="text-xs bg-acazul hover:bg-acazul/90 text-white">
+                    Salvar
+                  </Button>
+                </div>
+              </div>
+            )}
+            {/* We might also need a temporary pin marker overlay here, similar to the comment box */}
+            {/* For simplicity, starting with just the comment box overlay. */}
+            {/* A temporary pin marker could be another fixed position div or an SVG. */}
+             {showTempSiteCommentBox && tempSitePinData && (
+              <div
+                className="fixed rounded-full bg-blue-500 border-2 border-white shadow-lg"
+                style={{
+                  left: `${tempSitePinData.clientX}px`,
+                  top: `${tempSitePinData.clientY}px`,
+                  width: '18px', // Smaller than ImagePin's default 30px
+                  height: '18px',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: '99998', // Just below comment box
+                  pointerEvents: 'none', // So it doesn't interfere with clicks
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -222,4 +392,4 @@ const pinsVisiveisNoIframe = pins.filter(pin => {
   )
 }
 
-export default SiteArea
+export default SiteArea;

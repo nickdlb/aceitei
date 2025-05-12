@@ -262,23 +262,34 @@ export default function Page() {
     };
 
     const imageAreaProps = {
-        imageTitle: currentTitle || 'Sem título',
-        imageId: pageData?.id ?? '',
-        pins: filteredPins,
-        handleImageClick: handleImageClickPin,
-        draggingPin: draggingPin,
-        setDraggingPin: setDraggingPin,
-        isDragging: isDragging,
-        setIsDragging: setIsDragging,
-        updatePinPosition: updatePinPosition,
-        imageRef: imageRef,
+        // exibirImagem: imageUrl, // This was in the ImageArea version, SiteArea gets URL from documentData
+        imageTitle: currentTitle || 'Sem título', // SiteAreaHeader uses this
+        imageId: pageData?.id ?? '', // pageId, used by SiteArea's handleSaveTempSiteComment via context
+        pins: filteredPins, // Used by SiteArea for filtering visible pins and calculating next number
+        // handleImageClick: handleImageClickPin, // SiteArea now uses onPinAttempt internally
+        draggingPin: draggingPin, // This seems specific to ImageArea, might not be used by SiteArea
+        setDraggingPin: setDraggingPin, // ditto
+        isDragging: isDragging, // ditto
+        setIsDragging: setIsDragging, // ditto
+        updatePinPosition: updatePinPosition, // ditto
+        imageRef: imageRef, // SiteArea uses iframeRef, imageRef might be irrelevant here
         onTitleUpdate: handleTitleUpdate,
         onTogglePages: () => setIsPagesOpen(!isPagesOpen),
-        isPagesOpen: isPagesOpen
+        isPagesOpen: isPagesOpen,
+        // Props needed for the new temporary comment box logic in SiteArea
+        session: session,
+        loadComments: loadComments,
+        // Note: SiteAreaProps in PageLayoutSite should match SiteAreaExtendedProps
+        // We also need to ensure `handleImageClickPin` is still available for `authAnonymousComment` if it's used after a pending click.
+        // The `handleImageClick` prop in `imageAreaProps` is what `authAnonymousComment` uses via `handleImageClickUtil`.
+        // So we should keep it, but SiteArea itself won't use it for initial clicks.
+        handleImageClick: handleImageClickPin, 
     };
 
     const handleAuthSubmitAnonForm = async (name: string, email: string) => {
-        await authAnonymousComment(name, email, pageData?.id ?? '', pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickUtil);
+        // authAnonymousComment expects handleImageClickUtil, which handleImageClickPin wraps.
+        // The 13th argument to handleImageClickUtil is iframeUrl, which handleImageClickPin provides.
+        await authAnonymousComment(name, email, pageData?.id ?? '', pins, setPins, setComments, setEditingPinId, statusFilter, setStatusFilter, pendingClick, setShowAuthPopup, handleImageClickPin);
     };
 
     return (
