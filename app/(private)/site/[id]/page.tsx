@@ -12,7 +12,7 @@ import { handleImageClick as handleImageClickUtil } from '@/utils/handleImageCli
 import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/utils/commentUtils';
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
-import PageLayoutSite from '@/components/comment/CommentPageLayoutSite';
+import PageLayoutSite from '@/components/comment/site/CommentPageLayoutSite';
 import { PageProvider } from '@/contexts/PageContext';
 import type { DocumentPage } from '@/types';
 
@@ -283,7 +283,7 @@ export default function Page() {
         // We also need to ensure `handleImageClickPin` is still available for `authAnonymousComment` if it's used after a pending click.
         // The `handleImageClick` prop in `imageAreaProps` is what `authAnonymousComment` uses via `handleImageClickUtil`.
         // So we should keep it, but SiteArea itself won't use it for initial clicks.
-        handleImageClick: handleImageClickPin, 
+        handleImageClick: handleImageClickPin,
     };
 
     const handleAuthSubmitAnonForm = async (name: string, email: string) => {
@@ -304,7 +304,7 @@ export default function Page() {
                 type: pageData?.documents?.type ?? '',
                 url: pageData?.documents?.url ?? '',
             },
-            iframeUrl: iframeUrl, setIframeUrl:setIframeUrl
+            iframeUrl: iframeUrl, setIframeUrl: setIframeUrl
         }}>
             <PageLayoutSite
                 commentBarProps={commentBarProps}

@@ -115,10 +115,13 @@ const SiteArea: React.FC<SiteAreaExtendedProps> = ({
   };
 
   const urlRealDoIframe = extrairUrlFinal(iframeUrl)?.slice(8);
-  console.log('Essa é a url RealdOIframe', urlRealDoIframe)
+  console.log('Essa é a url RealdOIframe', urlRealDoIframe);
+  console.log('iframeSize', iframeSize);
 
   const pinsVisiveisNoIframe = pins.filter(pin => {
-    return pin.url_comentario && urlRealDoIframe === pin.url_comentario && pin.iframeSize === iframeSize;
+    console.log('pin.iframeSize', pin.iframeSize);
+    console.log('iframeSize', iframeSize);
+    return pin.iframeSize && pin.iframeSize.toLowerCase() === iframeSize.toLowerCase();
   });
 
   createPinIframe({
@@ -242,16 +245,13 @@ const SiteArea: React.FC<SiteAreaExtendedProps> = ({
         }
 
         if (siteComentar) {
-          // Apply custom cursor to body and all elements within, overriding other styles
           styleElement.innerHTML = `
             body, body * { 
-              cursor: url("/cursor-comentar.svg") 18 18, crosshair !important; 
+              cursor: url("/cursor-comentar.svg") 18 18, pointer !important; 
             }
           `;
         } else {
-          // Remove custom cursor style override
           styleElement.innerHTML = '';
-          // Ensure default cursor is set on body if no other styles apply
           if (doc.body) {
             doc.body.style.cursor = 'default';
           }
@@ -407,11 +407,11 @@ const SiteArea: React.FC<SiteAreaExtendedProps> = ({
                 style={{
                   left: `${tempSitePinData.clientX}px`,
                   top: `${tempSitePinData.clientY}px`,
-                  width: '18px', // Smaller than ImagePin's default 30px
+                  width: '18px',
                   height: '18px',
                   transform: 'translate(-50%, -50%)',
-                  zIndex: '99998', // Just below comment box
-                  pointerEvents: 'none', // So it doesn't interfere with clicks
+                  zIndex: '99998',
+                  pointerEvents: 'none',
                 }}
               />
             )}

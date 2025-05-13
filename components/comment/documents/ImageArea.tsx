@@ -8,17 +8,14 @@ import { usePageContext } from '@/contexts/PageContext';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/utils/supabaseClient';
 import { Session } from '@supabase/supabase-js';
-import {
-  SaveTempComment,
-  CancelTempComment
-} from '@/utils/tempCommentUtils';
+import { SaveTempComment, CancelTempComment } from '@/utils/tempCommentUtils';
 
 interface Props extends ImageAreaProps {
   onTitleUpdate: (newTitle: string) => Promise<void | undefined>;
   onTogglePages: () => void;
-  session: Session | null; // Pass session for saving comment
-  loadComments: () => Promise<void>; // Pass for refreshing after save
-  pageId: string; // Pass current pageId
+  session: Session | null;
+  loadComments: () => Promise<void>;
+  pageId: string;
 }
 
 const ImageArea: React.FC<Props> = ({
@@ -118,55 +115,32 @@ const ImageArea: React.FC<Props> = ({
   }, [showTempCommentBox, imageRef, tempCommentBoxRef]);
 
   useEffect(() => {
-    if (showTempCommentBox && tempPinData && tempCommentBoxRef.current && containerRef.current && imageRef.current) {
+    if (showTempCommentBox && tempPinData && tempCommentBoxRef.current && scrollContainerRef.current && imageRef.current) {
       const commentBoxWidth = tempCommentBoxRef.current.offsetWidth;
       const commentBoxHeight = tempCommentBoxRef.current.offsetHeight;
-      const containerWidth = containerRef.current.offsetWidth;
-      const containerHeight = containerRef.current.offsetHeight;
-      const imageRect = imageRef.current.getBoundingClientRect(); // Coords relative to viewport
-      const containerRect = containerRef.current.getBoundingClientRect(); // Coords relative to viewport
-
-      // Calculate pin position in pixels relative to the containerRef
-      // This needs to account for the image's position within the scroll container and the scroll container's transform.
+      const containerWidth = scrollContainerRef.current.offsetWidth;
+      const containerHeight = scrollContainerRef.current.offsetHeight;
+      const imageRect = imageRef.current.getBoundingClientRect();
       const scrollContainerStyle = window.getComputedStyle(scrollContainerRef.current!);
       const scrollMatrix = new DOMMatrixReadOnly(scrollContainerStyle.transform);
       const scale = scrollMatrix.a || 1;
-
-      // Pin position relative to the scaled image
       const pinXOnScaledImage = (tempPinData.x / 100) * (imageRect.width / scale);
       const pinYOnScaledImage = (tempPinData.y / 100) * (imageRect.height / scale);
-      
-      // Image offset within the scroll container (which is centered in containerRef)
-      // This is tricky because imageRef.current.offsetLeft/Top are relative to its offsetParent, which might not be scrollContainerRef
-      // Let's use the getBoundingClientRects and subtract.
-      const imageOffsetLeftInContainer = imageRect.left - containerRect.left;
-      const imageOffsetTopInContainer = imageRect.top - containerRect.top;
-
-      // Absolute pin position in pixels from the top-left of containerRef
-      const pinAbsoluteX = imageOffsetLeftInContainer + pinXOnScaledImage * scale;
-      const pinAbsoluteY = imageOffsetTopInContainer + pinYOnScaledImage * scale;
-
-      let newLeft = pinAbsoluteX + 15; // Default: to the right of the pin
-      let newTop = pinAbsoluteY - commentBoxHeight / 2; // Default: vertically centered with pin
-
-      // Adjust if overflowing right
+      let newLeft = pinXOnScaledImage + 20;
+      let newTop = pinYOnScaledImage - commentBoxHeight / 2;
+      console.log('NewLeft',newLeft, 'commentBoxWidth', commentBoxWidth, 'containerWidth', containerWidth)
+         console.log('NewTop',newTop, 'commentBoxHeight', commentBoxHeight, 'containerHeight', containerHeight)
       if (newLeft + commentBoxWidth > containerWidth) {
-        newLeft = pinAbsoluteX - commentBoxWidth - 15; // Move to the left of the pin
+        newLeft = pinXOnScaledImage - commentBoxWidth - 20;
       }
-
-      // Adjust if overflowing left (can happen if moved to left and still overflows)
       if (newLeft < 0) {
-        newLeft = 0; // Align with left edge
+        newLeft = 0;
       }
-      
-      // Adjust if overflowing bottom
-      if (newTop + commentBoxHeight > containerHeight) {
-        newTop = containerHeight - commentBoxHeight; // Align with bottom edge
+      if (newTop + commentBoxHeight > containerHeight - 30) {
+        newTop = containerHeight - commentBoxHeight - 30;
       }
-
-      // Adjust if overflowing top
       if (newTop < 0) {
-        newTop = 0; // Align with top edge
+        newTop = 10;
       }
       
       setTempCommentBoxStyle({
@@ -198,7 +172,7 @@ const ImageArea: React.FC<Props> = ({
           <div className="relative">
             <img ref={imageRef} src={exibirImagem} alt={documentData.title || 'Imagem para comentários'}
               className="max-h-[calc(100vh-5rem)] w-auto object-contain" 
-              onClick={handleImageClickInternal} style={{ cursor: 'crosshair' }}/>
+              onClick={handleImageClickInternal} style={{ cursor: `url('/cursor-comentar.svg') 18 18, pointer` }}/>
             {pins.map((pin) => (
               <ImagePin
                 key={pin.id}

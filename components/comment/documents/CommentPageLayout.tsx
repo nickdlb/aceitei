@@ -1,14 +1,13 @@
 import React from 'react';
-import CommentBar from '@/components/comment/CommentBar';
-import SiteArea from '@/components/comment/SiteArea';
-import ImageSidebar from '@/components/comment/ImageSidebar';
+import CommentBar from './CommentBar';
+import ImageArea from './ImageArea';
+import ImageSidebar from './ImageSidebar';
 import AuthPopup from '@/components/common/auth/AuthPopup';
 import { usePageContext } from '@/contexts/PageContext';
-import CommentBarSite from './CommentBarSite';
 
-interface PageLayoutSiteProps {
+interface PageLayoutProps {
   commentBarProps: any;
-  SiteAreaProps: any;
+  imageAreaProps: any;
   isPagesOpen: boolean;
   showAuthPopup: boolean;
   setShowAuthPopup: (show: boolean) => void;
@@ -16,9 +15,9 @@ interface PageLayoutSiteProps {
   handlePageChange: (newPageId: string) => Promise<void>;
 }
 
-const PageLayoutSite: React.FC<PageLayoutSiteProps> = ({
+const PageLayout: React.FC<PageLayoutProps> = ({
   commentBarProps,
-  SiteAreaProps,
+  imageAreaProps,
   isPagesOpen,
   showAuthPopup,
   setShowAuthPopup,
@@ -27,18 +26,18 @@ const PageLayoutSite: React.FC<PageLayoutSiteProps> = ({
 }) => {
   const { pages, pageId } = usePageContext();
 
-  const enhancedSiteAreaProps = {
-    ...SiteAreaProps,
+  const enhancedImageAreaProps = {
+    ...imageAreaProps,
     pagesCount: pages.length,
   };
 
   return (
     <div className="w-full h-screen flex">
       <div className="w-[380px] flex-shrink-0 !border-0">
-        <CommentBarSite {...commentBarProps} />
+        <CommentBar {...commentBarProps} />
       </div>
       <div className="flex-1 flex">
-        <SiteArea {...enhancedSiteAreaProps} />
+        <ImageArea {...enhancedImageAreaProps} />
         {pages.length > 1 && isPagesOpen && (
           <ImageSidebar
             pages={pages}
@@ -56,4 +55,4 @@ const PageLayoutSite: React.FC<PageLayoutSiteProps> = ({
   );
 };
 
-export default PageLayoutSite;
+export default PageLayout;

@@ -13,7 +13,7 @@ import { changeCommentStatus, editComment, saveComment, deleteComment } from '@/
 import { authAnonymousComment } from '@/utils/authAnonymousComment';
 import PageLoadingSpinner from '@/components/common/PageLoadingSpinner';
 import PageImageNotFound from '@/components/common/PageImageNotFound';
-import PageLayout from '@/components/comment/CommentPageLayout';
+import PageLayout from '@/components/comment/documents/CommentPageLayout';
 import { PageProvider } from '@/contexts/PageContext';
 import type { DocumentPage } from '@/types';
 
@@ -25,7 +25,6 @@ export default function Page() {
     const imageRef = useRef<HTMLImageElement>(null);
     const [isPagesOpen, setIsPagesOpen] = useState(true);
     const { loading, pageData, pages, setPageData } = getPageDataSupabase(documentId);
-    const router = useRouter();
     const [pendingClick, setPendingClick] = useState<{ x: number, y: number } | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
     const [currentTitle, setCurrentTitle] = useState(pageData?.documents?.title ?? '');

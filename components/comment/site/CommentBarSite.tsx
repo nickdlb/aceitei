@@ -3,26 +3,20 @@
 import UserProfileSidebar from '@/components/dashboard/sidebar/UserProfile';
 import { useState, useEffect, useRef } from 'react';
 import { saveComment } from '@/utils/commentUtils';
-import {
-  deleteComment,
-  changeCommentStatus,
-  editComment,
-  checkCommentPermissions,
-} from '@/utils/commentUtils';
+import { deleteComment, changeCommentStatus, editComment,checkCommentPermissions } from '@/utils/commentUtils';
 import { createReply } from '@/utils/replyUtils';
-import CommentHeader from './CommentBarHeader';
-import CommentListItem from './CommentBarListItem';
+import CommentListItemSite from './CommentBarListItemSite';
 import { usePageContext } from '@/contexts/PageContext';
 import { Session } from '@supabase/supabase-js';
 import { PinProps } from '@/types';
 import { getUserProfile } from '@/utils/profileUtils';
 import CommentFilterSite from './CommentBarFilterSite';
+import CommentHeaderSite from './CommentBarHeaderSite';
 
 interface CommentBarProps {
   pins: PinProps[];
   statusFilter: 'ativo' | 'resolvido' | null;
   setStatusFilter: (filter: 'ativo' | 'resolvido' | null) => void;
-  // groupByFilter and setGroupByFilter will be managed internally by CommentBarSite
   editingPinId: string | null;
   comments: { [key: string]: string };
   setEditingPinId: (pinId: string | null) => void;
@@ -43,7 +37,6 @@ const CommentBar = ({
   userNames: initialUserNames,
   session,
   loadComments,
-  loadRepliesForPin,
   setShowAuthPopup,
 }: CommentBarProps) => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -257,7 +250,7 @@ const CommentBar = ({
   return (
     <div className="flex flex-col h-full bg-acbgbranco">
       <div className="flex-1 overflow-y-auto pb-4">
-        <CommentHeader totalComments={pins.length} />
+        <CommentHeaderSite totalComments={pins.length} />
         <CommentFilterSite
           totalComments={pins.length}
           statusFilter={statusFilter}
@@ -276,7 +269,7 @@ const CommentBar = ({
                   {group
                     .sort((a, b) => a.num - b.num)
                     .map((pin) => (
-                      <CommentListItem
+                      <CommentListItemSite
                         key={pin.id}
                         pin={pin}
                         currentUserId={session?.user?.id || ''}

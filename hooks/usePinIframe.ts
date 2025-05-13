@@ -73,7 +73,7 @@ export function createPinIframe({
       body = iframeDoc.body;
 
       body.style.position = 'relative';
-      body.style.cursor = 'crosshair';
+      body.style.cursor = 'pointer';
 
       body.removeEventListener('click', onClick);
       body.addEventListener('click', onClick);

@@ -39,20 +39,6 @@ const CommentFilterSite: React.FC<CommentFilterSiteProps> = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        { /* 
-        <span className="text-acpreto font-semibold text-sm">Agrupar por:</span>
-        <Select onValueChange={(value: 'Link' | 'Nenhum') => setGroupByFilter(value)} value={groupByFilter}>
-          <SelectTrigger className="w-auto min-w-[120px]">
-            <SelectValue placeholder="Selecione" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="Link">Link</SelectItem>
-              <SelectItem value="Nenhum">Nenhum</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        */ }
       </div>
     </div>
   );

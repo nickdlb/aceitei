@@ -34,14 +34,6 @@ export async function GET(req: NextRequest) {
       window.addEventListener('message', (e) => {
         if (e.data?.type === 'set-mode') {
           mode = e.data.mode;
-
-          // Define cursor geral
-          document.body.style.cursor = mode === 'comentar' ? 'crosshair' : '';
-
-          // Força cursor em todos os elementos interativos
-          document.querySelectorAll('a, button, [role="button"]').forEach(el => {
-            el.style.cursor = mode === 'comentar' ? 'crosshair' : '';
-          });
         }
       });
 
