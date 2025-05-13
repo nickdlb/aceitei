@@ -272,46 +272,52 @@ const CommentBar = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-acbgbranco">
-      <div className="flex-1 overflow-y-auto pb-4">
-        <CommentHeader totalComments={pins.length} />
-        <CommentFilter
-          totalComments={pins.length}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
+  <div className="flex flex-col h-full bg-acbgbranco">
+    {/* Cabeçalho e filtro fixos no topo */}
+    <div className="shrink-0">
+      <CommentHeader totalComments={pins.length} />
+      <CommentFilter
+        totalComments={pins.length}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+      />
+    </div>
+
+    {/* Área rolável apenas nos cards */}
+    <div className="flex-1 overflow-y-auto px-4 space-y-6 thin-scrollbar">
+      {pins.sort((a, b) => a.num - b.num).map((pin) => (
+        <CommentListItem
+          key={pin.id}
+          pin={pin}
+          currentUserId={session?.user?.id || ''}
+          localComments={localComments}
+          editingPinId={editingPinId}
+          permissions={permissions}
+          userNames={userNames}
+          showReplies={showReplies}
+          replyText={replyText}
+          CommentChange={CommentChange}
+          CommentSave={CommentSave}
+          CommentDelete={CommentDelete}
+          CommentStatusChange={CommentStatusChange}
+          setEditingPinId={setEditingPinId}
+          handleReplyLocal={handleReplyLocal}
+          setReplyText={setReplyText}
+          toggleReplies={toggleRepliesLocal}
+          handleReplyKeyPressLocal={handleReplyKeyPressLocal}
+          session={session}
+          loadComments={loadComments}
         />
-        <div>
-          <div className="px-4 space-y-6 thin-scrollbar">
-            {pins.sort((a, b) => a.num - b.num).map((pin) => (
-              <CommentListItem
-                key={pin.id}
-                pin={pin}
-                currentUserId={session?.user?.id || ''}
-                localComments={localComments}
-                editingPinId={editingPinId}
-                permissions={permissions}
-                userNames={userNames}
-                showReplies={showReplies}
-                replyText={replyText}
-                CommentChange={CommentChange}
-                CommentSave={CommentSave}
-                CommentDelete={CommentDelete}
-                CommentStatusChange={CommentStatusChange}
-                setEditingPinId={setEditingPinId}
-                handleReplyLocal={handleReplyLocal}
-                setReplyText={setReplyText}
-                toggleReplies={toggleRepliesLocal}
-                handleReplyKeyPressLocal={handleReplyKeyPressLocal}
-                session={session}
-                loadComments={loadComments}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      ))}
+    </div>
+
+    {/* Parte inferior fixa */}
+    <div className="shrink-0">
       <UserProfileSidebar />
     </div>
-  );
+  </div>
+);
+
 };
 
 export default CommentBar;
