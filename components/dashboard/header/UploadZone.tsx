@@ -22,20 +22,19 @@ export const UploadZone = ({ onUploadSuccess, refreshImages }: UploadZoneProps) 
   const [loading, setLoading] = useState(false);
 
   const combineImages = async (files: File[]) => {
-    console.log('Combining images:', files);
     if (!session?.user?.id) return;
-    setLoading(true); // Show loading state for combine operation
+    setLoading(true);
     try {
       const data = await uploadImage(files, session.user.id, files[0].name, true);
       if (data) {
         onUploadSuccess(data);
-        await refreshImages(); // Ensure UI updates after combined upload
+        await refreshImages();
       }
     } catch (err) {
       const error = err as Error;
       console.error('Erro no combineImages:', error.message);
     } finally {
-      setLoading(false); // Hide loading state
+      setLoading(false); 
     }
   };
 
@@ -223,12 +222,10 @@ export const UploadZone = ({ onUploadSuccess, refreshImages }: UploadZoneProps) 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSeparate={() => {
-          console.log('Separate files');
           acceptedFilesState.forEach((file) => handleUpload([file]));
           setIsModalOpen(false);
         }}
         onCombine={() => {
-          console.log('Combine files');
           combineImages(acceptedFilesState);
           setIsModalOpen(false);
         }}

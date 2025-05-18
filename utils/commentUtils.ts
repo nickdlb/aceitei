@@ -25,7 +25,6 @@
 
             const pinBeingEdited = pins.find(pin => pin.id === null || pin.isEditing);
             if (pinBeingEdited) {
-                console.log('A pin is currently being edited');
                 return;
             }
 

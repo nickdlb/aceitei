@@ -48,7 +48,6 @@ export const SubscriptionInfo = () => {
           },
         })
         const data = await res.json()
-        console.log("Assinatura recebida:", data)
         setSubscription(data.subscription)
       } catch (err) {
         console.error('Erro ao buscar assinatura:', err)

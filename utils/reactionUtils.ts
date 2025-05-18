@@ -53,12 +53,7 @@ export const deleteReaction = async (
     loadComments: () => Promise<void>
 ): Promise<void> => {
     try {
-
-        console.log('[DEBUG] Tentando excluir reactionId:', reactionId);
-        console.log('[DEBUG] Sessão do usuário:', session?.user?.id);
-
         const permissions = await checkReactionPermissions(reactionId, session);
-
         if (!permissions.canDelete) {
             console.error('Sem permissão para excluir. IDs comparados:', {
                 reactionUserId: permissions.reactionUserId,

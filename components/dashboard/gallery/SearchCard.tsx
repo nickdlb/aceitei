@@ -8,9 +8,9 @@ const SearchCard: React.FC = () => {
   const { showSearchForm, setShowSearchForm, searchTerm, setSearchTerm } = useDashboardContext()
   return (
     <div className="flex items-center px-4 py-2 bg-acbgbranco rounded-xl">
-      <Button onClick={() => setShowSearchForm(!showSearchForm)} variant="ghost" size="icon" className="text-acpreto p-2 rounded-xl  focus:outline-none">
+      <Button onClick={() => setShowSearchForm(!showSearchForm)} variant="ghost" size="icon" className="text-acbranco p-2 rounded-xl focus:outline-none">
         <div className={`${!showSearchForm ? "bg-acazul" : "border-accinzafraco border-2"} p-2 rounded-md`}>
-        <Search className={`${!showSearchForm ? "text-acbranco" : "text-acpreto"} h-10 w-10`} />
+        <Search className={`${!showSearchForm ? "text-acbrancohover" : "text-acbrancohover"} h-10 w-10`} />
         </div>
       </Button>
       {showSearchForm && (

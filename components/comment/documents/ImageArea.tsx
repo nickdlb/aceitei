@@ -128,8 +128,6 @@ const ImageArea: React.FC<Props> = ({
       const pinYOnScaledImage = (tempPinData.y / 100) * (imageRect.height / scale);
       let newLeft = pinXOnScaledImage + 20;
       let newTop = pinYOnScaledImage - commentBoxHeight / 2;
-      console.log('NewLeft',newLeft, 'commentBoxWidth', commentBoxWidth, 'containerWidth', containerWidth)
-         console.log('NewTop',newTop, 'commentBoxHeight', commentBoxHeight, 'containerHeight', containerHeight)
       if (newLeft + commentBoxWidth > containerWidth) {
         newLeft = pinXOnScaledImage - commentBoxWidth - 20;
       }

@@ -99,8 +99,6 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   };
 
   const handleSaveReply = async (replyId: string) => {
-    console.log("Saving reply:", replyId, editedReplyText);
-
     setEditingReplyId(null);
     setEditedReplyText('');
   };

@@ -11,7 +11,6 @@ export async function GET(req: NextRequest) {
   const token = authHeader?.replace('Bearer ', '')
 
   if (!token) {
-    console.log('[API] Token ausente.')
     return NextResponse.json({ subscription: null })
   }
 
@@ -22,7 +21,6 @@ export async function GET(req: NextRequest) {
   } = await supabase.auth.getUser()
 
   if (userError || !user) {
-    console.log('[API] Usuário não autenticado:', userError)
     return NextResponse.json({ subscription: null })
   }
 
@@ -33,7 +31,6 @@ export async function GET(req: NextRequest) {
     .single()
 
   if (customerError || !customerData) {
-    console.log('[API] Cliente Stripe não encontrado:', customerError)
     return NextResponse.json({ subscription: null })
   }
 

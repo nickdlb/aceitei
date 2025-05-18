@@ -11,7 +11,6 @@ const PopupUpload = ({ onUploadComplete }: PopupUploadProps) => {
     const { refreshImages } = useDashboardContext();
 
     const handleUploadSuccess = async (data: any) => {
-        console.log('Upload success:', data);
         if (data && onUploadComplete) {
             await onUploadComplete(data);
         }

@@ -63,7 +63,6 @@ export default function Page() {
             });
             const blob = new Blob([payload], { type: 'application/json' });
             const success = navigator.sendBeacon('/api/track-exit', blob);
-            console.log('📡 Beacon enviado:', success, documentId);
         };
 
         window.addEventListener('visibilitychange', () => {
@@ -83,8 +82,6 @@ export default function Page() {
 }, [pageData?.id]);
 
     useEffect(() => {
-        console.log('✅ pageData:', pageData);
-        console.log('✅ pages:', pages);
     }, [pageData?.id ?? '', pageData, pages]);
 
 

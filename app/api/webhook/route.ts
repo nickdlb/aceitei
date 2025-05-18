@@ -51,22 +51,16 @@ export async function POST(req: Request) {
       limit: 1
     })
     const priceId = lineItems.data?.[0]?.price?.id ?? 'unknown'
-
-    console.log('🔁 Webhook recebido - userId:', userId)
-
     if (!userId || !customerId || !subscriptionId) {
       console.error('❌ Dados ausentes na sessão Stripe')
       return new NextResponse('Dados incompletos', { status: 400 })
     }
-
-    // Buscar dados da assinatura para popular stripe_customers
     const subscription = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription
     const subscriptionItem = subscription.items.data[0]
     
     const currentPeriodEnd = subscriptionItem?.current_period_end || null
     const planActive = subscription.status === 'active'
 
-    // Atualizar tabela `users`
     const { error: userError } = await supabase
       .from('users')
       .upsert({
@@ -82,7 +76,6 @@ export async function POST(req: Request) {
       return new NextResponse('Erro ao salvar usuário', { status: 500 })
     }
 
-    // Atualizar tabela `stripe_customers`
     const { error: customerError } = await supabase
       .from('stripe_customers')
       .upsert({
@@ -99,8 +92,6 @@ export async function POST(req: Request) {
       console.error('❌ Erro ao salvar na tabela stripe_customers:', customerError)
       return new NextResponse('Erro ao salvar stripe_customers', { status: 500 })
     }
-
-    console.log('✅ Dados salvos com sucesso!')
   }
 
   return NextResponse.json({ received: true })

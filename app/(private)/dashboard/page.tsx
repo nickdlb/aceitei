@@ -74,25 +74,20 @@ const AppContent = () => {
     }, []);
 
     useEffect(() => {
-        console.log(`[app/page.tsx Effect] authIsLoading: ${authIsLoading}, shouldRedirect: ${shouldRedirect}`);
         if (!authIsLoading && shouldRedirect) {
-            console.log('[app/page.tsx] Triggering replace redirect to /login');
             router.replace('/login');
         }
 
     }, [authIsLoading, shouldRedirect, router]);
 
     if (authIsLoading) {
-        console.log('[app/page.tsx] Rendering Loading state');
-        return <div className="flex h-screen items-center justify-center">Loading...</div>;
+        return <div className="flex h-screen items-center justify-center">Carregando...</div>;
     }
 
     if (shouldRedirect || !isAuthenticated) {
-        console.log(`[app/page.tsx] Rendering Redirecting state (shouldRedirect: ${shouldRedirect}, isAuthenticated: ${isAuthenticated})`);
-        return <div className="flex h-screen items-center justify-center">Redirecting...</div>;
+        return <div className="flex h-screen items-center justify-center">Redirecionando...</div>;
     }
 
-    console.log('[app/page.tsx] Rendering main content');
     return (
         <DashboardProvider value={{
                 sortOrder,

@@ -101,8 +101,6 @@ const CommentBar = ({
     const checkComments = () => {
       const hasEmptyComments = pins.some((pin) => !pin.comment && localComments[pin.id]);
       if (hasEmptyComments) {
-        // Apenas para log/debug
-        console.log('Atualizando pins com comentários do estado comments');
       }
     };
 

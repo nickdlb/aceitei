@@ -116,12 +116,7 @@ const SiteArea: React.FC<SiteAreaExtendedProps> = ({
   };
 
   const urlRealDoIframe = extrairUrlFinal(iframeUrl)?.slice(8);
-  console.log('Essa é a url RealdOIframe', urlRealDoIframe);
-  console.log('iframeSize', iframeSize);
-
   const pinsVisiveisNoIframe = pins.filter(pin => {
-    console.log('pin.iframeSize', pin.iframeSize);
-    console.log('iframeSize', iframeSize);
     return pin.iframeSize && pin.iframeSize.toLowerCase() === iframeSize.toLowerCase();
   });
 

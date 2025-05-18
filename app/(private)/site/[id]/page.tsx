@@ -74,12 +74,6 @@ export default function Page() {
         updateDocumentLastAccessed();
     }, [pageData?.id ?? '']);
 
-    useEffect(() => {
-        console.log('✅ pageData:', pageData);
-        console.log('✅ pages:', pages);
-    }, [pageData?.id ?? '', pageData, pages]);
-
-
     const {
         pins,
         editingPinId,

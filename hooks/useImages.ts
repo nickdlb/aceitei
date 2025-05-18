@@ -57,7 +57,6 @@ export const useImages = (sortOrder: string) => {
             }
 
             const newCommentCount = commentsData ? commentsData.length : 0;
-            console.log(`New comments for document ${documentId}: ${newCommentCount}`);
             return newCommentCount;
 
         } catch (error) {

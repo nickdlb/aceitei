@@ -51,10 +51,6 @@ const CommentBar = ({
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    console.log('✅ document:', documentData);
-  });
-
-  useEffect(() => {
     setLocalComments(comments || {});
   }, [comments]);
 
@@ -116,8 +112,6 @@ const CommentBar = ({
           ...pin,
           comment: localComments[pin.id] || pin.comment || ''
         }));
-
-        console.log('Atualizando pins com comentários do estado comments');
       }
     };
 
