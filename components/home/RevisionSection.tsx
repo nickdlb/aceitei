@@ -3,7 +3,7 @@ export default function RevisionSection() {
         <section className="bg-acbg py-20 px-6">
             <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center gap-12">
                 <div className="w-full lg:w-1/2">
-                    <h2 className="text-sm text-acazul font-medium uppercase mb-2">
+                    <h2 className="w-fit text-sm bg-acpreto text-acbranco font-medium uppercase mb-5 px-4 py-2 rounded-full">
                         POR QUE ESCOLHER A FEEDYBACKY?
                     </h2>
                     <h3 className="text-3xl md:text-4xl font-extrabold text-acpreto mb-6">

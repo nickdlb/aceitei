@@ -145,7 +145,7 @@ export default function Page() {
             setPendingClick,
             setShowAuthPopup,
             editingPinId,
-            null // iframeUrl is null for ImageArea context
+            null
         );
     };
 

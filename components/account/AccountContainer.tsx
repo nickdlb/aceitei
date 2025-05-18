@@ -8,6 +8,7 @@ import { useAuth } from '@/components/common/auth/AuthProvider'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SubscriptionInfo } from './SubscriptionInfo'
 import { getUserProfile } from '@/utils/profileUtils'
+import { StripePlans } from './StripePlans'
 
 const AccountContainer = () => {
   const [photoURL, setPhotoURL] = useState('')
@@ -62,11 +63,19 @@ const AccountContainer = () => {
   return (
     <div className="space-y-4 pl-6 pt-12">
       <h2 className="text-acpreto text-2xl font-bold">Minha Conta</h2>
-      <div className="bg-acbgbranco rounded-lg shadow p-6">
-        <ProfilePhoto photoURL={photoURL} onUpdatePhoto={handleUpdatePhoto} userId={session?.user?.id || null} />
-        <UserInfo userData={userData} onUpdateName={handleUpdateName} userId={session?.user?.id || null} />
+      <div className='flex gap-4'>
+        <div className='flex flex-col gap-4'>
+          <div className="bg-acbgbranco rounded-lg shadow p-6">
+          <ProfilePhoto photoURL={photoURL} onUpdatePhoto={handleUpdatePhoto} userId={session?.user?.id || null} />
+          <UserInfo userData={userData} onUpdateName={handleUpdateName} userId={session?.user?.id || null} />
+        </div>
+        <SubscriptionInfo />
+        </div>
+        <div className='bg-acbgbranco w-fit p-4 rounded-xl'>
+          <h2 className='p-2 text-acpreto text-xl font-bold'> Planos </h2>
+          <StripePlans/>
+        </div>
       </div>
-      <SubscriptionInfo />
     </div>
   )
 }

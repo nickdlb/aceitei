@@ -7,7 +7,7 @@ import NotificationsBell from '@/components/dashboard/header/NotificationsBell';
 
 const Header: React.FC = () => {
   return (
-    <div className="bg-acbgbranco px-6 py-2 w-full flex items-center justify-between gap-4 h-20 ">
+    <div className="bg-acbgbranco px-4 py-2 w-full flex items-center justify-between gap-4 h-16 ">
       <div className='flex items-center gap-4'>
         <span className='text-sm md:text-base font-semibold'>Dashboard</span>
       </div>

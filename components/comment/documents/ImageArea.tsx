@@ -166,7 +166,7 @@ const ImageArea: React.FC<Props> = ({
         scrollContainerRef={scrollContainerRef}
       />
 
-      <div ref={containerRef} className="flex-1 overflow-auto relative flex items-center justify-center bg-acbg" style={{ height: 'calc(100vh - 3.5rem)' }}>
+      <div ref={containerRef} className="flex-1 overflow-auto relative flex items-center justify-center bg-acbg rounded-xl" style={{ height: 'calc(100vh - 3.5rem)' }}>
         <div ref={scrollContainerRef}
           className="relative transition-transform duration-300 ease-in-out pt-4">
           <div className="relative">

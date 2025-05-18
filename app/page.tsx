@@ -3,14 +3,14 @@
 import React from 'react';
 import FaqSection from '@/components/home/FaqSection';
 import HeroSection from '@/components/home/HeroSection';
-import BenefitsSection from '@/components/home/BenefitsSection';
 import ProfissionalsSection from '@/components/home/ProfissionalsSection';
 import FooterSection from '@/components/home/FooterSection';
 import CtaSection from '@/components/home/CtaSection';
 import HeaderSection from '@/components/home/HeaderSection';
 import RevisionSection from '@/components/home/RevisionSection';
-import EfficiencySection from '@/components/home/EfficiencySection';
+import EfficiencySection2 from '@/components/home/EfficiencySection2';
 import LaptopSection from '@/components/home/LaptopSection';
+import BentoboxSession from '@/components/home/BentoboxSection';
 
 const HomePage = () => {
   return (
@@ -20,7 +20,8 @@ const HomePage = () => {
         <HeroSection/>
         <LaptopSection/>
         <ProfissionalsSection/>
-        <EfficiencySection/>
+        <BentoboxSession/>
+        <EfficiencySection2/>
         <RevisionSection/>
         <FaqSection/>
         <CtaSection/>

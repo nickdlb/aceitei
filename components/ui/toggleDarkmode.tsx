@@ -65,7 +65,7 @@ function Toggle({
     >
       <Sun
         className={cn(
-          "absolute size-4 transition-all duration-500 ease-in-out",
+          "absolute size-5 transition-all duration-500 ease-in-out",
           isDarkMode
             ? "rotate-90 scale-0 opacity-0"
             : "rotate-0 scale-100 opacity-100"
@@ -74,7 +74,7 @@ function Toggle({
       />
       <Moon
         className={cn(
-          "absolute size-4 transition-all duration-500 ease-in-out",
+          "absolute size-5 transition-all duration-500 ease-in-out",
           isDarkMode
             ? "rotate-0 scale-100 opacity-100"
             : "-rotate-90 scale-0 opacity-0"
@@ -88,7 +88,7 @@ function Toggle({
 
 const ToggleDarkModeAnimated = () => {
   return (
-    <div className='hover:bg-acbgcinzafraco bg-acbranco hover:text-acbrancohover text-acpreto size-9 rounded-full fixed right-8 bottom-8'>
+    <div className='hover:bg-acbgcinzafraco bg-acpreto hover:text-acbrancohover text-acbranco size-12 rounded-full fixed right-5 bottom-5 flex items-center justify-center'>
       <Toggle />
     </div>
   );

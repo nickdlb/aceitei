@@ -29,7 +29,9 @@ const MinhaConta = () => {
   return (
     <div className="flex h-screen bg-acbg">
       <Sidebar />
-      <AccountContainer />
+      <div className='flex'>
+        <AccountContainer />
+      </div>
     </div>
   );
 };
