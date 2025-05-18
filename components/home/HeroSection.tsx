@@ -1,47 +1,22 @@
 export default function HeroSection() {
     return (
-        <section className="bg-acbranco relative px-6 py-20 overflow-hidden">
-            <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-between relative z-10 min-h-[60vh]">
-                <div className="max-w-xl text-center lg:text-left">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-acpreto leading-tight">
-                        Transforme feedbacks <br /> caóticos em processos <br /> eficientes com o <span className="text-acazul">Feedybacky</span>
-                    </h1>
-                    <p className="mt-4 text-accinza text-lg">
+        <section className="bg-acbg relative px-6 py-20 overflow-hidden">
+            <div className="max-w-[1400px] pt-[10vh] mx-auto flex flex-col items-center relative z-10 min-h-[60vh]">
+                <div className="text-center flex flex-col justify-center items-center">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-acpreto">
+                        Transforme feedbacks caóticos em processos <br /> eficientes com o <span className="text-acazul">Feedybacky</span> </h1>
+                    <p className="mt-4 text-acpreto text-lg max-w-[1000px]">
                         Você sabe como é frustrante procurar por alterações e sugestões espalhadas em múltiplos canais. Organize tudo com o Feedybacky, aumente sua produtividade e acelere as aprovações!
                     </p>
-                    <div className="mt-6 flex flex-wrap gap-4 justify-center lg:justify-start">
-                        <button className="flex items-center gap-2 bg-acazul text-acbranco px-5 py-3 rounded-full hover:bg-acazul/80 transition">
-                            Como funciona? <span className="text-xl">🤯</span>
+                    <div className="mt-6 flex flex-wrap gap-4 justify-center">
+                        <button className="gap-2 bg-acazul text-acbrancohover px-4 py-2 rounded-full">
+                            <a href="/register">Teste Grátis</a>
                         </button>
-                        <button className="flex items-center gap-2 border border-acazul text-acazul px-5 py-3 rounded-full hover:bg-acazul/10 transition">
-                            Inscrevesse <span className="text-xl">→</span>
+                        <button className="gap-2 bg-acpreto text-acbranco px-4 py-2 rounded-full">
+                            Como funciona<span className="text-xl"></span>
                         </button>
                     </div>
                 </div>
-
-                {/* Formulário à direita */}
-                <div className="bg-acbranco rounded-xl shadow-lg p-6 w-full max-w-md mt-12 lg:mt-0">
-                    <h3 className="text-acpreto text-base font-medium mb-4">
-                        Entre na lista de espera agora e seja um dos primeiros a testar o <span className="text-acazul font-semibold">Feedybacky!</span>
-                    </h3>
-                    <form className="space-y-4">
-                        <input type="text" placeholder="Nome" className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-acazul" />
-                        <input type="email" placeholder="Email" className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-acazul" />
-                        <select className="w-full px-4 py-2 border rounded text-accinza focus:outline-none focus:ring-2 focus:ring-acazul">
-                            <option value="">Qual é o seu perfil profissional?</option>
-                            <option value="designer">Designer</option>
-                            <option value="freelancer">Freelancer</option>
-                            <option value="empresa">Empresa</option>
-                        </select>
-                        <button type="submit" className="w-full bg-acazul text-acbranco py-2 rounded hover:bg-acazul/80 transition">
-                            Entrar
-                        </button>
-                    </form>
-                    <p className="mt-4 text-sm text-accinza font-semibold">
-                        Fique tranquilo! Sua inscrição é totalmente gratuita e sem compromisso.
-                    </p>
-                </div>
-
             </div>
         </section>
     )

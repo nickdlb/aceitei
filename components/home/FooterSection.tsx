@@ -8,11 +8,11 @@ import {
 
 export default function FooterSection() {
   return (
-    <footer className="bg-white text-gray-700 text-base flex items-center justify-center">
+    <footer className="bg-acbg text-acpreto text-base flex items-center justify-center">
       <div className='max-w-[1400px]'>
         <div className="mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h4 className="text-black text-xl font-semibold mb-4">Recursos</h4>
+            <h4 className="text-xl font-semibold mb-4">Recursos</h4>
             <ul className="space-y-2">
               <li>Feedback visual direto</li>
               <li>Gestão de mudanças</li>
@@ -22,7 +22,7 @@ export default function FooterSection() {
             </ul>
           </div>
           <div>
-            <h4 className="text-black text-xl font-semibold mb-4">Suporte</h4>
+            <h4 className="text-xl font-semibold mb-4">Suporte</h4>
             <ul className="space-y-2">
               <li>FAQ</li>
               <li>Central de Ajuda</li>
@@ -30,7 +30,7 @@ export default function FooterSection() {
             </ul>
           </div>
           <div>
-            <h4 className="text-black text-xl font-semibold mb-4">Sobre o Feedybacky</h4>
+            <h4 className="text-xl font-semibold mb-4">Sobre o Feedybacky</h4>
             <ul className="space-y-2">
               <li>Sobre nós</li>
               <li>Para quem é?</li>
@@ -38,7 +38,7 @@ export default function FooterSection() {
             </ul>
           </div>
           <div>
-            <p className="text-black text-base font-semibold mb-4">
+            <p className="text-base font-semibold mb-4">
               Fique por dentro! Receba as últimas novidades do Feedybacky em primeira mão.
             </p>
             <div className="flex items-center mb-4 overflow-hidden rounded-full border border-gray-300">
@@ -51,16 +51,15 @@ export default function FooterSection() {
                 Assinar
               </button>
             </div>
-            <div className="flex gap-3 text-indigo-500 text-xl">
+            <div className="flex gap-3 text-acpreto text-xl">
               <Github size={20} />
               <Instagram size={20} />
               <Twitter size={20} />
               <Youtube size={20} />
-              <Music2 size={20} /> {/* usado como alternativa ao TikTok */}
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 text-center py-4 text-xs text-gray-500">
+        <div className="border-t border-gray-200 text-center py-4 text-xs text-acpreto">
           <p>Copyright © 2025 Feedybacky, Todos os direitos reservados</p>
         </div>
       </div>

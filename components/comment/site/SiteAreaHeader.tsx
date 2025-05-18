@@ -1,5 +1,5 @@
 import React from 'react'
-import { Download, Pencil, LayoutList } from 'lucide-react'
+import { Download, Pencil, LayoutList, Laptop, Smartphone } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -71,9 +71,9 @@ const SiteAreaHeader: React.FC<SiteAreaHeaderProps> = ({
         <Button onClick={() => setSiteComentar(true)} variant={'outline'} className={`${siteComentar === true ? 'bg-blue-700 text-white' : ''}`}>Comentar</Button>
         <Button onClick={() => setSiteComentar(false)} variant={'outline'} className={`${siteComentar === false ? 'bg-blue-700 text-white' : ''}`}>Navegar</Button>
       </div>
-      <div className="flex items-center gap-4">
-        <Button onClick={() => setIframeSize('desktop')} variant={'outline'} className={`${iframeSize === 'desktop' ? 'bg-blue-700 text-white' : ''}`}>Desktop</Button>
-        <Button onClick={() => setIframeSize('mobile')} variant={'outline'} className={`${iframeSize === 'mobile' ? 'bg-blue-700 text-white' : ''}`}>Mobile</Button>
+      <div className="flex items-center gap-2">
+        <Button onClick={() => setIframeSize('desktop')} variant={'outline'} className={`${iframeSize === 'desktop' ? 'bg-blue-700 text-white' : ''}`}><Laptop></Laptop></Button>
+        <Button onClick={() => setIframeSize('mobile')} variant={'outline'} className={`${iframeSize === 'mobile' ? 'bg-blue-700 text-white' : ''}`}><Smartphone/></Button>
         <select
           value={zoomLevel}
           onChange={(e) => handleZoomChange(e.target.value)}

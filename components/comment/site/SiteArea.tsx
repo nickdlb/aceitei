@@ -52,6 +52,7 @@ const SiteArea: React.FC<SiteAreaExtendedProps> = ({
   const [showTempSiteCommentBox, setShowTempSiteCommentBox] = useState(false);
   const tempSiteCommentBoxRef = useRef<HTMLDivElement>(null);
   const [tempSiteCommentBoxStyle, setTempSiteCommentBoxStyle] = useState<React.CSSProperties>({});
+  const [tempSiteCommentAttachments, settempSiteCommentAttachments ] = useState({})
 
 
   const handlePinAttempt = (

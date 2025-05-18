@@ -21,30 +21,19 @@ export default function FaqSection() {
         <h2 className="text-3xl md:text-4xl font-extrabold text-acpreto mb-12">
           O que todo mundo quer saber sobre o <span className="text-acazul">Feedybacky</span>
         </h2>
-
         <div className="grid md:grid-cols-2 gap-8 text-left">
-          {/* Coluna Esquerda */}
-          <Accordion
-            type="single"
-            collapsible
-            value={activeLeft}
-            onValueChange={(value) => setActiveLeft(value)}
-            className="bg-acbranco rounded-xl overflow-hidden shadow"
-          >
+          <Accordion type="single" collapsible value={activeLeft} onValueChange={(value) => setActiveLeft(value)} className="bg-acbgbranco rounded-xl overflow-hidden shadow">
             <AccordionItem value="item-0">
-              <AccordionTrigger
-                className={`px-6 py-4 text-sm font-semibold hover:no-underline ${activeLeft === "item-0"
-                    ? "bg-gradient-to-r from-acroxo to-acazul text-acbranco"
+              <AccordionTrigger className={`px-6 py-4 text-sm font-semibold hover:no-underline ${activeLeft === "item-0"
+                    ? "bg-gradient-to-r from-acroxo to-acazul text-acbrancohover"
                     : "text-acpreto"
-                  }`}
-              >
+                  }`}>
                 O que é o Feedybacky?
               </AccordionTrigger>
-              <AccordionContent className="bg-acbranco px-6 py-4 text-sm text-accinza">
+              <AccordionContent className="bg-acbgbranco px-6 py-4 text-sm text-acpreto">
                 O Feedybacky é uma plataforma para gerenciar os feedbacks visuais de maneira organizada, permitindo comentários diretos sobre artes e postagens.
               </AccordionContent>
             </AccordionItem>
-
             {[
               "Como o Feedybacky funciona?",
               "Quem pode usar o Feedybacky?",
@@ -55,44 +44,32 @@ export default function FaqSection() {
               const id = `item-${i + 1}`
               return (
                 <AccordionItem value={id} key={id}>
-                  <AccordionTrigger
-                    className={`px-6 py-4 text-sm font-medium text-left hover:no-underline ${activeLeft === id
-                        ? "bg-gradient-to-r from-acroxo to-acazul text-acbranco"
+                  <AccordionTrigger className={`px-6 py-4 text-sm font-medium text-left hover:no-underline ${activeLeft === id
+                        ? "bg-gradient-to-r from-acroxo to-acazul text-acbrancohover"
                         : "text-acpreto"
                       }`}
                   >
                     {q}
                   </AccordionTrigger>
-                  <AccordionContent className="px-6 py-2 text-sm text-accinza">
+                  <AccordionContent className="px-6 py-2 text-sm text-acpreto">
                     Resposta para "{q}".
                   </AccordionContent>
                 </AccordionItem>
               )
             })}
           </Accordion>
-
-          {/* Coluna Direita */}
-          <Accordion
-            type="single"
-            collapsible
-            value={activeRight}
-            onValueChange={(value) => setActiveRight(value)}
-            className="bg-acbranco rounded-xl overflow-hidden shadow"
-          >
+          <Accordion type="single" collapsible value={activeRight} onValueChange={(value) => setActiveRight(value)} className="bg-acbgbranco rounded-xl overflow-hidden shadow">
             <AccordionItem value="item-0">
-              <AccordionTrigger
-                className={`px-6 py-4 text-sm font-semibold hover:no-underline ${activeRight === "item-0"
-                    ? "bg-gradient-to-r from-acazul to-acroxo text-acbranco"
+              <AccordionTrigger className={`px-6 py-4 text-sm font-semibold hover:no-underline ${activeRight === "item-0"
+                    ? "bg-gradient-to-r from-acazul to-acroxo text-acbrancohover"
                     : "text-acpreto"
-                  }`}
-              >
+                  }`}>
                 Como os feedbacks são adicionados?
               </AccordionTrigger>
-              <AccordionContent className="bg-acbranco px-6 py-4 text-sm text-accinza">
+              <AccordionContent className="bg-acbgbranco px-6 py-4 text-sm text-acpreto">
                 Os usuários podem clicar diretamente sobre a arte ou postagem para adicionar comentários e sugestões de melhoria.
               </AccordionContent>
             </AccordionItem>
-
             {[
               "É possível rastrear as mudanças?",
               "Posso compartilhar feedbacks com qualquer pessoa?",
@@ -105,13 +82,13 @@ export default function FaqSection() {
                 <AccordionItem value={id} key={id}>
                   <AccordionTrigger
                     className={`px-6 py-4 text-sm font-medium text-left hover:no-underline ${activeRight === id
-                        ? "bg-gradient-to-r from-acazul to-acroxo text-acbranco"
+                        ? "bg-gradient-to-r from-acazul to-acroxo text-acbrancohover"
                         : "text-acpreto"
                       }`}
                   >
                     {q}
                   </AccordionTrigger>
-                  <AccordionContent className="px-6 py-2 text-sm text-accinza">
+                  <AccordionContent className="px-6 py-2 text-sm text-acpreto">
                     Resposta para "{q}".
                   </AccordionContent>
                 </AccordionItem>

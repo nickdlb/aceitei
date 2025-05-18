@@ -220,13 +220,6 @@ const CommentBar = ({
     );
   };
 
-  const handleKeyPress = async (event: React.KeyboardEvent<HTMLTextAreaElement>, pinId: string) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      await CommentSave(pinId);
-    }
-  };
-
   const handleReplyLocal = async (pinId: string) => {
 
     openRepliesRef.current = {
@@ -273,7 +266,6 @@ const CommentBar = ({
 
   return (
   <div className="flex flex-col h-full bg-acbgbranco">
-    {/* Cabeçalho e filtro fixos no topo */}
     <div className="shrink-0">
       <CommentHeader totalComments={pins.length} />
       <CommentFilter
@@ -282,8 +274,6 @@ const CommentBar = ({
         setStatusFilter={setStatusFilter}
       />
     </div>
-
-    {/* Área rolável apenas nos cards */}
     <div className="flex-1 overflow-y-auto px-4 space-y-6 thin-scrollbar">
       {pins.sort((a, b) => a.num - b.num).map((pin) => (
         <CommentListItem
@@ -310,8 +300,6 @@ const CommentBar = ({
         />
       ))}
     </div>
-
-    {/* Parte inferior fixa */}
     <div className="shrink-0">
       <UserProfileSidebar />
     </div>

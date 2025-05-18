@@ -15,6 +15,7 @@ interface ThemeContextProps {
   theme: Theme
   setTheme: (theme: Theme) => void
   toggleTheme: () => void
+  logo: string
 }
 
 const ThemeContext = createContext<ThemeContextProps | undefined>(undefined)
@@ -30,39 +31,39 @@ export function ThemeProvider({
   defaultTheme = 'light',
   storageKey = 'ui-theme',
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-
-    if (typeof window !== 'undefined') {
-      try {
-        const storedTheme = window.localStorage.getItem(storageKey)
-        if (storedTheme === 'light' || storedTheme === 'dark') {
-          return storedTheme
-        }
-
-        const prefersDark = window.matchMedia(
-          '(prefers-color-scheme: dark)'
-        ).matches
-        return prefersDark ? 'dark' : 'light'
-      } catch (e) {
-        console.error('Error reading theme from localStorage', e)
-        return defaultTheme
-      }
-    }
-
-    return defaultTheme
-  })
+  const [theme, setThemeState] = useState<Theme>(defaultTheme)
+  const [logo, setLogo] = useState<string>('')
 
   useEffect(() => {
+    // Inicializa tema com preferência do sistema ou localStorage
+    try {
+      const storedTheme = localStorage.getItem(storageKey)
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const initialTheme: Theme = storedTheme === 'light' || storedTheme === 'dark'
+        ? storedTheme
+        : systemPrefersDark ? 'dark' : 'light'
 
-    const root = window.document.documentElement
+      setThemeState(initialTheme)
+    } catch (e) {
+      console.error('Error initializing theme', e)
+      setThemeState(defaultTheme)
+    }
+  }, [])
+
+  useEffect(() => {
+    // Aplica tema ao <html>
+    const root = document.documentElement
     root.classList.remove('light', 'dark')
-
     root.classList.add(theme)
+
     try {
       localStorage.setItem(storageKey, theme)
     } catch (e) {
       console.error('Error saving theme to localStorage', e)
     }
+
+    // Atualiza logo de acordo com o tema
+    setLogo(theme === 'dark' ? '/logo-feedybacky-white.png' : '/logo-feedybacky-dark.png')
   }, [theme, storageKey])
 
   const setTheme = useCallback((newTheme: Theme) => {
@@ -70,13 +71,14 @@ export function ThemeProvider({
   }, [])
 
   const toggleTheme = useCallback(() => {
-    setThemeState((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'))
+    setThemeState(prev => (prev === 'light' ? 'dark' : 'light'))
   }, [])
 
   const value = {
     theme,
     setTheme,
     toggleTheme,
+    logo,
   }
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

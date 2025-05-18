@@ -9,7 +9,7 @@ export default function EfficiencySection() {
                     <h2 className="text-3xl md:text-4xl font-extrabold text-acpreto mb-6 leading-tight">
                         <span className="text-acazul">Feedybacky</span> é a maneira mais eficiente de gerenciar os feedbacks visuais
                     </h2>
-                    <p className="text-accinza text-base mb-6">
+                    <p className="text-acpreto text-base mb-6">
                         Se você já perdeu tempo buscando sugestões espalhadas em e-mails, mensagens e comentários soltos,
                         sabe como isso atrasa seu fluxo de trabalho e gera retrabalho desnecessário. Com o Feedybacky,
                         você transforma o caos da revisão em um processo simples, eficiente e visual!
@@ -28,12 +28,12 @@ export default function EfficiencySection() {
                             </span>
                         ))}
                     </div>
-                    <a href="#inscricao" className="inline-flex items-center border border-acroxo text-acroxo px-6 py-3 rounded- font-medium hover:bg-acbg transition">
-                        Inscreva-se <span className="ml-2">→</span>
-                    </a>
+                    <button className="gap-2 bg-acazul text-acbrancohover px-4 py-2 rounded-full">
+                        <a href="/register">Teste Grátis</a>
+                    </button>
                 </div>
                 <div className="w-full lg:w-1/2">
-                    <img src="/gestao-preview.png" alt="Dashboard do Feedybacky" className="w-full rounded-xl shadow-xl" />
+                    <img src="/print-feedybacky.png" alt="Dashboard do Feedybacky" className="w-full rounded-xl shadow-xl" />
                 </div>
             </div>
         </section>

@@ -38,7 +38,7 @@
     "**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts"
-  ],
+, "imagens.mjs"  ],
   "exclude": [
     "node_modules",
     ".next"

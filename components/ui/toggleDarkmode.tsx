@@ -88,7 +88,7 @@ function Toggle({
 
 const ToggleDarkModeAnimated = () => {
   return (
-    <div className='hover:bg-acbgcinzafraco hover:text-acbrancohover text-acpreto size-9 rounded-full'>
+    <div className='hover:bg-acbgcinzafraco bg-acbranco hover:text-acbrancohover text-acpreto size-9 rounded-full fixed right-8 bottom-8'>
       <Toggle />
     </div>
   );

@@ -19,7 +19,6 @@ const HomePage = () => {
         <HeaderSection/>
         <HeroSection/>
         <LaptopSection/>
-        <BenefitsSection/>
         <ProfissionalsSection/>
         <EfficiencySection/>
         <RevisionSection/>

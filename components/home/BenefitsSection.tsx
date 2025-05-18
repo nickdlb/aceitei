@@ -7,27 +7,27 @@ export default function BenefitsSection() {
                         <div className="bg-gray-300 rounded-full">
                             <img src="/alvo.png"></img>
                         </div>
-                        <h3 className="text-xl font-semibold text-acbranco text-left">Centralize Feedbacks</h3>
+                        <h3 className="text-xl font-semibold text-acbrancohover text-left">Centralize Feedbacks</h3>
                     </div>
-<p className="mt-2 text-acbranco text-justify">Tenha todos os comentários organizados diretamente sobre a arte ou postagem, sem perder nada.</p>
+                    <p className="mt-2 text-acbrancohover text-justify">Tenha todos os comentários organizados diretamente sobre a arte ou postagem, sem perder nada.</p>
                 </div>
                 <div className="flex justify-start">
                     <div className="flex items-center gap-4">
                         <div className="bg-gray-300 rounded-full">
                             <img src="/foguete.png"></img>
                         </div>
-                        <h3 className="text-xl font-semibold text-acbranco text-left">Reduza Retrabalho</h3>
+                        <h3 className="text-xl font-semibold text-acbrancohover text-left">Reduza Retrabalho</h3>
                     </div>
-                    <p className="mt-2 text-acbranco text-justify">Evite refazer tarefas desnecessárias e acelere as aprovações com um sistema de revisão mais ágil.</p>
+                    <p className="mt-2 text-acbrancohover text-justify">Evite refazer tarefas desnecessárias e acelere as aprovações com um sistema de revisão mais ágil.</p>
                 </div>
                 <div className="flex justify-start">
                     <div className="flex items-center gap-4">
                         <div className="bg-gray-300 rounded-full">
                             <img src="/aviao-papel.png"></img>
                         </div>
-                        <h3 className="text-xl font-semibold text-acbranco text-left">Colabore com Facilidade</h3>
+                        <h3 className="text-xl font-semibold text-acbrancohover text-left">Colabore com Facilidade</h3>
                     </div>
-                    <p className="mt-2 text-acbranco text-justify">Envie rapidamente para clientes e equipe, tornando a colaboração mais fluida e eficiente.</p>
+                    <p className="mt-2 text-acbrancohover text-justify">Envie rapidamente para clientes e equipe, tornando a colaboração mais fluida e eficiente.</p>
                 </div>
             </div>
         </section>

@@ -5,6 +5,7 @@ import { ThemeProvider, ThemeInitScript } from '@/contexts/ThemeContext'
 import { AuthProvider } from '@/components/common/auth/AuthProvider'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { Toaster } from 'sonner';
+import { ToggleDarkModeAnimated } from '@/components/ui/toggleDarkmode'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider storageKey="feedybacky-theme">
           <AuthProvider>
             {children}
+            <ToggleDarkModeAnimated />
             <Toaster/>
           </AuthProvider>
         </ThemeProvider>
