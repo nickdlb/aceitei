@@ -43,8 +43,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   }, {
     onConflict: 'user_id'})
           .eq('user_id', userId)
-          .single();
-          router.push("/account")
+          .single();  
+          router.push("/start")
         }
       }
       setLoading(false);
